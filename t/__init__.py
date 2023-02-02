@@ -1,6 +1,6 @@
 # t/__init__.py
 
-from .hello import *
+from .readwrite import *
 
 name: str = "t"
 
