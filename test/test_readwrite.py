@@ -106,4 +106,73 @@ class TestIO:
         assert ti.infer() == bool
 
 
+root: str = "test/formats/"
+
+
+class TestDelimitedFileReader:
+    def test_comma_delimiter(self) -> None:
+        sample: str = "sample-01-comma.csv"
+        reader: DelimitedFileReader = DelimitedFileReader(root + sample)
+        df: pd.DataFrame = reader.read()
+        assert df.shape[1] == 12
+        assert df.shape[0] == 10
+
+    def test_space_delimiter(self) -> None:
+        sample: str = "sample-02-space.csv"
+        reader: DelimitedFileReader = DelimitedFileReader(
+            root + sample, delimiter="space"
+        )
+        df: pd.DataFrame = reader.read()
+        assert df.shape[1] == 12
+        assert df.shape[0] == 10
+
+    def test_tab_delimiter(self) -> None:
+        sample: str = "sample-03-tab.tsv"
+        reader: DelimitedFileReader = DelimitedFileReader(
+            root + sample, delimiter="tab"
+        )
+        df: pd.DataFrame = reader.read()
+        assert df.shape[1] == 12
+        assert df.shape[0] == 10
+
+    def test_pipe_delimiter(self) -> None:
+        sample: str = "sample-04-pipe.csv"
+        reader: DelimitedFileReader = DelimitedFileReader(
+            root + sample, delimiter="pipe"
+        )
+        df: pd.DataFrame = reader.read()
+        assert df.shape[1] == 12
+        assert df.shape[0] == 10
+
+    def test_noheader(self) -> None:
+        sample: str = "sample-05-noheader.csv"
+        reader: DelimitedFileReader = DelimitedFileReader(root + sample, header=False)
+        df: pd.DataFrame = reader.read()
+        assert df.shape[1] == 12
+        assert df.shape[0] == 10
+
+    # NOTE - Not currently supporting explicit column types.
+    # def test_explicit_types(self) -> None:
+    #     sample: str = "sample-01-comma.csv"
+    #     col_types: list = [
+    #         str,
+    #         int,
+    #         int,
+    #         int,
+    #         int,
+    #         int,
+    #         int,
+    #         int,
+    #         int,
+    #         int,
+    #         float,
+    #         float,
+    #     ]
+    #     reader: DelimitedFileReader = DelimitedFileReader(
+    #         root + sample, col_types=col_types
+    #     )
+    #     t: Table = reader.read()
+    #     assert t.col_types() == col_types
+
+
 ### END ###

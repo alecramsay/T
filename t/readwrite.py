@@ -24,14 +24,14 @@ StandardDelimiters: dict[str, str] = {
     "semicolon": ";",
     "comma": ",",
     "space": " ",
-    "pipe": "\|",
+    "pipe": "|",
     # user-defined
 }
 
 TextQualifiers: dict = {
     "doublequote": '"',
     "singlequote": "'",
-    "\{none\}": None,
+    "{none\}": None,
 }
 
 
@@ -73,8 +73,9 @@ def read_delimited_file(
 ) -> pd.DataFrame:
     """Read a delimited text file, e.g., CSV
 
-    A two-pass wrapper over Pandas' read_csv() function. The first pass
-    infers the column types. The second pass reads the file using them.
+    A two-pass wrapper over Pandas' read_csv() function.
+    - The first pass infers string columns (e.g., leading zeros)
+    - The second pass reads the file using them
 
     Args:
         file (str): Absolute file path
@@ -83,7 +84,12 @@ def read_delimited_file(
     """
 
     df: pd.DataFrame = pd.read_csv(
-        file, dtype=str, header=header, sep=delimiter, nrows=PREREAD_LINES
+        file,
+        dtype=str,
+        header=header,
+        sep=delimiter,
+        nrows=PREREAD_LINES,
+        engine="python",
     )
 
     inferencers: list[TypeInferencer] = [TypeInferencer() for _ in list(df)]
@@ -98,7 +104,9 @@ def read_delimited_file(
         if inferred_types[i] == str:
             str_cols[col] = "string"
 
-    return pd.read_csv(file, header=header, sep=delimiter, dtype=str_cols)
+    return pd.read_csv(
+        file, header=header, sep=delimiter, dtype=str_cols, engine="python"
+    )
 
 
 ### INFER COLUMN TYPES ###
