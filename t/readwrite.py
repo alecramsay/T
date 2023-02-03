@@ -9,8 +9,8 @@ import pandas as pd
 from typing import Type
 
 from .constants import *
+from .excel import *
 
-# from .excel import *
 # from .utils import *
 # from .datamodel import *
 
@@ -31,7 +31,7 @@ StandardDelimiters: dict[str, str] = {
 TextQualifiers: dict = {
     "doublequote": '"',
     "singlequote": "'",
-    "{none\}": None,
+    # "{none\}": None, TODO
 }
 
 
@@ -104,9 +104,18 @@ def read_delimited_file(
         if inferred_types[i] == str:
             str_cols[col] = "string"
 
-    return pd.read_csv(
+    df = pd.read_csv(
         file, header=header, sep=delimiter, dtype=str_cols, engine="python"
     )
+
+    # Use Excel names, if there isn't a header
+    if header is None:
+        offsets: list = list(df.columns)
+        fieldnames: list[str] = first_n_excel_column_names(len(offsets))
+        rename_dict: dict = dict(zip(offsets, fieldnames))
+        df.rename(columns=rename_dict, inplace=True)
+
+    return df
 
 
 ### INFER COLUMN TYPES ###
