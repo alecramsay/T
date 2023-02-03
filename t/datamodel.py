@@ -14,25 +14,41 @@ from .constants import *
 
 # from .utils import *
 
-# TODO - Enumerate data types
+# TODO - HERE
+
+dtypes: dict[str, str] = {
+    "object": "object",
+    "string": "string",
+    "int": "int64",
+    "float": "float64",
+    "bool": "bool",
+    "datetime": "datetime64",
+    "timedelta": "timedelta64",
+}
 
 
 class Column:
     """
-    Column definition meta data for managing aliases and data types
+    Column definition meta data for managing aliases & data types
 
     Pandas data types:
     https://pbpython.com/pandas_dtypes.html
     https://pandas.pydata.org/pandas-docs/stable/user_guide/basics.html#basics-dtypes
-    https://pandas.pydata.org/pandas-docs/stable/user_guide/text.html#text-types
 
     object                       <<< "can hold any Python object, including strings"
     string                       <<< text
     int                          <<< integers
     float                        <<< floating point numbers
     bool                         <<< booleans
+    datetime                     <<< dates & times
+    timedelta                    <<< time durations
+    category                     <<< categorical data
 
-    Built-in Python data types:
+    Pandas extension types:
+    https://pandas.pydata.org/pandas-docs/stable/development/extending.html#extending-extension-types
+    https://pandas.pydata.org/pandas-docs/stable/user_guide/text.html#text-types
+
+    Built-in Python data types -- NOTE: Not all of these are supported directly yet
     https://www.w3schools.com/python/python_datatypes.asp
 
     str                          <<< text
