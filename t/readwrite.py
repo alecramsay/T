@@ -8,6 +8,8 @@ import os
 import pandas as pd
 from typing import Type
 
+from .constants import *
+
 # from .excel import *
 # from .utils import *
 # from .datamodel import *
@@ -33,7 +35,7 @@ TextQualifiers: dict = {
 }
 
 
-class TableReader:
+class DelimitedFileReader:
     """Read table from a delimited text file
 
     The user specifies what the delimiter is and whether there is a header.
@@ -52,26 +54,27 @@ class TableReader:
         *,
         delimiter="comma",
         header=True,
-        col_types=None,
     ) -> None:
         self.file: str = FileSpec(rel_path).abs_path
         self.delimiter: str = StandardDelimiters[delimiter]
-        self.header: bool = header
+        self.header: int | None = 0 if header else None
 
     def read(self) -> pd.DataFrame:
-        pass  # TODO
+        return read_delimited_file(
+            self.file, delimiter=self.delimiter, header=self.header
+        )
 
 
 ### READ CSV USING PANDAS ###
 
 
-def read_csv(
-    file: str,
-    *,
-    delimiter=StandardDelimiters["comma"],  # TODO
-    header: int = 0,  # TODO
+def read_delimited_file(
+    file: str, *, delimiter=StandardDelimiters["comma"], header: int = 0
 ) -> pd.DataFrame:
-    """Two-pass read using Pandas
+    """Read a delimited text file, e.g., CSV
+
+    A two-pass wrapper over Pandas' read_csv() function. The first pass
+    infers the column types. The second pass reads the file using them.
 
     Args:
         file (str): Absolute file path
@@ -79,7 +82,9 @@ def read_csv(
         header (int, optional): Header row. Defaults to 0.
     """
 
-    df: pd.DataFrame = pd.read_csv(file, dtype=str)
+    df: pd.DataFrame = pd.read_csv(
+        file, dtype=str, header=header, sep=delimiter, nrows=PREREAD_LINES
+    )
 
     inferencers: list[TypeInferencer] = [TypeInferencer() for _ in list(df)]
     for _, df_row in df.iterrows():
@@ -93,7 +98,7 @@ def read_csv(
         if inferred_types[i] == str:
             str_cols[col] = "string"
 
-    return pd.read_csv(file, dtype=str_cols)
+    return pd.read_csv(file, header=header, sep=delimiter, dtype=str_cols)
 
 
 ### INFER COLUMN TYPES ###
