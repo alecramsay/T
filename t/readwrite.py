@@ -5,19 +5,95 @@ READ/WRITE
 """
 
 import os
+import pandas as pd
 from typing import Type
+
+# from .excel import *
+# from .utils import *
+# from .datamodel import *
 
 
 class FileSpec:
-    def __init__(self, path: str, name=None) -> None:
-        file_name: str
-        file_extension: str
-        file_name, file_extension = os.path.splitext(path)
+    pass  # Declaration
 
-        self.rel_path: str = path
-        self.abs_path: str = os.path.abspath(path)
-        self.name: str = name.lower() if (name) else os.path.basename(file_name).lower()
-        self.extension: str = file_extension
+
+StandardDelimiters: dict[str, str] = {
+    "tab": "\t",
+    "semicolon": ";",
+    "comma": ",",
+    "space": " ",
+    "pipe": "\|",
+    # user-defined
+}
+
+TextQualifiers: dict = {
+    "doublequote": '"',
+    "singlequote": "'",
+    "\{none\}": None,
+}
+
+
+class TableReader:
+    """Read table from a delimited text file
+
+    The user specifies what the delimiter is and whether there is a header.
+    The column types are inferred from the data.
+
+    Args:
+        rel_path (str): Relative path to the file
+        delimiter (str, optional): Delimiter. Defaults to "comma."
+        header (bool, optional): Header? Defaults to True.
+        col_types (list, optional): List of column types. Defaults to None.
+    """
+
+    def __init__(
+        self,
+        rel_path: str,
+        *,
+        delimiter="comma",
+        header=True,
+        col_types=None,
+    ) -> None:
+        self.file: str = FileSpec(rel_path).abs_path
+        self.delimiter: str = StandardDelimiters[delimiter]
+        self.header: bool = header
+
+    def read(self) -> pd.DataFrame:
+        pass  # TODO
+
+
+### READ CSV USING PANDAS ###
+
+
+def read_csv(
+    file: str,
+    *,
+    delimiter=StandardDelimiters["comma"],  # TODO
+    header: int = 0,  # TODO
+) -> pd.DataFrame:
+    """Two-pass read using Pandas
+
+    Args:
+        file (str): Absolute file path
+        delimiter (str, optional): Delimiter. Defaults to ','.
+        header (int, optional): Header row. Defaults to 0.
+    """
+
+    df: pd.DataFrame = pd.read_csv(file, dtype=str)
+
+    inferencers: list[TypeInferencer] = [TypeInferencer() for _ in list(df)]
+    for _, df_row in df.iterrows():
+        for i, value in enumerate(df_row):
+            inferencers[i].add(value)
+
+    inferred_types: list = [obj.infer() for obj in inferencers]
+
+    str_cols: dict[str, str] = dict()
+    for i, col in enumerate(list(df)):
+        if inferred_types[i] == str:
+            str_cols[col] = "string"
+
+    return pd.read_csv(file, dtype=str_cols)
 
 
 ### INFER COLUMN TYPES ###
@@ -116,6 +192,21 @@ def is_bool(s: str) -> bool:
     Is the string a boolean?
     """
     return s.lower() in ["true", "false"]
+
+
+### PATHS ###
+
+
+class FileSpec:
+    def __init__(self, path: str, name=None) -> None:
+        file_name: str
+        file_extension: str
+        file_name, file_extension = os.path.splitext(path)
+
+        self.rel_path: str = path
+        self.abs_path: str = os.path.abspath(path)
+        self.name: str = name.lower() if (name) else os.path.basename(file_name).lower()
+        self.extension: str = file_extension
 
 
 ### END ###
