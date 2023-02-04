@@ -109,6 +109,35 @@ class TestIO:
             ti.add(s)
         assert ti.infer() == bool
 
+    def test_infer_complex(self) -> None:
+        samples: list[str]
+        ti: TypeInferencer
+
+        samples = [
+            "3+5j",
+            "3+6j",
+            "-2.298223593415307508e-11+2.117954721174255306e-09j",
+        ]
+        ti = TypeInferencer()
+        for s in samples:
+            assert is_complex(s)
+
+        # TODO - test integration into inferencer
+
+    def test_infer_bytes(self) -> None:
+        samples: list[str]
+        ti: TypeInferencer
+
+        samples = [
+            b"\x7f\x45\x4c\x46\x01\x01\x01\x00",
+            b"\x7fELF\x01\x01\x01\0",
+        ]
+        ti = TypeInferencer()
+        for s in samples:
+            assert is_bytes(s)
+
+        # TODO - test integration into inferencer
+
 
 root: str = "test/formats/"
 

@@ -216,6 +216,31 @@ def is_bool(s: str) -> bool:
     return s.lower() in ["true", "false"]
 
 
+def is_complex(s: str) -> bool:
+    """
+    Is the string a complex number?
+    """
+    try:
+        complex(s)
+        return True
+    except ValueError:
+        return False
+
+
+def is_bytes(s: str) -> bool:
+    """
+    Is the string a bytes object?
+    """
+
+    try:
+        if isinstance(s, bytes):
+            return True
+        else:
+            return False
+    except ValueError:
+        return False
+
+
 ### PATHS ###
 
 
