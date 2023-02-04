@@ -131,6 +131,7 @@ class TestIO:
         samples = [
             b"\x7f\x45\x4c\x46\x01\x01\x01\x00",
             b"\x7fELF\x01\x01\x01\0",
+            b"\xe8\x03",
         ]
         ti = TypeInferencer()
         for s in samples:
