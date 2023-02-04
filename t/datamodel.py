@@ -30,10 +30,15 @@ dtypes: dict[str, str] = {
 class Column:
     """
     Column definition meta data for managing aliases & data types
+    - Pandas data types: a numpy.dtype or Python type -or-
+    - Pandas extension types
 
     Pandas data types:
     https://pbpython.com/pandas_dtypes.html
     https://pandas.pydata.org/pandas-docs/stable/user_guide/basics.html#basics-dtypes
+    https://pandas.pydata.org/pandas-docs/stable/user_guide/text.html#text-types
+    https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.astype.html
+    https://numpy.org/doc/stable/reference/arrays.dtypes.html
 
     object                       <<< "can hold any Python object, including strings"
     string                       <<< text
@@ -46,7 +51,7 @@ class Column:
 
     Pandas extension types:
     https://pandas.pydata.org/pandas-docs/stable/development/extending.html#extending-extension-types
-    https://pandas.pydata.org/pandas-docs/stable/user_guide/text.html#text-types
+    https://pandas.pydata.org/pandas-docs/stable/ecosystem.html#ecosystem-extensions
 
     Built-in Python data types -- NOTE: Not all of these are supported directly yet
     https://www.w3schools.com/python/python_datatypes.asp

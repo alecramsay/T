@@ -30,7 +30,7 @@ class TestIO:
         for x in ["True", "true", "TRUE", "tRuE", "False", "false", "FALSE", "fAlSe"]:
             assert is_bool(x)
 
-    def test_infer_data_types(self) -> None:
+    def test_infer_int(self) -> None:
         samples: list[str]
         ti: TypeInferencer
 
@@ -40,6 +40,7 @@ class TestIO:
             ti.add(s)
         assert ti.infer() == int
 
+    def test_infer_float(self) -> None:
         samples = [
             "1.1",
             "2.2",
@@ -57,12 +58,14 @@ class TestIO:
             ti.add(s)
         assert ti.infer() == float
 
+    def test_infer_mixed_numbers(self) -> None:
         samples = ["1", "2", "3", "4", "5", "6.6", "7.7", "8.8", "9.9", "10.10"]
         ti = TypeInferencer()
         for s in samples:
             ti.add(s)
         assert ti.infer() == float
 
+    def test_infer_leading_zeroes(self) -> None:
         # Leading zeroes
         samples = [
             "04013000006",
@@ -99,6 +102,7 @@ class TestIO:
             ti.add(s)
         assert ti.infer() == str
 
+    def test_infer_bool(self) -> None:
         samples = ["True", "true", "TRUE", "tRuE", "False", "false", "FALSE", "fAlSe"]
         ti = TypeInferencer()
         for s in samples:
