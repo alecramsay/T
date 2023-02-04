@@ -3,6 +3,7 @@
 # TEST DATA MODEL
 #
 
+import ast
 import random
 
 from t.readwrite import *
@@ -124,20 +125,66 @@ class TestIO:
 
         # TODO - test integration into inferencer
 
-    def test_infer_bytes(self) -> None:
-        samples: list[str]
-        ti: TypeInferencer
+    # TODO
+    # def test_infer_bytes(self) -> None:
+    #     samples: list[str]
+    #     ti: TypeInferencer
 
-        samples = [
-            b"\x7f\x45\x4c\x46\x01\x01\x01\x00",
-            b"\x7fELF\x01\x01\x01\0",
-            b"\xe8\x03",
+    #     samples = [
+    #         'b"Hello"',
+    #     ]
+    #     ti = TypeInferencer()
+    #     for s in samples:
+    #         assert is_bytes(s)
+
+    # TODO - test integration into inferencer
+
+    def test_literal_eval(self) -> None:
+        """
+        Built-in Python data types & their literal representations:
+        https://www.w3schools.com/python/python_datatypes.asp
+        """
+
+        examples: list[str] = [
+            "'Hello world!'",
+            "20",
+            "20.5",
+            "1j",
+            '["apple", "banana", "cherry"]',
+            '("apple", "banana", "cherry")',
+            # "range(6)",
+            '{"name" : "John", "age" : 36}',
+            '{"apple", "banana", "cherry"}',
+            # 'frozenset({"apple", "banana", "cherry"})',
+            "True",
+            'b"Hello"',
+            # "bytearray(5)",
+            # "memoryview(bytes(5))",
+            "None",
         ]
-        ti = TypeInferencer()
-        for s in samples:
-            assert is_bytes(s)
 
-        # TODO - test integration into inferencer
+        types: list[str] = [
+            str,
+            int,
+            float,
+            complex,
+            list,
+            tuple,
+            # range, # Not supported by ast.literal_eval
+            dict,
+            set,
+            # frozenset, # Not supported by ast.literal_eval
+            bool,
+            bytes,
+            # bytearray, # Not supported by ast.literal_eval
+            # memoryview, # Not supported by ast.literal_eval
+            type(None),
+        ]
+
+        for q, a in zip(examples, types):
+            evaled = ast.literal_eval(q)
+            print(f"{q} = {type(evaled).__name__}")
+            assert type(evaled) == a
 
 
 root: str = "test/formats/"

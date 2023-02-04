@@ -248,6 +248,8 @@ def is_complex(s: str) -> bool:
 def is_bytes(s: str) -> bool:
     """
     Is the string a bytes object?
+
+    https://stackoverflow.com/questions/47741235/how-to-read-bytes-object-from-csv
     """
 
     try:

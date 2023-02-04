@@ -53,7 +53,7 @@ class Column:
     https://pandas.pydata.org/pandas-docs/stable/development/extending.html#extending-extension-types
     https://pandas.pydata.org/pandas-docs/stable/ecosystem.html#ecosystem-extensions
 
-    Built-in Python data types -- NOTE: Not all of these are supported directly yet
+    Built-in Python data types & their literal representations:
     https://www.w3schools.com/python/python_datatypes.asp
 
     str                          <<< text
