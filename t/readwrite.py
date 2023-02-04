@@ -5,6 +5,7 @@ READ/WRITE
 """
 
 import os
+import builtins
 import pandas as pd
 from typing import Type
 
@@ -136,20 +137,25 @@ class TypeInferencer:
             self.types.add(float)
         elif is_bool(example):
             self.types.add(bool)
+        # TODO
+        # elif is_complex(example):
+        #     self.types.add(complex)
+        # elif is_bytes(example):
+        #     self.types.add(bytes)
         else:
+            # TODO
+            # self.types.add(type(example))
             self.types.add(str)
 
         self.lengths.add(len(example))
 
-    def infer(self) -> Type[str] | Type[int] | Type[float] | Type[bool]:
+    def infer(self) -> Type:
         if self.n == 0:
             return str
 
         # All the same type
         if len(self.types) == 1:
-            inferred_type: Type[str] | Type[int] | Type[float] | Type[
-                bool
-            ] = self.types.pop()
+            inferred_type: Type = self.types.pop()
 
             # All 'integers' the same multi-digit width, e.g., GEOIDs
             # NOTE - This check assumes a non-trivial number of examples.
@@ -162,15 +168,27 @@ class TypeInferencer:
 
             return inferred_type
 
+        # Mixed types
+
         # All int & float
         if self.types == {int, float}:
             return float
 
-        # No change
         return str
 
 
 # Type Inference Helpers
+
+
+# TODO
+# def get_builtin_fn(name):
+#     """
+#     This works at top level but not w/in the module:
+
+#     return getattr(globals()["__builtins__"], name)
+#     """
+
+#     return getattr(builtins, name)
 
 
 def leading_zeroes(s: str) -> bool:
