@@ -123,22 +123,29 @@ class TypeInferencer:
         self.types: set[Type] = set()
 
     def add(self, example: str) -> None:
+        print(f"Example: {example}")
         self.n += 1
+        self.lengths.add(len(example))
+
+        if leading_zeroes(example):
+            self.types.add(str)
+            return
+
+        if is_bool(example):
+            self.types.add(bool)
+            return
 
         try:
-            if leading_zeroes(example):
-                self.types.add(str)
-            else:
-                dtype: Type
-                name: str
-                dtype, name = type_from_literal(example)
-                # A valid Python literal string
-                self.types.add(dtype)
+            dtype: Type
+            name: str
+            dtype, name = type_from_literal(example)
+            # A valid Python literal string
+            self.types.add(dtype)
         except:
             # Not a valid Python literal string
-            self.types.add(str)
+            self.types.add(str)  # TODO
 
-        self.lengths.add(len(example))
+        return
 
     def infer(self) -> Type:
         if self.n == 0:
@@ -194,6 +201,13 @@ def leading_zeroes(s: str) -> bool:
         return True
     else:
         return False
+
+
+def is_bool(s: str) -> bool:
+    """
+    Is the string a boolean?
+    """
+    return s.lower() in ["true", "false"]
 
 
 ### PATHS ###
