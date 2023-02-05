@@ -69,8 +69,8 @@ def read_delimited_file(
     """Read a delimited text file, e.g., CSV
 
     A two-pass wrapper over Pandas' read_csv() function.
-    - The first pass adds some extra column type inferencing (e.g., leading zeros)
-    - The second pass reads the file using string data types where appropriate
+    - The first pass adds some extra column type inferencing (e.g., leading zeros, bools)
+    - The second pass reads the file using that information
 
     Args:
         file (str): Absolute file path
@@ -120,7 +120,7 @@ class TypeInferencer:
     def __init__(self) -> None:
         self.n: int = 0
         self.lengths: set[int] = set()
-        self.types: set[Type] = set()
+        self.types: set = set()
 
     def add(self, example: str) -> None:
         print(f"Example: {example}")

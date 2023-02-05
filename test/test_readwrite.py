@@ -11,6 +11,25 @@ from t.readwrite import *
 
 class TestIO:
     def test_data_type_predicates(self) -> None:
+        # Not valid string literal (no quotes)
+        try:
+            dtype: Type
+            name: str
+            dtype, name = type_from_literal("foo")
+            assert False
+        except:
+            assert True
+
+        # Valid string literal
+        try:
+            dtype: Type
+            name: str
+            dtype, name = type_from_literal('"foo"')
+            assert False
+        except:
+            assert True
+
+        # Leading zeroes (str)
         for i in range(0, 10):
             assert not leading_zeroes(str(i))
 
@@ -21,6 +40,7 @@ class TestIO:
 
         assert not leading_zeroes("0.0")
 
+        # Integer
         dtype: Type
         name: str
         dtype, name = type_from_literal(str(0))
@@ -40,6 +60,7 @@ class TestIO:
         except:
             assert True
 
+        # Float
         for i in range(-10, 10 + 1):
             f: float = random.random()
             dtype: Type
@@ -47,6 +68,7 @@ class TestIO:
             dtype, name = type_from_literal(str(i + f))
             assert dtype == float
 
+        # Boolean
         for x in ["True", "False"]:
             dtype: Type
             name: str
