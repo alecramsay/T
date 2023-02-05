@@ -211,7 +211,7 @@ def leading_zeroes(s: str) -> bool:
     """
     Like GEODID
     """
-    if len(s) > 1 and s[0] == "0":
+    if len(s) > 1 and s[0] == "0" and s[1] != ".":
         return True
     else:
         return False
