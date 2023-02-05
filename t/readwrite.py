@@ -132,21 +132,34 @@ class TypeInferencer:
     def add(self, example: str) -> None:
         self.n += 1
 
-        if is_int(example):
-            self.types.add(int)
-        elif is_float(example):
-            self.types.add(float)
-        elif is_bool(example):
-            self.types.add(bool)
+        if leading_zeroes(example):
+            self.types.add(str)
+        else:
+            try:
+                dtype: Type
+                name: str
+                dtype, name = type_from_literal(example)
+                # A valid Python literal string
+                self.types.add(dtype)
+            except:
+                # Not a valid Python literal string
+                self.types.add(str)
+
+        # if is_int(example):
+        #     self.types.add(int)
+        # elif is_float(example):
+        #     self.types.add(float)
+        # elif is_bool(example):
+        #     self.types.add(bool)
         # TODO
         # elif is_complex(example):
         #     self.types.add(complex)
         # elif is_bytes(example):
         #     self.types.add(bytes)
-        else:
-            # TODO
-            # self.types.add(type(example))
-            self.types.add(str)
+        # else:
+        #     # TODO
+        #     # self.types.add(type(example))
+        #     self.types.add(str)
 
         self.lengths.add(len(example))
 
