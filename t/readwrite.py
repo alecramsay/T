@@ -30,11 +30,7 @@ StandardDelimiters: dict[str, str] = {
     # user-defined
 }
 
-TextQualifiers: dict = {
-    "doublequote": '"',
-    "singlequote": "'",
-    # "{none\}": None, TODO
-}
+TextQualifiers: dict = {"doublequote": '"', "singlequote": "'", "none": None}
 
 
 class DelimitedFileReader:
@@ -132,34 +128,18 @@ class TypeInferencer:
     def add(self, example: str) -> None:
         self.n += 1
 
-        if leading_zeroes(example):
-            self.types.add(str)
-        else:
-            try:
+        try:
+            if leading_zeroes(example):
+                self.types.add(str)
+            else:
                 dtype: Type
                 name: str
                 dtype, name = type_from_literal(example)
                 # A valid Python literal string
                 self.types.add(dtype)
-            except:
-                # Not a valid Python literal string
-                self.types.add(str)
-
-        # if is_int(example):
-        #     self.types.add(int)
-        # elif is_float(example):
-        #     self.types.add(float)
-        # elif is_bool(example):
-        #     self.types.add(bool)
-        # TODO
-        # elif is_complex(example):
-        #     self.types.add(complex)
-        # elif is_bytes(example):
-        #     self.types.add(bytes)
-        # else:
-        #     # TODO
-        #     # self.types.add(type(example))
-        #     self.types.add(str)
+        except:
+            # Not a valid Python literal string
+            self.types.add(str)
 
         self.lengths.add(len(example))
 
@@ -192,17 +172,6 @@ class TypeInferencer:
 
 
 # Type Inference Helpers
-
-
-# TODO
-# def get_builtin_fn(name):
-#     """
-#     This works at top level but not w/in the module:
-
-#     return getattr(globals()["__builtins__"], name)
-#     """
-
-#     return getattr(builtins, name)
 
 
 def type_from_literal(s: str) -> tuple[Type, str]:

@@ -151,23 +151,20 @@ class TestIO:
         ]
         ti = TypeInferencer()
         for s in samples:
-            assert is_complex(s)
+            ti.add(s)
+            assert ti.infer() == complex
 
-        # TODO - test integration into inferencer
+    def test_infer_bytes(self) -> None:
+        samples: list[str]
+        ti: TypeInferencer
 
-    # TODO
-    # def test_infer_bytes(self) -> None:
-    #     samples: list[str]
-    #     ti: TypeInferencer
-
-    #     samples = [
-    #         'b"Hello"',
-    #     ]
-    #     ti = TypeInferencer()
-    #     for s in samples:
-    #         assert is_bytes(s)
-
-    # TODO - test integration into inferencer
+        samples = [
+            'b"Hello"',
+        ]
+        ti = TypeInferencer()
+        for s in samples:
+            ti.add(s)
+            assert ti.infer() == bytes
 
     def test_literal_eval(self) -> None:
         """
@@ -218,26 +215,29 @@ class TestIO:
             dtype, name = type_from_literal(q)
             assert dtype == a
 
-        # TODO - Not valid literals
-        # examples: list[str] = [
-        #     "range(6)",
-        #     'frozenset({"apple", "banana", "cherry"})',
-        #     "bytearray(5)",
-        #     "memoryview(bytes(5))",
-        # ]
+        # Not valid literals
+        examples: list[str] = [
+            "range(6)",
+            'frozenset({"apple", "banana", "cherry"})',
+            "bytearray(5)",
+            "memoryview(bytes(5))",
+        ]
 
-        # types: list[str] = [
-        #     # range, # Not supported by ast.literal_eval
-        #     # frozenset, # Not supported by ast.literal_eval
-        #     # bytearray, # Not supported by ast.literal_eval
-        #     # memoryview, # Not supported by ast.literal_eval
-        # ]
+        types: list[str] = [
+            range,  # Not supported by ast.literal_eval
+            frozenset,  # Not supported by ast.literal_eval
+            bytearray,  # Not supported by ast.literal_eval
+            memoryview,  # Not supported by ast.literal_eval
+        ]
 
-        # for q, a in zip(examples, types):
-        #     dtype: Type
-        #     name: str
-        #     dtype, name = type_from_literal(q)
-        #     assert dtype == a
+        for q, a in zip(examples, types):
+            try:
+                dtype: Type
+                name: str
+                dtype, name = type_from_literal(q)
+                assert False
+            except:
+                assert True
 
 
 root: str = "test/formats/"
