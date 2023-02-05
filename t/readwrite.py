@@ -13,12 +13,9 @@ from typing import Type
 from .constants import *
 from .excel import *
 
-# from .utils import *
-# from .datamodel import *
-
 
 class FileSpec:
-    pass  # Declaration
+    pass  # Forward declaration
 
 
 StandardDelimiters: dict[str, str] = {
@@ -72,8 +69,8 @@ def read_delimited_file(
     """Read a delimited text file, e.g., CSV
 
     A two-pass wrapper over Pandas' read_csv() function.
-    - The first pass infers string columns (e.g., leading zeros)
-    - The second pass reads the file using them
+    - The first pass adds some extra column type inferencing (e.g., leading zeros)
+    - The second pass reads the file using string data types where appropriate
 
     Args:
         file (str): Absolute file path

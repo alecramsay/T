@@ -1,11 +1,11 @@
 int,bool,float,complex,bytes,str,other
-1,True,1.234,(3+6j),b'\xe8\x03',foo,TODO
-12,False,1.234,(3+6j),b'\xe8\x03',foo,TODO
-123,True,1.234,(3+6j),b'\xe8\x03',foo,TODO
-99,True,1.234,(3+6j),b'\xe8\x03',foo,TODO
-23,True,1.234,(3+6j),b'\xe8\x03',foo,TODO
-66,True,1.234,(3+6j),b'\xe8\x03',foo,TODO
-123,True,1.234,(3+6j),b'\xe8\x03',foo,TODO
-123,True,1.234,(3+6j),b'\xe8\x03',foo,TODO
-123,True,1.234,(3+6j),b'\xe8\x03',foo,TODO
-123,True,1.234,(3+6j),b'\xe8\x03',foo,TODO
+1,True,1.234,(3+6j),b'\xe8\x03',foo,[1, 2, 3]
+12,False,1.234,(3+6j),b'\xe8\x03',foo,[1, 2, 3]
+123,True,1.234,(3+6j),b'\xe8\x03',foo,[1, 2, 3]
+99,True,1.234,(3+6j),b'\xe8\x03',foo,[1, 2, 3]
+23,True,1.234,(3+6j),b'\xe8\x03',foo,[1, 2, 3]
+66,True,1.234,(3+6j),b'\xe8\x03',foo,[1, 2, 3]
+123,True,1.234,(3+6j),b'\xe8\x03',foo,[1, 2, 3]
+123,True,1.234,(3+6j),b'\xe8\x03',foo,[1, 2, 3]
+123,True,1.234,(3+6j),b'\xe8\x03',foo,[1, 2, 3]
+123,True,1.234,(3+6j),b'\xe8\x03',foo,[1, 2, 3]

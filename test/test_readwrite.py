@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 #
-# TEST DATA MODEL
+# TEST READ/WRITE
 #
 
 import ast
@@ -277,6 +277,13 @@ class TestDelimitedFileReader:
         assert df.shape[1] == 12
         assert df.shape[0] == 10
 
+    def test_dtypes(self) -> None:
+        sample: str = "dtypes.csv"
+        reader: DelimitedFileReader = DelimitedFileReader("test/files/" + sample)
+        df: pd.DataFrame = reader.read()
+        assert df.shape[1] == 7
+        assert df.shape[0] == 10
+
     # NOTE - Not currently supporting explicit column types.
     # def test_explicit_types(self) -> None:
     #     sample: str = "sample-01-comma.csv"
@@ -299,6 +306,8 @@ class TestDelimitedFileReader:
     #     )
     #     t: Table = reader.read()
     #     assert t.col_types() == col_types
+
+    pass
 
 
 ### END ###
