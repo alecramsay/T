@@ -5,6 +5,7 @@ READ/WRITE
 """
 
 import os
+import ast
 import builtins
 import pandas as pd
 from typing import Type
@@ -191,6 +192,21 @@ class TypeInferencer:
 #     return getattr(builtins, name)
 
 
+def type_from_literal(s: str) -> tuple[Type, str]:
+    """Evaluate the string as a literal and return the type & name
+
+    Built-in Python data types & their literal representations:
+    https://www.w3schools.com/python/python_datatypes.asp
+
+    Throws an exception if the string is not a valid literal
+    """
+
+    t: Type = type(ast.literal_eval(s))
+    name: str = t.__name__
+
+    return t, name
+
+
 def leading_zeroes(s: str) -> bool:
     """
     Like GEODID
@@ -201,6 +217,7 @@ def leading_zeroes(s: str) -> bool:
         return False
 
 
+# DELETE
 def is_int(s: str) -> bool:
     """
     Is the string an integer? (possibly negative)
@@ -214,6 +231,7 @@ def is_int(s: str) -> bool:
         return False
 
 
+# DELETE
 def is_float(s: str) -> bool:
     """
     Is the string a float? (possibly negative)
@@ -227,6 +245,7 @@ def is_float(s: str) -> bool:
         return False
 
 
+# DELETE
 def is_bool(s: str) -> bool:
     """
     Is the string a boolean?
@@ -234,6 +253,7 @@ def is_bool(s: str) -> bool:
     return s.lower() in ["true", "false"]
 
 
+# DELETE
 def is_complex(s: str) -> bool:
     """
     Is the string a complex number?
@@ -245,6 +265,7 @@ def is_complex(s: str) -> bool:
         return False
 
 
+# DELETE
 def is_bytes(s: str) -> bool:
     """
     Is the string a bytes object?

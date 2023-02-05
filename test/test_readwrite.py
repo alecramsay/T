@@ -182,9 +182,13 @@ class TestIO:
         ]
 
         for q, a in zip(examples, types):
-            evaled = ast.literal_eval(q)
-            print(f"{q} = {type(evaled).__name__}")
-            assert type(evaled) == a
+            dtype: Type
+            name: str
+            dtype, name = type_from_literal(q)
+            assert dtype == a
+            # evaled = ast.literal_eval(q)
+            # print(f"{q} = {type(evaled).__name__}")
+            # assert type(evaled) == a
 
 
 root: str = "test/formats/"
