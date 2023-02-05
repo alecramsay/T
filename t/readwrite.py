@@ -240,7 +240,12 @@ def is_bool(s: str) -> bool:
 
 
 def is_date_time(s: str) -> bool:
-    """Is the string a date or time?"""
+    """Is the string a date or time?
+
+    https://strftime.org/
+    https://docs.python.org/3/library/datetime.html#strftime-and-strptime-behavior
+    https://stackoverflow.com/questions/9507648/datetime-from-string-in-python-best-guessing-string-format
+    """
 
     try:
         dt: datetime = dateutil.parser.parse(s)
