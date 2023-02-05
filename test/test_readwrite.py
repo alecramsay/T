@@ -15,6 +15,7 @@ class TestIO:
             assert not leading_zeroes(str(i))
 
         assert not leading_zeroes("0")
+
         for s in ["01", "012", "0123"]:
             assert leading_zeroes(s)
 
@@ -23,15 +24,13 @@ class TestIO:
         dtype: Type
         name: str
         dtype, name = type_from_literal(str(0))
-        # DELETE
-        # assert is_int(str(0))
+        assert dtype == int
 
         for i in range(-10, 10 + 1):
             dtype: Type
             name: str
             dtype, name = type_from_literal(str(i))
-            # DELETE
-            # assert is_int(str(i))
+            assert dtype == int
 
         try:
             dtype: Type
@@ -40,24 +39,19 @@ class TestIO:
             assert False
         except:
             assert True
-        # DELETE
-        # assert not is_int("04013000006")
 
         for i in range(-10, 10 + 1):
             f: float = random.random()
             dtype: Type
             name: str
             dtype, name = type_from_literal(str(i + f))
-            # DELETE
-            # assert is_float(str(i + f))
+            assert dtype == float
 
-        # for x in ["True", "true", "TRUE", "tRuE", "False", "false", "FALSE", "fAlSe"]:
         for x in ["True", "False"]:
             dtype: Type
             name: str
             dtype, name = type_from_literal(x)
-            # DELETE
-            # assert is_bool(x)
+            assert dtype == bool
 
     def test_infer_int(self) -> None:
         samples: list[str]
@@ -133,8 +127,6 @@ class TestIO:
 
     def test_infer_bool(self) -> None:
         samples = ["True", "False"]
-        # DELETE
-        # samples = ["True", "true", "TRUE", "tRuE", "False", "false", "FALSE", "fAlSe"]
         ti = TypeInferencer()
         for s in samples:
             ti.add(s)
