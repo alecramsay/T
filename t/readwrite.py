@@ -71,9 +71,12 @@ def read_delimited_file(
     """Read a delimited text file, e.g., CSV
 
     A two-pass wrapper over Pandas' read_csv() function:
-    - The first pass adds some extra column type inferencing (e.g., leading zeros, bools), and
-      ensures that string columns are read as strings & other Python types are read as objects
-    - The second pass reads the file using that information
+    * The first pass adds some extra column type inferencing, e.g.,
+      - numeric fields with leading zeros treated as strings
+      - all upper/lower case variations of "True" & "False" treated as bools
+      - Python collection types treated as objects in Pandas
+      - dates & times interpreted as such by Pandas
+    * The second pass reads the file using that information
 
     Args:
         file (str): Absolute file path
@@ -109,8 +112,8 @@ def read_delimited_file(
         file,
         header=header,
         sep=delimiter,
-        dtype=str_cols,
-        parse_dates=dt_cols,
+        dtype=str_cols,  # Read strings as strings
+        parse_dates=dt_cols,  # Read dates as dates
         engine="python",
     )
 
@@ -132,7 +135,7 @@ def read_delimited_file(
 class TypeInferencer:
     """Infer the type of a column from a sample of values
 
-    The set of types is a hybrid composite of:
+    The set of types is a *hybrid* composite of:
     - The Python type literals supported by ast.literal_eval(), and
     - The Pandas datetime types
     """
