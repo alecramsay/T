@@ -145,6 +145,7 @@ class TestIO:
         https://www.w3schools.com/python/python_datatypes.asp
         """
 
+        # Valid literals
         examples: list[str] = [
             "'Hello world!'",
             "20",
@@ -186,9 +187,27 @@ class TestIO:
             name: str
             dtype, name = type_from_literal(q)
             assert dtype == a
-            # evaled = ast.literal_eval(q)
-            # print(f"{q} = {type(evaled).__name__}")
-            # assert type(evaled) == a
+
+        # TODO - Not valid literals
+        # examples: list[str] = [
+        #     "range(6)",
+        #     'frozenset({"apple", "banana", "cherry"})',
+        #     "bytearray(5)",
+        #     "memoryview(bytes(5))",
+        # ]
+
+        # types: list[str] = [
+        #     # range, # Not supported by ast.literal_eval
+        #     # frozenset, # Not supported by ast.literal_eval
+        #     # bytearray, # Not supported by ast.literal_eval
+        #     # memoryview, # Not supported by ast.literal_eval
+        # ]
+
+        # for q, a in zip(examples, types):
+        #     dtype: Type
+        #     name: str
+        #     dtype, name = type_from_literal(q)
+        #     assert dtype == a
 
 
 root: str = "test/formats/"
