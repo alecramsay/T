@@ -11,20 +11,21 @@ from t.readwrite import *
 
 class TestIO:
     def test_data_type_predicates(self) -> None:
-        # Not valid string literal (no quotes)
+        # NOTE - Strings in CSV files aren't wrapped in quotes
+        # Valid string literal
+        # try:
+        #     dtype: Type
+        #     name: str
+        #     dtype, name = type_from_literal('"foo"')
+        #     assert False
+        # except:
+        #     assert True
+
+        # They show up as invalid literals
         try:
             dtype: Type
             name: str
             dtype, name = type_from_literal("foo")
-            assert False
-        except:
-            assert True
-
-        # Valid string literal
-        try:
-            dtype: Type
-            name: str
-            dtype, name = type_from_literal('"foo"')
             assert False
         except:
             assert True
@@ -39,6 +40,14 @@ class TestIO:
             assert leading_zeroes(s)
 
         assert not leading_zeroes("0.0")
+
+        # Boolean
+        for x in ["True", "False", "true", "false", "TRUE", "FALSE"]:
+            assert is_bool(x)
+
+        # Date/Time
+        assert is_date_time("10/24/59")
+        assert not is_date_time("Not a date!")
 
         # Integer
         dtype: Type
@@ -67,13 +76,6 @@ class TestIO:
             name: str
             dtype, name = type_from_literal(str(i + f))
             assert dtype == float
-
-        # Boolean
-        for x in ["True", "False"]:
-            dtype: Type
-            name: str
-            dtype, name = type_from_literal(x)
-            assert dtype == bool
 
     def test_infer_int(self) -> None:
         samples: list[str]

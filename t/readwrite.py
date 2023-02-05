@@ -6,6 +6,8 @@ READ/WRITE
 
 import os
 import ast
+import datetime
+import dateutil.parser
 import builtins
 import pandas as pd
 from typing import Type
@@ -96,12 +98,20 @@ def read_delimited_file(
     inferred_types: list = [obj.infer() for obj in inferencers]
 
     str_cols: dict[str, str] = dict()
+    dt_cols: list = list()
     for i, col in enumerate(list(df)):
         if inferred_types[i] == str:
             str_cols[col] = "string"
+        elif inferred_types[i] == "pd.datetime":
+            dt_cols.append(col)
 
     df = pd.read_csv(
-        file, header=header, sep=delimiter, dtype=str_cols, engine="python"
+        file,
+        header=header,
+        sep=delimiter,
+        dtype=str_cols,
+        parse_dates=dt_cols,
+        engine="python",
     )
 
     # TODO - Detect commas in collection strings
@@ -120,6 +130,13 @@ def read_delimited_file(
 
 
 class TypeInferencer:
+    """Infer the type of a column from a sample of values
+
+    The set of types is a hybrid composite of:
+    - The Python type literals supported by ast.literal_eval(), and
+    - The Pandas datetime types
+    """
+
     def __init__(self) -> None:
         self.n: int = 0
         self.lengths: set[int] = set()
@@ -129,10 +146,12 @@ class TypeInferencer:
         self.n += 1
         self.lengths.add(len(example))
 
+        # Treat columns with leading zeroes as strings
         if leading_zeroes(example):
             self.types.add(str)
             return
 
+        # Allow upper/lower case "true" and "false"
         if is_bool(example):
             self.types.add(bool)
             return
@@ -144,9 +163,15 @@ class TypeInferencer:
             # A valid Python literal string
             self.types.add(dtype)
         except:
-            # Not a valid Python literal string
-            # Either an unquoted string -or- literal not by ast.literal_eval()
-            self.types.add(str)
+            # Not a valid Python literal string:
+            # It's either an unquoted string, in which case quoting will make it a valida string literal; or
+            # It's a Python literal not (yet) supported by ast.literal_eval(), in which case treat it as a string; or
+            # It's a datetime, in which case *don't* treat it as a string, so Pandas can parse it
+
+            if is_date_time(example):
+                self.types.add("pd.datetime")
+            else:
+                self.types.add(str)
 
         return
 
@@ -197,9 +222,8 @@ def type_from_literal(s: str) -> tuple[Type, str]:
 
 
 def leading_zeroes(s: str) -> bool:
-    """
-    Like GEODID
-    """
+    """Does the string have leading zeroes, like a GEODID?"""
+
     if len(s) > 1 and s[0] == "0" and s[1] != ".":
         return True
     else:
@@ -207,10 +231,19 @@ def leading_zeroes(s: str) -> bool:
 
 
 def is_bool(s: str) -> bool:
-    """
-    Is the string a boolean?
-    """
+    """Is the string a boolean?"""
+
     return s.lower() in ["true", "false"]
+
+
+def is_date_time(s: str) -> bool:
+    """Is the string a date or time?"""
+
+    try:
+        dt: datetime = dateutil.parser.parse(s)
+        return True
+    except:
+        return False
 
 
 ### PATHS ###
