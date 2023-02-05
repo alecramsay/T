@@ -1,0 +1,11 @@
+int,bool,float,complex,bytes,str
+1,True,1.234,(3+6j),b'\xe8\x03',foo
+12,False,1.234,(3+6j),b'\xe8\x03',foo
+123,True,1.234,(3+6j),b'\xe8\x03',foo
+99,True,1.234,(3+6j),b'\xe8\x03',foo
+23,True,1.234,(3+6j),b'\xe8\x03',foo
+66,True,1.234,(3+6j),b'\xe8\x03',foo
+123,True,1.234,(3+6j),b'\xe8\x03',foo
+123,True,1.234,(3+6j),b'\xe8\x03',foo
+123,True,1.234,(3+6j),b'\xe8\x03',foo
+123,True,1.234,(3+6j),b'\xe8\x03',foo

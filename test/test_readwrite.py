@@ -254,13 +254,10 @@ class TestIO:
                 assert True
 
 
-root: str = "test/formats/"
-
-
-class TestDelimitedFileReader:
+class TestDelimiters:
     def test_comma_delimiter(self) -> None:
         sample: str = "sample-01-comma.csv"
-        reader: DelimitedFileReader = DelimitedFileReader(root + sample)
+        reader: DelimitedFileReader = DelimitedFileReader("test/formats/" + sample)
         df: pd.DataFrame = reader.read()
         assert df.shape[1] == 12
         assert df.shape[0] == 10
@@ -268,7 +265,7 @@ class TestDelimitedFileReader:
     def test_space_delimiter(self) -> None:
         sample: str = "sample-02-space.csv"
         reader: DelimitedFileReader = DelimitedFileReader(
-            root + sample, delimiter="space"
+            "test/formats/" + sample, delimiter="space"
         )
         df: pd.DataFrame = reader.read()
         assert df.shape[1] == 12
@@ -277,7 +274,7 @@ class TestDelimitedFileReader:
     def test_tab_delimiter(self) -> None:
         sample: str = "sample-03-tab.tsv"
         reader: DelimitedFileReader = DelimitedFileReader(
-            root + sample, delimiter="tab"
+            "test/formats/" + sample, delimiter="tab"
         )
         df: pd.DataFrame = reader.read()
         assert df.shape[1] == 12
@@ -286,7 +283,7 @@ class TestDelimitedFileReader:
     def test_pipe_delimiter(self) -> None:
         sample: str = "sample-04-pipe.csv"
         reader: DelimitedFileReader = DelimitedFileReader(
-            root + sample, delimiter="pipe"
+            "test/formats/" + sample, delimiter="pipe"
         )
         df: pd.DataFrame = reader.read()
         assert df.shape[1] == 12
@@ -294,17 +291,32 @@ class TestDelimitedFileReader:
 
     def test_noheader(self) -> None:
         sample: str = "sample-05-noheader.csv"
-        reader: DelimitedFileReader = DelimitedFileReader(root + sample, header=False)
+        reader: DelimitedFileReader = DelimitedFileReader(
+            "test/formats/" + sample, header=False
+        )
         df: pd.DataFrame = reader.read()
         assert df.shape[1] == 12
         assert df.shape[0] == 10
 
+
+class TestDataTypes:
     def test_dtypes(self) -> None:
-        sample: str = "dtypes.csv"
-        reader: DelimitedFileReader = DelimitedFileReader("test/files/" + sample)
+        sample: str = "basic.csv"
+        reader: DelimitedFileReader = DelimitedFileReader("test/dtypes/" + sample)
         df: pd.DataFrame = reader.read()
-        assert df.shape[1] == 7
+        assert df.shape[1] == 6
         assert df.shape[0] == 10
+
+        sample: str = "collections.csv"
+        reader: DelimitedFileReader = DelimitedFileReader(
+            "test/dtypes/" + sample, delimiter="pipe"
+        )
+        df: pd.DataFrame = reader.read()
+        assert df.shape[1] == 5
+        assert df.shape[0] == 10
+
+        types: list[str] = [f"{dt}" for dt in df.dtypes]
+        assert types == ["string", "object", "object", "object", "object"]
 
     # NOTE - Not currently supporting explicit column types.
     # def test_explicit_types(self) -> None:
@@ -324,7 +336,7 @@ class TestDelimitedFileReader:
     #         float,
     #     ]
     #     reader: DelimitedFileReader = DelimitedFileReader(
-    #         root + sample, col_types=col_types
+    #         "test/formats/" + sample, col_types=col_types
     #     )
     #     t: Table = reader.read()
     #     assert t.col_types() == col_types

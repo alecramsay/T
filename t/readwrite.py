@@ -68,8 +68,9 @@ def read_delimited_file(
 ) -> pd.DataFrame:
     """Read a delimited text file, e.g., CSV
 
-    A two-pass wrapper over Pandas' read_csv() function.
-    - The first pass adds some extra column type inferencing (e.g., leading zeros, bools)
+    A two-pass wrapper over Pandas' read_csv() function:
+    - The first pass adds some extra column type inferencing (e.g., leading zeros, bools), and
+      ensures that string columns are read as strings & other Python types are read as objects
     - The second pass reads the file using that information
 
     Args:
@@ -103,7 +104,7 @@ def read_delimited_file(
         file, header=header, sep=delimiter, dtype=str_cols, engine="python"
     )
 
-    # Use Excel names, if there isn't a header
+    # Use Excel names, if there wasn't a header
     if header is None:
         offsets: list = list(df.columns)
         fieldnames: list[str] = first_n_excel_column_names(len(offsets))
@@ -123,7 +124,6 @@ class TypeInferencer:
         self.types: set = set()
 
     def add(self, example: str) -> None:
-        print(f"Example: {example}")
         self.n += 1
         self.lengths.add(len(example))
 
@@ -143,7 +143,8 @@ class TypeInferencer:
             self.types.add(dtype)
         except:
             # Not a valid Python literal string
-            self.types.add(str)  # TODO
+            # Either an unquoted string -or- literal not by ast.literal_eval()
+            self.types.add(str)
 
         return
 
