@@ -104,6 +104,8 @@ def read_delimited_file(
         file, header=header, sep=delimiter, dtype=str_cols, engine="python"
     )
 
+    # TODO - Detect commas in collection strings
+
     # Use Excel names, if there wasn't a header
     if header is None:
         offsets: list = list(df.columns)
