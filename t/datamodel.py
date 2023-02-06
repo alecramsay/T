@@ -26,6 +26,7 @@ PD_DTYPES: dict[str, str] = {
 }
 
 
+# TODO - `[x.name for x in df.dtypes]`
 class Column:
     """Column definitions are meta data for managing aliases & data types"""
 
@@ -111,6 +112,9 @@ class Table:
         self._data = DelimitedFileReader(
             rel_path, header=header, delimiter=delimiter
         ).read()
+
+        # TODO - Hook up column definitions to the DataFrame
+        # TODO - Wire up n_cols, n_rows, etc.
 
 
 ### END ###
