@@ -8,7 +8,6 @@ import os
 import ast
 import datetime
 import dateutil.parser
-import builtins
 import pandas as pd
 from typing import Type
 
@@ -33,7 +32,7 @@ TextQualifiers: dict = {"doublequote": '"', "singlequote": "'", "none": None}
 
 
 class DelimitedFileReader:
-    """Read table from a delimited text file
+    """Read a delimited text file into a Pandas DataFrame
 
     The user specifies what the delimiter is and whether there is a header.
     The column types are inferred from the data.
