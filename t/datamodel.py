@@ -4,12 +4,14 @@
 The T data model for 2D tables with rows & columns
 """
 
+import pandas as pd
 from typing import Any, Type
 from collections import namedtuple
 import re
 import pprint
 
 from .constants import *
+from .readwrite import DelimitedFileReader
 
 # Pandas data types - https://pandas.pydata.org/pandas-docs/stable/user_guide/basics.html#dtypes
 PD_DTYPES: dict[str, str] = {
@@ -80,6 +82,35 @@ class Column:
 
     def output_name(self) -> str:
         return self.alias if (self.alias) else self.name
+
+
+class Table:
+    """A 2D table with multiple rows with columns having one data type each.
+
+    Uses a Pandas DataFrame for storage.
+    """
+
+    def __init__(self) -> None:
+        self._cols: list[Column] = None
+        self._data: pd.DataFrame = None
+
+        self.signatures: set = set()
+        # self.ncols = len(self.cols)
+        # self.indexes = {}
+        # self.stats = None
+
+    def read(
+        self,
+        rel_path: str,
+        *,
+        delimiter="comma",
+        header=True,
+    ) -> None:
+        """Read a table from a delimited file (e.g., CSV."""
+
+        self._data = DelimitedFileReader(
+            rel_path, header=header, delimiter=delimiter
+        ).read()
 
 
 ### END ###

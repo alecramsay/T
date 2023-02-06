@@ -1,5 +1,6 @@
 # t/__init__.py
 
+from .datamodel import *
 from .readwrite import *
 
 name: str = "t"
