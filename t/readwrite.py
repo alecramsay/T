@@ -117,7 +117,12 @@ def read_delimited_file(
         engine="python",
     )
 
-    # TODO - Detect commas in collection strings
+    # NOTE - If a column's contents contain the delimiter -- e.g., a comma in a
+    # lists, tuples, dicts, or sets -- then Pandas will split the column which
+    # will results in a multiindex.
+
+    if isinstance(df.index, pd.MultiIndex):
+        raise Exception("Make sure the delimiter is not in any column values!")
 
     # Use Excel names, if there wasn't a header
     if header is None:
