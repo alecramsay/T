@@ -10,29 +10,26 @@ from t.datamodel import *
 
 class TestDataModel:
     def test_column(self) -> None:
-        s: Column = Column("GEOID", str)
-        assert s.type == str
+        s: Column = Column("GEOID", "string")
+        assert s.type == "string"
 
-        i: Column = Column("Total", int)
-        assert i.type == int
+        i: Column = Column("Total", "int")
+        assert i.type == "int"
 
-        f: Column = Column("D_pct", float)
-        assert f.type == float
+        f: Column = Column("D_pct", "float")
+        assert f.type == "float"
 
-        b: Column = Column("BOOLEAN", bool)
-        assert b.type == bool
+        b: Column = Column("BOOLEAN", "bool")
+        assert b.type == "bool"
 
-        l: Column = Column("LIST", list)
-        assert l.type == list
+        l: Column = Column("LIST", "object")
+        assert l.type == "object"
 
-        t: Column = Column("TUPLE", tuple)
-        assert t.type == tuple
+        t: Column = Column("DATE", "datetime")
+        assert t.type == "datetime"
 
-        d: Column = Column("DICT", dict)
-        assert d.type == dict
-
-        s = Column("SET", set)
-        assert s.type == set
+        d: Column = Column("CATEGORY", "category")
+        assert d.type == "category"
 
     def test_canonicalize_name(self) -> None:
         mod: str

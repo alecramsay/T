@@ -4,7 +4,6 @@
 The T data model for 2D tables with rows & columns
 """
 
-
 from typing import Any, Type
 from collections import namedtuple
 import re
@@ -12,11 +11,8 @@ import pprint
 
 from .constants import *
 
-# from .utils import *
-
-# TODO - HERE
-
-dtypes: dict[str, str] = {
+# Pandas data types - https://pandas.pydata.org/pandas-docs/stable/user_guide/basics.html#dtypes
+PD_DTYPES: dict[str, str] = {
     "object": "object",
     "string": "string",
     "int": "int64",
@@ -24,47 +20,12 @@ dtypes: dict[str, str] = {
     "bool": "bool",
     "datetime": "datetime64",
     "timedelta": "timedelta64",
+    "category": "category",
 }
 
 
 class Column:
-    """
-    Column definition meta data for managing aliases & data types
-    - Pandas data types: a numpy.dtype or Python type -or-
-    - Pandas extension types
-
-    Pandas data types:
-    https://pbpython.com/pandas_dtypes.html
-    https://pandas.pydata.org/pandas-docs/stable/user_guide/basics.html#basics-dtypes
-    https://pandas.pydata.org/pandas-docs/stable/user_guide/text.html#text-types
-    https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.astype.html
-    https://numpy.org/doc/stable/reference/arrays.dtypes.html
-
-    object                       <<< "can hold any Python object, including strings"
-    string                       <<< text
-    int                          <<< integers
-    float                        <<< floating point numbers
-    bool                         <<< booleans
-    datetime                     <<< dates & times
-    timedelta                    <<< time durations
-    category                     <<< categorical data
-
-    Pandas extension types:
-    https://pandas.pydata.org/pandas-docs/stable/development/extending.html#extending-extension-types
-    https://pandas.pydata.org/pandas-docs/stable/ecosystem.html#ecosystem-extensions
-
-    Built-in Python data types & their literal representations:
-    https://www.w3schools.com/python/python_datatypes.asp
-
-    str                          <<< text
-    int, float, complex          <<< numbers
-    list, tuple, range           <<< sequences
-    dict                         <<< mappings
-    set, frozenset               <<< sets
-    bool                         <<< booleans
-    bytes, bytearray, memoryview <<< binary data
-
-    """
+    """Column definitions are meta data for managing aliases & data types"""
 
     def __init__(self, name, dtype=None) -> None:
         """
@@ -73,7 +34,7 @@ class Column:
         """
         self.name = Column.canonicalize_name(name)
         self.alias = name if (name != self.name) else None  # Automatic aliasing
-        self.type = dtype if (dtype) else str
+        self.type: str = dtype if dtype and (dtype in PD_DTYPES) else "string"
         self.default = None
         self.format: str = None
 
