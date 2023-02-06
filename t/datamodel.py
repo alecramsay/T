@@ -13,8 +13,10 @@ import pprint
 from .constants import *
 from .readwrite import DelimitedFileReader
 
+### PANDAS DATA TYPES ###
+
 # Pandas data types - https://pandas.pydata.org/pandas-docs/stable/user_guide/basics.html#dtypes
-PD_DTYPES: dict[str, str] = {
+PD_FRIENDLY_NAME_TO_TYPE: dict[str, str] = {
     "object": "object",
     "string": "string",
     "int": "int64",
@@ -24,9 +26,15 @@ PD_DTYPES: dict[str, str] = {
     "timedelta": "timedelta64",
     "category": "category",
 }
+PD_TYPE_FRIENDLY_NAMES: list[str] = list(PD_FRIENDLY_NAME_TO_TYPE.keys())
+PD_TYPE_TO_FRIENDLY_NAMES: dict[str, str] = {
+    v: k for k, v in PD_FRIENDLY_NAME_TO_TYPE.items()
+}
 
 
-# TODO - `[x.name for x in df.dtypes]`
+# TODO
+# names = list(df.columns)
+# dtypes = [x.name for x in df.dtypes]
 class Column:
     """Column definitions are meta data for managing aliases & data types"""
 
@@ -37,7 +45,9 @@ class Column:
         """
         self.name = Column.canonicalize_name(name)
         self.alias = name if (name != self.name) else None  # Automatic aliasing
-        self.type: str = dtype if dtype and (dtype in PD_DTYPES) else "string"
+        self.type: str = (
+            dtype if dtype and (dtype in PD_TYPE_FRIENDLY_NAMES) else "string"
+        )
         self.default = None
         self.format: str = None
 
