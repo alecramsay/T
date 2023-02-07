@@ -1,5 +1,6 @@
 # t/__init__.py
 
+from .verbs import *
 from .datamodel import *
 from .readwrite import *
 
