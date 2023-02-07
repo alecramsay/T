@@ -168,4 +168,47 @@ class AliasVerb(Verb):
         return self._new_table
 
 
+class SelectVerb(Verb):
+    pass  # TODO
+
+
+class FirstVerb(Verb):
+    pass  # TODO
+
+
+class LastVerb(Verb):
+    pass  # TODO
+
+
+class RandomVerb(Verb):
+    pass  # TODO
+
+
+class CastVerb(Verb):
+    pass  # TODO
+
+
+class DeriveVerb(Verb):
+    pass  # TODO
+
+
+### TABLE FILTERS ###
+
+
+class SortVerb(Verb):
+    pass  # TODO
+
+
+class GroupVerb(Verb):
+    pass  # TODO
+
+
+class JoinVerb(Verb):
+    pass  # TODO
+
+
+class UnionVerb(Verb):
+    pass  # TODO
+
+
 ### END ###
