@@ -134,4 +134,38 @@ class RenameVerb(Verb):
         return self._new_table
 
 
+class AliasVerb(Verb):
+    """ALIAS specified columns
+
+    - Aliasing is just like renaming, except it retains the alias so it can be reverted.
+    - Use original column names on write.
+    """
+
+    def __init__(self, x_table, col_specs) -> None:
+        super().__init__()
+
+        self._x_table = x_table
+        self._col_refs, self._new_col_refs = self._unzip_col_specs(col_specs)
+
+        self._validate_col_refs()
+        self._validate_new_col_refs()
+
+    def apply(self) -> Table:
+        self._new_table: Table = self._x_table.copy()
+
+        renames: dict() = {
+            from_col: to_col
+            for from_col, to_col in zip(self._col_refs, self._new_col_refs)
+        }
+        self._new_table.rename_cols(renames)
+
+        aliases: dict() = {
+            from_col: to_col
+            for from_col, to_col in zip(self._new_col_refs, self._col_refs)
+        }
+        self._new_table.alias_cols(aliases)
+
+        return self._new_table
+
+
 ### END ###
