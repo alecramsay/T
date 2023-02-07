@@ -35,7 +35,7 @@ class Verb:
 
         table.are_cols(col_refs)
 
-    def _validate_new_cols(self, new_col_refs=None, table=None) -> None:
+    def _validate_new_col_refs(self, new_col_refs=None, table=None) -> None:
         """Validate new column references. Raise an exception when one or more are not valid."""
 
         new_col_refs: list[str] = new_col_refs or self._new_col_refs
@@ -43,8 +43,10 @@ class Verb:
 
         table.could_be_cols(new_col_refs)
 
-    def _unzip_col_specs(self, col_specs) -> tuple[list[str], list[str]]:
+    def _unzip_col_specs(self, col_specs=None) -> tuple[list[str], list[str]]:
         """Unzip a list of column specs into a list existing column refs and a list of new column refs."""
+
+        col_specs: list[str] = col_specs or self._col_specs
 
         if len(col_specs) < 1:
             raise Exception("No column specs.")
@@ -104,6 +106,30 @@ class DropVerb(Verb):
             name for name in self._x_table.col_names() if name in self._col_refs
         ]
         self._new_table.drop_cols(drop_col_refs)
+
+        return self._new_table
+
+
+class RenameVerb(Verb):
+    """RENAME specified columns & keep everything else"""
+
+    def __init__(self, x_table, col_specs) -> None:
+        super().__init__()
+
+        self._x_table = x_table
+        self._col_refs, self._new_col_refs = self._unzip_col_specs(col_specs)
+
+        self._validate_col_refs()
+        self._validate_new_col_refs()
+
+    def apply(self) -> Table:
+        self._new_table: Table = self._x_table.copy()
+
+        renames: dict() = {
+            from_col: to_col
+            for from_col, to_col in zip(self._col_refs, self._new_col_refs)
+        }
+        self._new_table.rename_cols(renames)
 
         return self._new_table
 

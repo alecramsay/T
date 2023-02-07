@@ -217,14 +217,18 @@ class Table:
 
         return True
 
+    # NOTE - Validate the names before calling these methods.
+
     def drop_cols(self, names) -> None:
         """Drop columns from the table"""
 
-        # NOTE - Validate the names before calling this method.
-        # if not self.are_cols(names):
-        #     raise Exception("Can't drop columns that don't exist.")
-
         self._data.drop(columns=names, inplace=True)
+        self._extract_col_defs()
+
+    def rename_cols(self, renames: dict()) -> None:
+        """Rename columns in the table"""
+
+        self._data.rename(columns=renames, inplace=True)
         self._extract_col_defs()
 
 

@@ -57,5 +57,19 @@ class TestRowVerbs:
         assert x_table.n_cols() == 12
         assert new_table.n_cols() == 3
 
+    def test_rename_verb(self) -> None:
+        sample: str = "2020_census_AZ(PARTIAL).csv"
+        x_table: Table = Table("test/files/" + sample)
+
+        col_specs: list[tuple[str, str]] = [
+            ("GEOID20", "GEOID"),
+            ("Tot_2020_tot", "Total"),
+        ]
+        f: RenameVerb = RenameVerb(x_table, col_specs)
+        new_table: Table = f.apply()
+
+        assert new_table.is_column("GEOID")
+        assert new_table.is_column("Total")
+
 
 ### END ###
