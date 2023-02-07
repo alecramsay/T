@@ -32,9 +32,6 @@ PD_TYPE_TO_FRIENDLY_NAMES: dict[str, str] = {
 }
 
 
-# TODO
-# names = list(df.columns)
-# dtypes = [x.name for x in df.dtypes]
 class Column:
     """Column definitions are meta data for managing aliases & data types"""
 
@@ -98,24 +95,32 @@ class Column:
 class Table:
     """A 2D table with multiple rows with columns having one data type each.
 
-    Uses a Pandas DataFrame for storage.
+    - Uses a Pandas DataFrame for storage.
+    - Tables are either read from a delimited file or copied (and then modified).
+      The modifiers are responsible for ensuring that the modified table is consistent.
     """
 
-    def __init__(self) -> None:
-        self._cols: list[Column] = None
-        self._data: pd.DataFrame = None
-
-        self.signatures: set = set()
-        # self.ncols = len(self.cols)
-        # self.indexes = {}
-        # self.stats = None
-
-    def read(
+    def __init__(
         self,
         rel_path: str,
         *,
         delimiter="comma",
         header=True,
+    ) -> None:
+        self._cols: list[Column] = None
+        self._data: pd.DataFrame = None
+
+        self.signatures: set = set()
+
+        self._read(rel_path=rel_path, delimiter=delimiter, header=header)
+        self._extract_col_defs()
+
+    def _read(
+        self,
+        rel_path: str,
+        *,
+        delimiter,
+        header,
     ) -> None:
         """Read a table from a delimited file (e.g., CSV."""
 
@@ -123,8 +128,18 @@ class Table:
             rel_path, header=header, delimiter=delimiter
         ).read()
 
-        # TODO - Hook up column definitions to the DataFrame
-        # TODO - Wire up n_cols, n_rows, etc.
+    def _extract_col_defs(self) -> None:
+        """Extract column metadata from the DataFrame"""
+
+        names: list[str] = list(self._data.columns)
+        dtypes: list[str] = [x.name for x in self._data.dtypes]
+        self._cols = [Column(name, dtype) for name, dtype in zip(names, dtypes)]
+
+    def n_cols(self):
+        return len(self._cols)
+
+    def n_rows(self):
+        return self._data.shape[0]
 
 
 ### END ###
