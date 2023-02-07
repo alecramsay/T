@@ -218,7 +218,8 @@ class Table:
 
         return True
 
-    # NOTE - Validate the names before calling these methods.
+    ### WRAPPERS ENCAPSULATING PANDAS DATAFRAME METHODS ###
+    ### NOTE - Validate column names *before* calling them. ###
 
     def drop_cols(self, names) -> None:
         """Drop columns from the table"""
@@ -238,6 +239,11 @@ class Table:
         for col in self._cols:
             if col.name in aliases:
                 col.set_alias(aliases[col.name])
+
+    def first(self, n=5) -> None:
+        """Select the first n rows of the table"""
+
+        self._data = self._data[:n]
 
 
 ### END ###
