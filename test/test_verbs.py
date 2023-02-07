@@ -36,5 +36,26 @@ class TestRowVerbs:
         assert x_table.n_cols() == 12
         assert new_table.n_cols() == 2
 
+    def test_drop_verb(self):
+        sample: str = "sample-01-comma.csv"
+        x_table: Table = Table("test/formats/" + sample)
+
+        drop_refs: list[str] = [
+            "District",
+            "Total",
+            "Total_VAP",
+            "White",
+            "Hispanic",
+            "Black",
+            "Native",
+            "Asian",
+            "Pacific",
+        ]
+        f: DropVerb = DropVerb(x_table, drop_refs)
+        new_table: Table = f.apply()
+
+        assert x_table.n_cols() == 12
+        assert new_table.n_cols() == 3
+
 
 ### END ###

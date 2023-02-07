@@ -86,4 +86,26 @@ class KeepVerb(Verb):
         return self._new_table
 
 
+class DropVerb(Verb):
+    """DROP (i.e., explicit not-selected/kept)"""
+
+    def __init__(self, x_table, drop_cols) -> None:
+        super().__init__()
+
+        self._x_table = x_table
+        self._col_refs = [x.strip() for x in drop_cols]
+
+        self._validate_col_refs()
+
+    def apply(self) -> Table:
+        self._new_table: Table = self._x_table.copy()
+
+        drop_col_refs: list[str] = [
+            name for name in self._x_table.col_names() if name in self._col_refs
+        ]
+        self._new_table.drop_cols(drop_col_refs)
+
+        return self._new_table
+
+
 ### END ###
