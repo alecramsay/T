@@ -173,6 +173,7 @@ class SelectVerb(Verb):
     pass  # TODO
 
 
+# TODO
 class FirstVerb(Verb):
     """FIRST (aka 'take')"""
 

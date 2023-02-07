@@ -103,35 +103,31 @@ class Table:
       across modifications (verbs).
     """
 
-    def __init__(
+    ### CONSTRUCTORS ###
+
+    def __init__(self) -> None:
+        """Create an empty table to populate by hand or by reading a file"""
+        self._cols: list[Column] = None
+        self._data: pd.DataFrame = None
+
+    def read(
         self,
         rel_path: str,
         *,
         delimiter="comma",
         header=True,
     ) -> None:
-        self._cols: list[Column] = None
-        self._data: pd.DataFrame = None
-
-        self.signatures: set = set()
-
-        self._read(rel_path=rel_path, delimiter=delimiter, header=header)
-        self._extract_col_defs()
-
-    ### PRIVATE METHODS ###
-
-    def _read(
-        self,
-        rel_path: str,
-        *,
-        delimiter,
-        header,
-    ) -> None:
         """Read a table from a delimited file (e.g., CSV."""
 
         self._data = DelimitedFileReader(
             rel_path, header=header, delimiter=delimiter
         ).read()
+        self._extract_col_defs()
+
+    def copy(self) -> "Table":
+        """Return a copy of the table"""
+
+        return copy.deepcopy(self)
 
     def _extract_col_defs(self) -> None:
         """Extract column metadata from the DataFrame"""
@@ -141,11 +137,6 @@ class Table:
         self._cols = [Column(name, dtype) for name, dtype in zip(names, dtypes)]
 
     ### PUBLIC METHODS ###
-
-    def copy(self) -> "Table":
-        """Return a copy of the table"""
-
-        return copy.deepcopy(self)
 
     def n_cols(self):
         return len(self._cols)

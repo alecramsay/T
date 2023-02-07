@@ -10,7 +10,8 @@ from t.verbs import *
 class TestRowVerbs:
     def test_verb(self) -> None:
         sample: str = "sample-01-comma.csv"
-        x_table: Table = Table("test/formats/" + sample)
+        x_table: Table = Table()
+        x_table.read("test/formats/" + sample)
 
         good: list[str] = ["GEOID", "Total"]
         f: Verb = Verb()
@@ -27,7 +28,8 @@ class TestRowVerbs:
 
     def test_keep_verb(self):
         sample: str = "sample-01-comma.csv"
-        x_table: Table = Table("test/formats/" + sample)
+        x_table: Table = Table()
+        x_table.read("test/formats/" + sample)
 
         keep_refs: list[str] = ["GEOID", "Total"]
         f: KeepVerb = KeepVerb(x_table, keep_refs)
@@ -38,7 +40,8 @@ class TestRowVerbs:
 
     def test_drop_verb(self):
         sample: str = "sample-01-comma.csv"
-        x_table: Table = Table("test/formats/" + sample)
+        x_table: Table = Table()
+        x_table.read("test/formats/" + sample)
 
         drop_refs: list[str] = [
             "District",
@@ -59,7 +62,8 @@ class TestRowVerbs:
 
     def test_rename_verb(self) -> None:
         sample: str = "2020_census_AZ(PARTIAL).csv"
-        x_table: Table = Table("test/files/" + sample)
+        x_table: Table = Table()
+        x_table.read("test/files/" + sample)
 
         col_specs: list[tuple[str, str]] = [
             ("GEOID20", "GEOID"),
@@ -73,7 +77,8 @@ class TestRowVerbs:
 
     def test_alias_verb(self) -> None:
         sample: str = "2020_census_AZ(PARTIAL).csv"
-        x_table: Table = Table("test/files/" + sample)
+        x_table: Table = Table()
+        x_table.read("test/files/" + sample)
 
         # Alias some columns
         alias_cols: list = [

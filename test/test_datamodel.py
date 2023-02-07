@@ -54,7 +54,8 @@ class TestDataModel:
 
     def test_column_refs(self) -> None:
         sample: str = "sample-01-comma.csv"
-        census: Table = Table("test/formats/" + sample)
+        census: Table = Table()
+        census.read("test/formats/" + sample)
 
         actual: bool = census.are_cols(["GEOID", "Total"])
         assert actual
