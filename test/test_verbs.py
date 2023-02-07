@@ -26,7 +26,7 @@ class TestRowVerbs:
         except:
             assert True
 
-    def test_keep_verb(self):
+    def test_keep_verb(self) -> None:
         sample: str = "sample-01-comma.csv"
         x_table: Table = Table()
         x_table.read("test/formats/" + sample)
@@ -38,7 +38,7 @@ class TestRowVerbs:
         assert x_table.n_cols() == 12
         assert new_table.n_cols() == 2
 
-    def test_drop_verb(self):
+    def test_drop_verb(self) -> None:
         sample: str = "sample-01-comma.csv"
         x_table: Table = Table()
         x_table.read("test/formats/" + sample)
@@ -120,6 +120,29 @@ class TestRowVerbs:
                 expected = g.new_cols[i].alias
                 actual = col.alias
                 assert actual == expected
+
+    def test_first_verb(self) -> None:
+        sample: str = "2020_census_AZ(PARTIAL).csv"  # 100 rows
+        x_table: Table = Table()
+        x_table.read("test/files/" + sample)
+
+        # n = #
+        f: FirstVerb = FirstVerb(x_table, 10)
+        f.apply()
+
+        actual: int = f._new_table.n_rows()
+        expected: int = 10
+
+        assert actual == expected
+
+        # n = pct
+        f = FirstVerb(x_table, 20, "%")
+        f.apply()
+
+        actual = f._new_table.n_rows()
+        expected = 20
+
+        assert actual == expected
 
 
 ### END ###
