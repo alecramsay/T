@@ -8,6 +8,7 @@ import pandas as pd
 from typing import Any, Type
 from collections import namedtuple
 import re
+import copy
 import pprint
 
 from .constants import *
@@ -15,7 +16,7 @@ from .readwrite import DelimitedFileReader
 
 ### PANDAS DATA TYPES ###
 
-# Pandas data types - https://pandas.pydata.org/pandas-docs/stable/user_guide/basics.html#dtypes
+# https://pandas.pydata.org/pandas-docs/stable/user_guide/basics.html#dtypes
 PD_FRIENDLY_NAME_TO_TYPE: dict[str, str] = {
     "object": "object",
     "string": "string",
@@ -93,11 +94,12 @@ class Column:
 
 
 class Table:
-    """A 2D table with multiple rows with columns having one data type each.
+    """A 2D table: multiple rows with each column having one homogenous data type.
 
     - Uses a Pandas DataFrame for storage.
     - Tables are either read from a delimited file or copied (and then modified).
-      The modifiers are responsible for ensuring that the modified table is consistent.
+      The modifiers are responsible for ensuring that the copied table remains consistent
+      across modifications (verbs).
     """
 
     def __init__(
@@ -114,6 +116,8 @@ class Table:
 
         self._read(rel_path=rel_path, delimiter=delimiter, header=header)
         self._extract_col_defs()
+
+    ### PRIVATE METHODS ###
 
     def _read(
         self,
@@ -135,11 +139,83 @@ class Table:
         dtypes: list[str] = [x.name for x in self._data.dtypes]
         self._cols = [Column(name, dtype) for name, dtype in zip(names, dtypes)]
 
+    ### PUBLIC METHODS ###
+
+    def copy(self) -> "Table":
+        """Return a copy of the table"""
+
+        return copy.deepcopy(self)
+
     def n_cols(self):
         return len(self._cols)
 
     def n_rows(self):
         return self._data.shape[0]
+
+    def col_names(self) -> list[str]:
+        return [c.name for c in self._cols]
+
+    def has_aliases(self) -> bool:
+        for c in self._cols:
+            if c.alias:
+                return True
+
+        return False
+
+    def col_aliases_or_names(self) -> list[str]:
+        return [c.alias if c.alias else c.name for c in self._cols]
+
+    def map_names_to_aliases(self) -> dict[str, str]:
+        return {c.name: (c.alias if c.alias else c.name) for c in self._cols}
+
+    def col_types(self) -> list[str]:
+        return [c.type for c in self._cols]
+
+    def is_column(self, name) -> bool:
+        """Does the table have a column called <name>?"""
+
+        if name in self.col_names():
+            return True
+
+        raise Exception("Column {0} not in table.".format(name))
+
+    def get_column(self, name) -> Column:
+        for col in self._cols:
+            if col.name == name:
+                return col
+
+        raise Exception("Column {0} not in table.".format(name))
+
+    def are_cols(self, names) -> bool:
+        if len(names) < 1:
+            raise Exception("No columns referenced.")
+
+        for i, x in enumerate(names):
+            if self.is_column(x):
+                continue
+
+        return True
+
+    def could_be_column(self, name) -> bool:
+        """Could <name> be the name of a *new* column?"""
+
+        if not name.isidentifier():
+            return False
+
+        if name in self.col_names():
+            return False
+
+        return True
+
+    def could_be_cols(self, names) -> bool:
+        if len(names) < 1:
+            raise Exception("No columns named.")
+
+        for i, x in enumerate(names):
+            if self.could_be_column(x):
+                continue
+
+        return True
 
 
 ### END ###

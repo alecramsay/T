@@ -52,5 +52,22 @@ class TestDataModel:
         except Exception as e:
             assert True
 
+    def test_column_refs(self) -> None:
+        sample: str = "sample-01-comma.csv"
+        census: Table = Table("test/formats/" + sample)
+
+        actual: bool = census.are_cols(["GEOID", "Total"])
+        assert actual
+
+        try:
+            actual = census.are_cols(["GEOD", "Total"])
+            assert False
+        except:
+            assert True
+
+        assert not census.could_be_column("GEOID")
+        assert not census.could_be_column("123")
+        assert census.could_be_column("foo")
+
 
 ### END ###
