@@ -55,9 +55,8 @@ class Column:
     def set_format(self, format) -> None:
         self.format = format
 
-    # TODO - DELETE
-    # def rename(self, new_name) -> None:
-    #     self.name: str = Column.canonicalize_name(new_name)
+    def set_name(self, new_name) -> None:
+        self.name: str = Column.canonicalize_name(new_name)
 
     def set_alias(self, new_name) -> None:
         # NOTE - This allows aliased columns to be re-aliased.
@@ -234,7 +233,9 @@ class Table:
         """Rename columns in the table"""
 
         self._data.rename(columns=renames, inplace=True)
-        self._extract_col_defs()
+        for col in self._cols:
+            if col.name in renames:
+                col.set_name(renames[col.name])
 
     def alias_cols(self, aliases: dict()) -> None:
         """Alias columns in the table"""

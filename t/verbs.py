@@ -19,7 +19,7 @@ class Verb:
     Process:
     1. Copy the input table
     2. Make the change to the table's dataframe
-    3. Update the table's column metadata to match
+    3. Update the table's column metadata to match (to preserve aliases)
     """
 
     def __init__(self) -> None:
