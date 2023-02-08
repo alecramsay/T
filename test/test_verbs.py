@@ -190,7 +190,7 @@ class TestRowVerbs:
         x_table.read("test/files/" + sample)
 
         # n = #
-        f: RandomVerb = RandomVerb(x_table, 10)
+        f: SampleVerb = SampleVerb(x_table, 10)
         f.apply()
 
         actual: int = f._new_table.n_rows()
@@ -199,7 +199,7 @@ class TestRowVerbs:
         assert actual == expected
 
         # n = pct
-        f = RandomVerb(x_table, 20, "%")
+        f = SampleVerb(x_table, 20, "%")
         f.apply()
 
         actual = f._new_table.n_rows()

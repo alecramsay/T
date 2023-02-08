@@ -208,8 +208,8 @@ class LastVerb(Verb):
         return self._new_table
 
 
-class RandomVerb(Verb):
-    """RANDOM (like 'first' except it's randomly selected rows)"""
+class SampleVerb(Verb):
+    """SAMPLE (like 'first' except it's randomly selected rows)"""
 
     def __init__(self, x_table, n, pct=None) -> None:
         super().__init__()
