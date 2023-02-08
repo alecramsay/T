@@ -254,5 +254,10 @@ class Table:
 
         self._data = self._data.tail(n)
 
+    def sample(self, n=5) -> None:
+        """Sample n rows of the table"""
+
+        self._data = self._data.sample(n)
+
 
 ### END ###

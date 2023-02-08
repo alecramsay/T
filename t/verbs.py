@@ -209,7 +209,19 @@ class LastVerb(Verb):
 
 
 class RandomVerb(Verb):
-    pass  # TODO
+    """RANDOM (like 'first' except it's randomly selected rows)"""
+
+    def __init__(self, x_table, n, pct=None) -> None:
+        super().__init__()
+
+        self._x_table = x_table
+        self._take: int = n if not pct else max(round(n * (x_table.n_rows() / 100)), 1)
+
+    def apply(self) -> Table:
+        self._new_table: Table = self._x_table.copy()
+        self._new_table.sample(self._take)
+
+        return self._new_table
 
 
 class CastVerb(Verb):
