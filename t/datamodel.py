@@ -265,4 +265,36 @@ class Table:
         self._data.sort_values(by=by_list, ascending=ascending_list, inplace=True)
 
 
+### UNION ###
+
+
+def union(y_table: Table, x_table: Table) -> Table:
+    """Union two matching tables
+
+    - Verify that the tables match, before calling this
+    - Preserve the y_table's column metadata (e.g., aliases)
+    """
+
+    union_table: Table = Table()
+    union_table._cols = list(y_table._cols)
+    union_table._data = pd.concat([x_table._data, y_table._data], ignore_index=True)
+
+    return union_table
+
+
+def columns_match(table1, table2, match_names=True) -> bool:
+    if table1.n_cols() != table2.n_cols():
+        return False
+
+    if match_names and not all(
+        [a == b for a, b in zip(table1.col_names(), table2.col_names())]
+    ):
+        return False
+
+    if not all([a == b for a, b in zip(table1.col_types(), table2.col_types())]):
+        return False
+
+    return True
+
+
 ### END ###

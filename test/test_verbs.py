@@ -206,7 +206,7 @@ class TestRowVerbs:
 class TestTableVerbs:
     def test_sort_verb(self) -> None:
         x_table: Table = Table()
-        x_table.test(TEST_DF)
+        x_table.test(CITIES_DF)
 
         actual: int = x_table._data.iloc[0]["population"]
         expected: int = 698660
@@ -220,6 +220,35 @@ class TestTableVerbs:
         expected: int = 14043239
 
         assert actual == expected
+
+    def test_union_verb(self) -> None:
+        # Matched tables
+        y_table: Table = Table()
+        y_table.test(CITIES_DF)
+
+        x_table: Table = Table()
+        x_table.test(CITIES_DF)
+
+        f: UnionVerb = UnionVerb(y_table, x_table)
+        f.apply()
+
+        actual: int = f._new_table.n_rows()
+        expected: int = 6
+        assert actual == expected
+
+        # Mismatched tables
+        y_table: Table = Table()
+        y_table.test(CITIES_DF)
+
+        x_table: Table = Table()
+        x_table.test(PRODUCTS_DF)
+
+        try:
+            f: UnionVerb = UnionVerb(y_table, x_table)
+            f.apply()
+            assert False
+        except:
+            assert True
 
 
 ### END ###

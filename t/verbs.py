@@ -291,7 +291,21 @@ class JoinVerb(Verb):
 
 
 class UnionVerb(Verb):
-    pass  # TODO
+    """UNION"""
+
+    def __init__(self, y_table, x_table) -> None:
+        super().__init__()
+
+        self._y_table = y_table
+        self._x_table = x_table
+
+        if not columns_match(y_table, x_table):
+            raise ValueError("Tables must have identical columns")
+
+    def apply(self) -> Table:
+        self._new_table = union(self._y_table, self._x_table)
+
+        return self._new_table
 
 
 ### END ###
