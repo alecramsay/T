@@ -282,7 +282,15 @@ class SortVerb(Verb):
         return self._new_table
 
 
-class GroupVerb(Verb):
+class GroupByVerb(Verb):
+    """
+    https://betterprogramming.pub/pandas-illustrated-the-definitive-visual-guide-to-pandas-c31fa921a43#787c
+    https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.groupby.html
+    https://datascientyst.com/use-groupby-multiple-columns-pandas/
+    https://datagy.io/pandas-groupby-multiple-columns/
+    https://stackoverflow.com/questions/13582449/convert-dataframegroupby-object-to-dataframe-pandas
+    """
+
     pass  # TODO
 
 
