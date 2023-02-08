@@ -221,7 +221,7 @@ class Table:
     ### WRAPPERS ENCAPSULATING PANDAS DATAFRAME METHODS ###
     ### Validate column references before calling them. ###
 
-    def keep_cols(self, names) -> None:
+    def do_keep_cols(self, names) -> None:
         """Keep only the specified columns *in the specified order*"""
 
         # https://stackoverflow.com/questions/53141240/pandas-how-to-swap-or-reorder-columns
@@ -229,7 +229,7 @@ class Table:
         self._data = self._data[names]
         self._cols = [self.get_column(name) for name in names]
 
-    def rename_cols(self, renames: dict()) -> None:
+    def do_rename_cols(self, renames: dict()) -> None:
         """Rename columns in the table"""
 
         self._data.rename(columns=renames, inplace=True)
@@ -237,29 +237,29 @@ class Table:
             if col.name in renames:
                 col.set_name(renames[col.name])
 
-    def alias_cols(self, aliases: dict()) -> None:
+    def do_alias_cols(self, aliases: dict()) -> None:
         """Alias columns in the table"""
 
         for col in self._cols:
             if col.name in aliases:
                 col.set_alias(aliases[col.name])
 
-    def first(self, n=5) -> None:
+    def do_first(self, n=5) -> None:
         """Select the first n rows of the table"""
 
         self._data = self._data.head(n)
 
-    def last(self, n=5) -> None:
+    def do_last(self, n=5) -> None:
         """Select the last n rows of the table"""
 
         self._data = self._data.tail(n)
 
-    def sample(self, n=5) -> None:
+    def do_sample(self, n=5) -> None:
         """Sample n rows of the table"""
 
         self._data = self._data.sample(n)
 
-    def sort(self, by_list: list[str], ascending_list: list[bool]) -> None:
+    def do_sort(self, by_list: list[str], ascending_list: list[bool]) -> None:
         """Sort the table by the specified columns in the specified order"""
 
         self._data.sort_values(by=by_list, ascending=ascending_list, inplace=True)
@@ -268,7 +268,7 @@ class Table:
 ### UNION ###
 
 
-def union(y_table: Table, x_table: Table) -> Table:
+def do_union(y_table: Table, x_table: Table) -> Table:
     """Union two matching tables
 
     - Verify that the tables match, before calling this

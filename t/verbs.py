@@ -111,7 +111,7 @@ class KeepVerb(Verb):
 
     def apply(self) -> Table:
         self._new_table: Table = self._x_table.copy()
-        self._new_table.keep_cols(self._col_refs)
+        self._new_table.do_keep_cols(self._col_refs)
 
         return self._new_table
 
@@ -133,7 +133,7 @@ class DropVerb(Verb):
         keep_cols: list[str] = [
             name for name in self._x_table.col_names() if name not in self._col_refs
         ]
-        self._new_table.keep_cols(keep_cols)
+        self._new_table.do_keep_cols(keep_cols)
 
         return self._new_table
 
@@ -158,7 +158,7 @@ class RenameVerb(Verb):
             from_col: to_col
             for from_col, to_col in zip(self._col_refs, self._new_col_refs)
         }
-        self._new_table.rename_cols(renames)
+        self._new_table.do_rename_cols(renames)
 
         return self._new_table
 
@@ -187,13 +187,13 @@ class AliasVerb(Verb):
             from_col: to_col
             for from_col, to_col in zip(self._col_refs, self._new_col_refs)
         }
-        self._new_table.rename_cols(renames)
+        self._new_table.do_rename_cols(renames)
 
         aliases: dict() = {
             from_col: to_col
             for from_col, to_col in zip(self._new_col_refs, self._col_refs)
         }
-        self._new_table.alias_cols(aliases)
+        self._new_table.do_alias_cols(aliases)
 
         return self._new_table
 
@@ -213,7 +213,7 @@ class FirstVerb(Verb):
 
     def apply(self) -> Table:
         self._new_table: Table = self._x_table.copy()
-        self._new_table.first(self._take)
+        self._new_table.do_first(self._take)
 
         return self._new_table
 
@@ -229,7 +229,7 @@ class LastVerb(Verb):
 
     def apply(self) -> Table:
         self._new_table: Table = self._x_table.copy()
-        self._new_table.last(self._take)
+        self._new_table.do_last(self._take)
 
         return self._new_table
 
@@ -245,7 +245,7 @@ class SampleVerb(Verb):
 
     def apply(self) -> Table:
         self._new_table: Table = self._x_table.copy()
-        self._new_table.sample(self._take)
+        self._new_table.do_sample(self._take)
 
         return self._new_table
 
@@ -277,7 +277,7 @@ class SortVerb(Verb):
     def apply(self) -> Table:
         self._new_table: Table = self._x_table.copy()
 
-        self._new_table.sort(self._col_refs, self._ascending_list)
+        self._new_table.do_sort(self._col_refs, self._ascending_list)
 
         return self._new_table
 
@@ -303,7 +303,7 @@ class UnionVerb(Verb):
             raise ValueError("Tables must have identical columns")
 
     def apply(self) -> Table:
-        self._new_table = union(self._y_table, self._x_table)
+        self._new_table = do_union(self._y_table, self._x_table)
 
         return self._new_table
 
