@@ -70,6 +70,25 @@ class Verb:
 
         return col_refs, new_col_refs
 
+    def _unzip_sort_specs(self, col_specs=None) -> tuple[list[str], list[str]]:
+        """Unzip a list of sprt specs into a list column refs and sort orders."""
+
+        col_specs: list[str] = col_specs or self._col_specs
+
+        if len(col_specs) < 1:
+            raise Exception("No column specs.")
+
+        col_refs: list[str] = list()
+        new_col_refs: list[str] = list()
+        for pair in col_specs:
+            from_col: str
+            to_col: str
+            from_col, to_col = parse_spec(pair)
+            col_refs.append(from_col.strip())
+            new_col_refs.append(to_col.strip())
+
+        return col_refs, new_col_refs
+
 
 ### ROW FILTERS ###
 
@@ -120,8 +139,9 @@ class RenameVerb(Verb):
     def __init__(self, x_table, col_specs) -> None:
         super().__init__()
 
+        self._col_specs = col_specs
         self._x_table = x_table
-        self._col_refs, self._new_col_refs = self._unzip_col_specs(col_specs)
+        self._col_refs, self._new_col_refs = self._unzip_col_specs()
 
         self._validate_col_refs()
         self._validate_new_col_refs()
@@ -148,8 +168,9 @@ class AliasVerb(Verb):
     def __init__(self, x_table, col_specs) -> None:
         super().__init__()
 
+        self._col_specs = col_specs
         self._x_table = x_table
-        self._col_refs, self._new_col_refs = self._unzip_col_specs(col_specs)
+        self._col_refs, self._new_col_refs = self._unzip_col_specs()
 
         self._validate_col_refs()
         self._validate_new_col_refs()
@@ -236,7 +257,29 @@ class DeriveVerb(Verb):
 
 
 class SortVerb(Verb):
-    pass  # TODO
+    """SORT -- sort rows in place. <<< 'ORDER_BY'"""
+
+    def __init__(self, x_table, col_specs) -> None:
+        super().__init__()
+
+        self._x_table = x_table
+        self._col_refs, self._sort_orders = self._unzip_col_specs(col_specs)
+
+        # HERE
+
+        self._validate_col_refs()
+        self._validate_new_col_refs()
+
+    def apply(self) -> Table:
+        self._new_table: Table = self._x_table.copy()
+
+        renames: dict() = {
+            from_col: to_col
+            for from_col, to_col in zip(self._col_refs, self._new_col_refs)
+        }
+        self._new_table.rename_cols(renames)
+
+        return self._new_table
 
 
 class GroupVerb(Verb):
