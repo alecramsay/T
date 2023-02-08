@@ -259,5 +259,10 @@ class Table:
 
         self._data = self._data.sample(n)
 
+    def sort(self, by_list: list[str], ascending_list: list[bool]) -> None:
+        """Sort the table by the specified columns in the specified order"""
+
+        self._data.sort_values(by=by_list, ascending=ascending_list, inplace=True)
+
 
 ### END ###

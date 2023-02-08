@@ -5,12 +5,7 @@ TEST VERBS
 """
 
 from t.verbs import *
-
-data: dict[str, list] = {
-    "name": ["Oslo", "Vienna", "Tokyo"],
-    "population": [698660, 1911191, 14043239],
-    "area": [480.8, 414.8, 2194.1],
-}
+from t.constants import *
 
 
 class TestRowVerbs:
@@ -184,7 +179,7 @@ class TestRowVerbs:
 
         assert actual == expected
 
-    def test_random_verb(self) -> None:
+    def test_sample_verb(self) -> None:
         sample: str = "2020_census_AZ(PARTIAL).csv"  # 100 rows
         x_table: Table = Table()
         x_table.read("test/files/" + sample)
@@ -204,6 +199,25 @@ class TestRowVerbs:
 
         actual = f._new_table.n_rows()
         expected = 20
+
+        assert actual == expected
+
+
+class TestTableVerbs:
+    def test_sort_verb(self) -> None:
+        x_table: Table = Table()
+        x_table.test(TEST_DF)
+
+        actual: int = x_table._data.iloc[0]["population"]
+        expected: int = 698660
+
+        assert actual == expected
+
+        f: SortVerb = SortVerb(x_table, [("population", "DESC")])
+        f.apply()
+
+        actual: int = f._new_table._data.iloc[0]["population"]
+        expected: int = 14043239
 
         assert actual == expected
 

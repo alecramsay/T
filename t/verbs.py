@@ -71,23 +71,28 @@ class Verb:
         return col_refs, new_col_refs
 
     def _unzip_sort_specs(self, col_specs=None) -> tuple[list[str], list[str]]:
-        """Unzip a list of sprt specs into a list column refs and sort orders."""
+        """Unzip a list of sort specs into a list of column refs and sort order booleans."""
 
         col_specs: list[str] = col_specs or self._col_specs
 
         if len(col_specs) < 1:
             raise Exception("No column specs.")
 
-        col_refs: list[str] = list()
-        new_col_refs: list[str] = list()
+        by_list: list[str] = list()
+        ascending_list: list[bool] = list()
         for pair in col_specs:
-            from_col: str
-            to_col: str
-            from_col, to_col = parse_spec(pair)
-            col_refs.append(from_col.strip())
-            new_col_refs.append(to_col.strip())
+            by: str
+            order: str
+            by, order = parse_spec(pair)
+            by_list.append(by.strip())
 
-        return col_refs, new_col_refs
+            order = order.strip().upper()
+            order = "ASC" if order == by else order
+            if order not in ["ASC", "DESC"]:
+                raise Exception(f"Invalid sort order: {order}")
+            ascending_list.append(True if order == "ASC" else False)
+
+        return by_list, ascending_list
 
 
 ### ROW FILTERS ###
@@ -139,8 +144,8 @@ class RenameVerb(Verb):
     def __init__(self, x_table, col_specs) -> None:
         super().__init__()
 
-        self._col_specs = col_specs
         self._x_table = x_table
+        self._col_specs = col_specs
         self._col_refs, self._new_col_refs = self._unzip_col_specs()
 
         self._validate_col_refs()
@@ -168,8 +173,8 @@ class AliasVerb(Verb):
     def __init__(self, x_table, col_specs) -> None:
         super().__init__()
 
-        self._col_specs = col_specs
         self._x_table = x_table
+        self._col_specs = col_specs
         self._col_refs, self._new_col_refs = self._unzip_col_specs()
 
         self._validate_col_refs()
@@ -263,21 +268,16 @@ class SortVerb(Verb):
         super().__init__()
 
         self._x_table = x_table
-        self._col_refs, self._sort_orders = self._unzip_col_specs(col_specs)
-
-        # HERE
+        self._col_specs = col_specs
+        self._ascending_list: list[bool]
+        self._col_refs, self._ascending_list = self._unzip_sort_specs()
 
         self._validate_col_refs()
-        self._validate_new_col_refs()
 
     def apply(self) -> Table:
         self._new_table: Table = self._x_table.copy()
 
-        renames: dict() = {
-            from_col: to_col
-            for from_col, to_col in zip(self._col_refs, self._new_col_refs)
-        }
-        self._new_table.rename_cols(renames)
+        self._new_table.sort(self._col_refs, self._ascending_list)
 
         return self._new_table
 
