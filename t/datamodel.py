@@ -129,6 +129,16 @@ class Table:
 
         return copy.deepcopy(self)
 
+    def test(self, data) -> None:
+        """Create a test table
+
+        data is a dict of lists, where each list is a column of data.
+        data = {'a': [1., None, 3.], 'b': ['x', None, 'z']}
+        """
+
+        self._data = pd.DataFrame(data)
+        self._extract_col_defs()
+
     def _extract_col_defs(self) -> None:
         """Extract column metadata from the DataFrame"""
 
@@ -210,8 +220,9 @@ class Table:
         return True
 
     ### WRAPPERS ENCAPSULATING PANDAS DATAFRAME METHODS ###
-    ### NOTE - Validate column names *before* calling them. ###
+    ### Validate column refs *before* calling them.     ###
 
+    # https://stackoverflow.com/questions/53141240/pandas-how-to-swap-or-reorder-columns
     def drop_cols(self, names) -> None:
         """Drop columns from the table"""
 
