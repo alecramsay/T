@@ -6,6 +6,12 @@ TEST VERBS
 
 from t.verbs import *
 
+data: dict[str, list] = {
+    "name": ["Oslo", "Vienna", "Tokyo"],
+    "population": [698660, 1911191, 14043239],
+    "area": [480.8, 414.8, 2194.1],
+}
+
 
 class TestRowVerbs:
     def test_verb(self) -> None:
@@ -37,6 +43,17 @@ class TestRowVerbs:
 
         assert x_table.n_cols() == 12
         assert new_table.n_cols() == 2
+
+        # Change column order
+        sample: str = "sample-01-comma.csv"
+        x_table: Table = Table()
+        x_table.read("test/formats/" + sample)
+
+        keep_refs: list[str] = ["Total", "GEOID"]
+        f: KeepVerb = KeepVerb(x_table, keep_refs)
+        new_table: Table = f.apply()
+
+        assert new_table.col_names() == keep_refs
 
     def test_drop_verb(self) -> None:
         sample: str = "sample-01-comma.csv"

@@ -222,12 +222,13 @@ class Table:
     ### WRAPPERS ENCAPSULATING PANDAS DATAFRAME METHODS ###
     ### Validate column refs *before* calling them.     ###
 
-    # https://stackoverflow.com/questions/53141240/pandas-how-to-swap-or-reorder-columns
-    def drop_cols(self, names) -> None:
-        """Drop columns from the table"""
+    def keep_cols(self, names) -> None:
+        """Keep only the specified columns *in the specified order*"""
 
-        self._data.drop(columns=names, inplace=True)
-        self._extract_col_defs()
+        # https://stackoverflow.com/questions/53141240/pandas-how-to-swap-or-reorder-columns
+
+        self._data = self._data[names]
+        self._cols = [self.get_column(name) for name in names]
 
     def rename_cols(self, renames: dict()) -> None:
         """Rename columns in the table"""

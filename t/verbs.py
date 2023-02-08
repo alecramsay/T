@@ -14,6 +14,14 @@ from .datamodel import *
 
 
 class Verb:
+    """Base class for verbs
+
+    Process:
+    1. Copy the input table
+    2. Make the change to the table's dataframe
+    3. Update the table's column metadata to match
+    """
+
     def __init__(self) -> None:
         self._x_table: Table = None
         self._y_table: Table = None
@@ -66,7 +74,6 @@ class Verb:
 ### ROW FILTERS ###
 
 
-# TODO - Column order?
 class KeepVerb(Verb):
     """KEEP (aka 'select')"""
 
@@ -80,11 +87,7 @@ class KeepVerb(Verb):
 
     def apply(self) -> Table:
         self._new_table: Table = self._x_table.copy()
-
-        drop_col_refs: list[str] = [
-            name for name in self._x_table.col_names() if name not in self._col_refs
-        ]
-        self._new_table.drop_cols(drop_col_refs)
+        self._new_table.keep_cols(self._col_refs)
 
         return self._new_table
 
@@ -103,10 +106,10 @@ class DropVerb(Verb):
     def apply(self) -> Table:
         self._new_table: Table = self._x_table.copy()
 
-        drop_col_refs: list[str] = [
-            name for name in self._x_table.col_names() if name in self._col_refs
+        keep_cols: list[str] = [
+            name for name in self._x_table.col_names() if name not in self._col_refs
         ]
-        self._new_table.drop_cols(drop_col_refs)
+        self._new_table.keep_cols(keep_cols)
 
         return self._new_table
 
