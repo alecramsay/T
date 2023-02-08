@@ -161,5 +161,28 @@ class TestRowVerbs:
 
         assert actual == expected
 
+    def test_last_verb(self) -> None:
+        sample: str = "2020_census_AZ(PARTIAL).csv"  # 100 rows
+        x_table: Table = Table()
+        x_table.read("test/files/" + sample)
+
+        # n = #
+        f: LastVerb = LastVerb(x_table, 10)
+        f.apply()
+
+        actual: int = f._new_table.n_rows()
+        expected: int = 10
+
+        assert actual == expected
+
+        # n = pct
+        f = LastVerb(x_table, 20, "%")
+        f.apply()
+
+        actual = f._new_table.n_rows()
+        expected = 20
+
+        assert actual == expected
+
 
 ### END ###

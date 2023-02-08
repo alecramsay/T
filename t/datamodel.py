@@ -219,7 +219,7 @@ class Table:
         return True
 
     ### WRAPPERS ENCAPSULATING PANDAS DATAFRAME METHODS ###
-    ### Validate column refs *before* calling them.     ###
+    ### Validate column references before calling them. ###
 
     def keep_cols(self, names) -> None:
         """Keep only the specified columns *in the specified order*"""
@@ -247,7 +247,12 @@ class Table:
     def first(self, n=5) -> None:
         """Select the first n rows of the table"""
 
-        self._data = self._data[:n]
+        self._data = self._data.head(n)
+
+    def last(self, n=5) -> None:
+        """Select the last n rows of the table"""
+
+        self._data = self._data.tail(n)
 
 
 ### END ###

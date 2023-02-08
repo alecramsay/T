@@ -179,7 +179,7 @@ class SelectVerb(Verb):
 class FirstVerb(Verb):
     """FIRST (aka 'take')"""
 
-    def __init__(self, x_table, n, pct=None):
+    def __init__(self, x_table, n, pct=None) -> None:
         super().__init__()
 
         self._x_table = x_table
@@ -193,7 +193,19 @@ class FirstVerb(Verb):
 
 
 class LastVerb(Verb):
-    pass  # TODO
+    """LAST (complement of 'first')"""
+
+    def __init__(self, x_table, n, pct=None) -> None:
+        super().__init__()
+
+        self._x_table = x_table
+        self._take: int = n if not pct else max(round(n * (x_table.n_rows() / 100)), 1)
+
+    def apply(self) -> Table:
+        self._new_table: Table = self._x_table.copy()
+        self._new_table.last(self._take)
+
+        return self._new_table
 
 
 class RandomVerb(Verb):
