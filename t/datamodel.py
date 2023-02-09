@@ -32,6 +32,8 @@ PD_TYPE_TO_FRIENDLY_NAMES: dict[str, str] = {
     v: k for k, v in PD_FRIENDLY_NAME_TO_TYPE.items()
 }
 
+PD_GROUP_ABLE_TYPES: list[str] = ["int", "float", "datetime", "timedelta"]
+
 
 class Column:
     """Column definitions are meta data for managing aliases & data types"""
@@ -217,6 +219,9 @@ class Table:
                 continue
 
         return True
+
+    def group_able_cols(self) -> list[str]:
+        return [c.name for c in self._cols if c.type in PD_GROUP_ABLE_TYPES]
 
     ### WRAPPERS ENCAPSULATING PANDAS DATAFRAME METHODS ###
     ### Validate column references before calling them. ###

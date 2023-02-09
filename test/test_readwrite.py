@@ -309,6 +309,9 @@ class TestDataTypes:
         assert df.shape[1] == 6
         assert df.shape[0] == 10
 
+        types: list[str] = [f"{dt}" for dt in df.dtypes]
+        assert types == ["int64", "bool", "float64", "object", "object", "string"]
+
         sample: str = "collections.csv"
         reader: DelimitedFileReader = DelimitedFileReader(
             "test/dtypes/" + sample, delimiter="pipe"
