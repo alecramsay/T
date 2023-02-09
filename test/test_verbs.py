@@ -222,16 +222,12 @@ class TestTableVerbs:
         assert actual == expected
 
     def test_groupby_verb(self) -> None:
-        # One by column
         sample: str = "precincts_with_counties.csv"
         x_table: Table = Table()
         x_table.read("test/files/" + sample)
 
-        by_cols: list[str] = ["District"]
-        agg_cols: list[str] = ["Total"]
-        agg_fns: list[str] = ["sum"]
-
-        f: GroupByVerb = GroupByVerb(x_table, by_cols, only=agg_cols, agg=agg_fns)
+        # One by column
+        f: GroupByVerb = GroupByVerb(x_table, ["District"], only=["Total"], agg=["sum"])
         f.apply()
 
         assert True
@@ -241,15 +237,9 @@ class TestTableVerbs:
         assert f._new_table._data.iloc[0]["Total_sum"] == 1115482
 
         # Two by columns
-        sample: str = "precincts_with_counties.csv"
-        x_table: Table = Table()
-        x_table.read("test/files/" + sample)
-
-        by_cols: list[str] = ["District", "COUNTY"]
-        agg_cols: list[str] = ["Total"]
-        agg_fns: list[str] = ["sum"]
-
-        f: GroupByVerb = GroupByVerb(x_table, by_cols, only=agg_cols, agg=agg_fns)
+        f: GroupByVerb = GroupByVerb(
+            x_table, ["District", "COUNTY"], only=["Total"], agg=["sum"]
+        )
         f.apply()
 
         assert True
@@ -257,6 +247,56 @@ class TestTableVerbs:
         assert f._new_table.n_rows() == 101
         assert f._new_table.n_cols() == 3
         assert f._new_table._data.iloc[0]["Total_sum"] == 1115482
+
+        # Bad by column
+        try:
+            f: GroupByVerb = GroupByVerb(
+                x_table, ["Disrict"], only=["Total"], agg=["sum"]
+            )
+            f.apply()
+            assert False
+        except:
+            assert True
+
+        # Bad only column name
+        try:
+            f: GroupByVerb = GroupByVerb(
+                x_table, ["District"], only=["Totl"], agg=["sum"]
+            )
+            f.apply()
+            assert False
+        except:
+            assert True
+
+        # Bad only column type
+        try:
+            f: GroupByVerb = GroupByVerb(
+                x_table, ["District"], only=["Total", "COUNTY"], agg=["sum"]
+            )
+            f.apply()
+            assert False
+        except:
+            assert True
+
+        # Bad agg function
+        try:
+            f: GroupByVerb = GroupByVerb(
+                x_table, ["District"], only=["Total"], agg=["foo"]
+            )
+            f.apply()
+            assert False
+        except:
+            assert True
+
+        # By column in only list
+        try:
+            f: GroupByVerb = GroupByVerb(
+                x_table, ["District"], only=["District", "Total"], agg=["sum"]
+            )
+            f.apply()
+            assert False
+        except:
+            assert True
 
     def test_union_verb(self) -> None:
         # Matched tables

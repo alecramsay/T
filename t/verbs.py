@@ -301,9 +301,7 @@ class GroupByVerb(Verb):
     * By default, compute all statistics. Optionally take an explicit list of stats to compute.
 
     * For each aggregated column 'x', the resulting rows contain columns of the form x_min, x_max, etc.
-    * TODO - They can also be referenced as min(X), max(X), sum(X), count(X), and avg(X).
-
-    https://datagy.io/pandas-groupby/
+    * TODO - They can also be referenced as min(X), max(X), sum(X), count(X), and avg(X). <<< Is this true?
     """
 
     def __init__(
@@ -313,9 +311,11 @@ class GroupByVerb(Verb):
 
         self._x_table = x_table
 
+        # Group by columns
         self._group_cols: list = [x.strip() for x in by]
         self._validate_col_refs(self._group_cols, self._x_table)
 
+        # Columns to aggregate
         self._agg_cols: list[str]
         if only:
             self._agg_cols = [x.strip() for x in only]
@@ -338,6 +338,7 @@ class GroupByVerb(Verb):
                 if name in self._agg_cols:
                     self._agg_cols.remove(name)
 
+        # Aggregation functions
         self._agg_fns: list[str]
         if agg:
             self._agg_fns = [x.strip() for x in agg]
