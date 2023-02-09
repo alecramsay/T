@@ -221,6 +221,43 @@ class TestTableVerbs:
 
         assert actual == expected
 
+    def test_groupby_verb(self) -> None:
+        # One by column
+        sample: str = "precincts_with_counties.csv"
+        x_table: Table = Table()
+        x_table.read("test/files/" + sample)
+
+        by_cols: list[str] = ["District"]
+        agg_cols: list[str] = ["Total"]
+        agg_fns: list[str] = ["sum"]
+
+        f: GroupByVerb = GroupByVerb(x_table, by_cols, only=agg_cols, agg=agg_fns)
+        f.apply()
+
+        assert True
+
+        assert f._new_table.n_rows() == 13
+        assert f._new_table.n_cols() == 2
+        assert f._new_table._data.iloc[0]["Total_sum"] == 1115482
+
+        # Two by columns
+        sample: str = "precincts_with_counties.csv"
+        x_table: Table = Table()
+        x_table.read("test/files/" + sample)
+
+        by_cols: list[str] = ["District", "COUNTY"]
+        agg_cols: list[str] = ["Total"]
+        agg_fns: list[str] = ["sum"]
+
+        f: GroupByVerb = GroupByVerb(x_table, by_cols, only=agg_cols, agg=agg_fns)
+        f.apply()
+
+        assert True
+
+        assert f._new_table.n_rows() == 101
+        assert f._new_table.n_cols() == 3
+        assert f._new_table._data.iloc[0]["Total_sum"] == 1115482
+
     def test_union_verb(self) -> None:
         # Matched tables
         y_table: Table = Table()

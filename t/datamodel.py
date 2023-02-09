@@ -272,15 +272,25 @@ class Table:
         print(f"for_list: {agg_list}")
         print(f"agg_fns: {agg_fns}")
 
-        # df: pd.DataFrame = t1._data
+        # Grab these to preserve aliases
+        by_cols: list[Column] = [self.get_column(name) for name in by_list]
 
-        # df_grouped = df.groupby(by_cols)[agg_cols].agg(agg_fns)
-        # # https://towardsdatascience.com/how-to-flatten-multiindex-columns-and-rows-in-pandas-f5406c50e569
-        # df_grouped.columns = ["_".join(col) for col in df_grouped.columns.values]
+        self._data = self._data.groupby(by_list)[agg_list].agg(agg_fns)
 
-        # df_grouped: pd.DataFrame = df_grouped.reset_index()
+        # Flatten the multi-index columns
+        # https://towardsdatascience.com/how-to-flatten-multiindex-columns-and-rows-in-pandas-f5406c50e569
+        self._data.columns = ["_".join(col) for col in self._data.columns.values]
+        self._data = self._data.reset_index()
 
-        print("TODO: do_groupby()")
+        # Update the column metadata
+        names: list[str] = list(self._data.columns)
+        dtypes: list[str] = [x.name for x in self._data.dtypes]
+        self._cols = (
+            by_cols
+            + [Column(name, dtype) for name, dtype in zip(names, dtypes)][
+                len(by_cols) :
+            ]
+        )
 
 
 ### UNION ###
