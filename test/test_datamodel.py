@@ -13,11 +13,11 @@ class TestDataModel:
         s: Column = Column("GEOID", "string")
         assert s.type == "string"
 
-        i: Column = Column("Total", "int")
-        assert i.type == "int"
+        i: Column = Column("Total", "int64")
+        assert i.type == "int64"
 
-        f: Column = Column("D_pct", "float")
-        assert f.type == "float"
+        f: Column = Column("D_pct", "float64")
+        assert f.type == "float64"
 
         b: Column = Column("BOOLEAN", "bool")
         assert b.type == "bool"
@@ -25,8 +25,8 @@ class TestDataModel:
         l: Column = Column("LIST", "object")
         assert l.type == "object"
 
-        t: Column = Column("DATE", "datetime")
-        assert t.type == "datetime"
+        t: Column = Column("DATE", "datetime64")
+        assert t.type == "datetime64"
 
         d: Column = Column("CATEGORY", "category")
         assert d.type == "category"

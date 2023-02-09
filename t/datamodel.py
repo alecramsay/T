@@ -17,37 +17,31 @@ from .readwrite import DelimitedFileReader
 ### PANDAS DATA TYPES ###
 
 # https://pandas.pydata.org/pandas-docs/stable/user_guide/basics.html#dtypes
-PD_FRIENDLY_NAME_TO_TYPE: dict[str, str] = {
-    "object": "object",
-    "string": "string",
-    "int": "int64",
-    "float": "float64",
-    "bool": "bool",
-    "datetime": "datetime64",
-    "timedelta": "timedelta64",
-    "category": "category",
-}
-PD_TYPE_FRIENDLY_NAMES: list[str] = list(PD_FRIENDLY_NAME_TO_TYPE.keys())
-PD_TYPE_TO_FRIENDLY_NAMES: dict[str, str] = {
-    v: k for k, v in PD_FRIENDLY_NAME_TO_TYPE.items()
-}
 
-PD_GROUP_ABLE_TYPES: list[str] = ["int", "float", "datetime", "timedelta"]
+PD_TYPES: list[str] = [
+    "object",
+    "string",
+    "int64",
+    "float64",
+    "bool",
+    "datetime64",
+    "timedelta64",
+    "category",
+]
+PD_GROUP_ABLE_TYPES: list[str] = ["int64", "float64", "datetime64", "timedelta64"]
 
 
 class Column:
     """Column definitions are meta data for managing aliases & data types"""
 
-    def __init__(self, name, dtype=None) -> None:
+    def __init__(self, name, dtype: str) -> None:
         """
         User-visible column names contain spaces & lowercase letters.
         Internal column names must be a valid identifiers.
         """
         self.name = Column.canonicalize_name(name)
         self.alias = name if (name != self.name) else None  # Automatic aliasing
-        self.type: str = (
-            dtype if dtype and (dtype in PD_TYPE_FRIENDLY_NAMES) else "string"
-        )
+        self.type: str = dtype
         self.default = None
         self.format: str = None
 
