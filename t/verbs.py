@@ -283,7 +283,16 @@ class SortVerb(Verb):
 
 
 class GroupByVerb(Verb):
-    """
+    """GROUP BY
+
+    * Aggregate numeric columns by one or more grouping columns. Skip non-numeric ones.
+    * Compute one or more statistics for each group: count, min, max, std, sum, mean, median.
+    * By default, aggregate all numeric columns. Optionally take an explicit list of cols to aggregate.
+    * By default, compute all statistics. Optionally take an explicit list of stats to compute.
+
+    * For each aggregated column 'x', the resulting rows contain columns of the form x_min, x_max, etc.
+    * TODO - They can also be referenced as min(X), max(X), sum(X), count(X), and avg(X).
+
     https://datagy.io/pandas-groupby/
 
     https://betterprogramming.pub/pandas-illustrated-the-definitive-visual-guide-to-pandas-c31fa921a43#787c
@@ -293,9 +302,42 @@ class GroupByVerb(Verb):
     https://stackoverflow.com/questions/13582449/convert-dataframegroupby-object-to-dataframe-pandas
 
     https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.aggregate.html
+
     """
 
-    pass  # TODO
+    def __init__(
+        self, x_table, by: list[str], *, only: list[str] = None, agg: list[str] = None
+    ) -> None:
+        super().__init__()
+
+        self._x_table = x_table
+
+        self._group_cols: list = [x.strip() for x in by]
+        self._validate_col_refs(self._group_cols, self._x_table)
+
+        self._agg_cols: list[str]
+        if only:
+            self._agg_cols = [x.strip() for x in only]
+            self._validate_col_refs(self._agg_cols, self._x_table)
+            # TODO - Validate that by_cols are not in for_cols
+            # TODO - Validate that for_cols are numeric
+        else:
+            # TODO - Get numeric cols not in by_cols
+            self._agg_cols = self._x_table.col_names()
+
+        self._agg_fns: list[str]
+        if agg:
+            self._agg_fns = [x.strip() for x in agg]
+            # TODO - Validate that agg is a valid list of stats
+        else:
+            self._agg_fns = ["count", "min", "max", "std", "sum", "mean", "median"]
+
+    def apply(self) -> Table:
+        self._new_table: Table = self._x_table.copy()
+
+        self._new_table.do_groupby(self._group_cols, self._agg_cols, self._agg_fns)
+
+        return self._new_table
 
 
 class JoinVerb(Verb):

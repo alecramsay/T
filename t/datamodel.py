@@ -264,6 +264,21 @@ class Table:
 
         self._data.sort_values(by=by_list, ascending=ascending_list, inplace=True)
 
+    def do_groupby(
+        self, by_list: list[str], for_list: list[str], agg_list: list[str]
+    ) -> None:
+        """Group the table by the specified columns"""
+
+        # df: pd.DataFrame = t1._data
+
+        # df_grouped = df.groupby(by_cols)[agg_cols].agg(agg_fns)
+        # # https://towardsdatascience.com/how-to-flatten-multiindex-columns-and-rows-in-pandas-f5406c50e569
+        # df_grouped.columns = ["_".join(col) for col in df_grouped.columns.values]
+
+        # df_grouped: pd.DataFrame = df_grouped.reset_index()
+
+        print("TODO: do_groupby()")
+
 
 ### UNION ###
 
