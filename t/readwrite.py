@@ -14,6 +14,8 @@ from typing import Type
 from .constants import *
 from .excel import *
 
+PREREAD_LINES: int = 1000
+
 
 class FileSpec:
     pass  # Forward declaration

@@ -214,7 +214,7 @@ class Table:
 
         return True
 
-    def group_able_cols(self) -> list[str]:
+    def group_able_col_names(self) -> list[str]:
         return [c.name for c in self._cols if c.type in PD_GROUP_ABLE_TYPES]
 
     ### WRAPPERS ENCAPSULATING PANDAS DATAFRAME METHODS ###
@@ -264,9 +264,13 @@ class Table:
         self._data.sort_values(by=by_list, ascending=ascending_list, inplace=True)
 
     def do_groupby(
-        self, by_list: list[str], for_list: list[str], agg_list: list[str]
+        self, by_list: list[str], agg_list: list[str], agg_fns: list[str]
     ) -> None:
         """Group the table by the specified columns"""
+
+        print(f"by_list: {by_list}")
+        print(f"for_list: {agg_list}")
+        print(f"agg_fns: {agg_fns}")
 
         # df: pd.DataFrame = t1._data
 

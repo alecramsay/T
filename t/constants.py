@@ -4,8 +4,6 @@
 CONSTANTS
 """
 
-PREREAD_LINES: int = 1000
-
 ### FOR TESTING ###
 
 CITIES_DF: dict[str, list] = {

@@ -13,6 +13,16 @@ from .utils import *
 from .datamodel import *
 
 
+AGG_FNS: list[str] = ["count", "min", "max", "std", "sum", "mean", "median"]
+
+
+def is_agg_fn(fn: str) -> bool:
+    if fn in AGG_FNS:
+        return True
+
+    raise Exception(f"{fn} is not a valid aggregation function.")
+
+
 class Verb:
     """Base class for verbs
 
@@ -294,15 +304,6 @@ class GroupByVerb(Verb):
     * TODO - They can also be referenced as min(X), max(X), sum(X), count(X), and avg(X).
 
     https://datagy.io/pandas-groupby/
-
-    https://betterprogramming.pub/pandas-illustrated-the-definitive-visual-guide-to-pandas-c31fa921a43#787c
-    https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.groupby.html
-    https://datascientyst.com/use-groupby-multiple-columns-pandas/
-    https://datagy.io/pandas-groupby-multiple-columns/
-    https://stackoverflow.com/questions/13582449/convert-dataframegroupby-object-to-dataframe-pandas
-
-    https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.aggregate.html
-
     """
 
     def __init__(
@@ -319,18 +320,31 @@ class GroupByVerb(Verb):
         if only:
             self._agg_cols = [x.strip() for x in only]
             self._validate_col_refs(self._agg_cols, self._x_table)
-            # TODO - Validate that by_cols are not in for_cols
-            # TODO - Validate that for_cols are numeric
+
+            for name in self._group_cols:
+                if name in self._agg_cols:
+                    raise ValueError(
+                        f"Column '{name}' cannot be in both 'by' and 'only' lists."
+                    )
+
+            for name in self._agg_cols:
+                if name not in self._x_table.group_able_col_names():
+                    raise ValueError(
+                        f"Column '{name}' is not numeric or a datetime and cannot be aggregated."
+                    )
         else:
-            # TODO - Get numeric cols not in by_cols
-            self._agg_cols = self._x_table.col_names()
+            self._agg_cols = self._x_table.group_able_col_names()
+            for name in self._group_cols:
+                if name in self._agg_cols:
+                    self._agg_cols.remove(name)
 
         self._agg_fns: list[str]
         if agg:
             self._agg_fns = [x.strip() for x in agg]
-            # TODO - Validate that agg is a valid list of stats
+            for fn in self._agg_fns:
+                is_agg_fn(fn)
         else:
-            self._agg_fns = ["count", "min", "max", "std", "sum", "mean", "median"]
+            self._agg_fns = AGG_FNS
 
     def apply(self) -> Table:
         self._new_table: Table = self._x_table.copy()
