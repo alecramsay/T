@@ -327,5 +327,19 @@ class TestTableVerbs:
         except:
             assert True
 
+        # Matched tables
+        y_table: Table = Table()
+        y_table.read("test/union/first_part.csv")
+
+        x_table: Table = Table()
+        x_table.read("test/union/second_part.csv")
+
+        try:
+            f: UnionVerb = UnionVerb(y_table, x_table)
+            f.apply()
+            assert True
+        except:
+            assert False
+
 
 ### END ###
