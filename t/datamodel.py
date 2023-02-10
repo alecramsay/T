@@ -293,7 +293,7 @@ class Table:
         )
 
 
-### UNION ###
+### MULTI-TABLE WRAPPERS ###
 
 
 def do_union(y_table: Table, x_table: Table) -> Table:
@@ -323,6 +323,35 @@ def columns_match(table1, table2, match_names=True) -> bool:
         return False
 
     return True
+
+
+def do_join(
+    left: Table,
+    right: Table,
+    how: str,
+    left_on: str,
+    right_on: str,
+    suffixes,
+) -> Table:
+    """Join two tables
+
+    - Verify the parameters before calling this
+    """
+
+    join_table: Table = Table()
+    join_table._data = pd.merge(
+        left._data,
+        right._data,
+        how=how,
+        left_on=left_on,
+        right_on=right_on,
+        suffixes=suffixes,
+    )
+
+    # TODO - Manage columns
+    pass  # TODO
+
+    return join_table
 
 
 ### END ###

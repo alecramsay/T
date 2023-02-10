@@ -355,8 +355,81 @@ class GroupByVerb(Verb):
         return self._new_table
 
 
+PD_JOIN_TYPES: list[str] = ["left", "right", "outer", "inner", "cross"]
+
+
 class JoinVerb(Verb):
-    pass  # TODO
+    """JOIN the two tables on the top of the stack & return a new table.
+
+    https://en.wikipedia.org/wiki/Join_(SQL)
+
+    Map stack nomenclature to Pandas merge terminology:
+    https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.merge.html
+
+    y_table : left
+    x_table : right
+
+    how : {'left', 'right', 'outer', 'inner', 'cross'}, default 'inner'
+
+        Type of merge to be performed.
+        - left: use only keys from left frame, similar to a SQL left outer join; preserve key order.
+        - right: use only keys from right frame, similar to a SQL right outer join; preserve key order.
+        - outer: use union of keys from both frames, similar to a SQL full outer join; sort keys lexicographically.
+        - inner: use intersection of keys from both frames, similar to a SQL inner join; preserve the order of the left keys.
+        - cross: creates the cartesian product from both frames, preserves the order of the left keys.
+
+    y_col : left_on
+    x_col : right_on
+    suffixes : ('_x', None) by default
+    """
+
+    def __init__(
+        self,
+        y_table: Table,
+        x_table: Table,
+        *,
+        how: str = "inner",
+        y_col: str = None,
+        x_col: str = None,
+        suffix=None,  # TODO
+    ) -> None:
+        super().__init__()
+
+        self._y_table = y_table
+        self._x_table = x_table
+
+        self._how: str = how
+        if how not in PD_JOIN_TYPES:
+            raise ValueError(f"Invalid join type '{how}'.")
+
+        self._y_col: str = y_col
+        self._x_col: str = x_col
+        if y_col:
+            self._validate_col_refs(y_col, y_table)
+        if x_col:
+            self._validate_col_refs(x_col, x_table)
+
+        self._suffixes: tuple
+        if suffix:
+            if not isinstance(suffix, tuple) or len(suffix) != 2:
+                raise ValueError("Suffix must be a tuple of length 2.")
+            if (suffix[0] is None) and (suffix[1] is None):
+                raise ValueError("One suffix must not be None.")
+            self._suffixes = suffix
+        else:
+            self._suffixes = ("_x", None)  # default
+
+    def apply(self) -> Table:
+        self._new_table = do_join(
+            self._y_table,
+            self._x_table,
+            self._how,
+            self._y_col,
+            self._x_col,
+            self._suffixes,
+        )
+
+        return self._new_table
 
 
 class UnionVerb(Verb):
