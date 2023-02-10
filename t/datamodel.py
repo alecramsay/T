@@ -348,8 +348,8 @@ def do_join(
         suffixes=suffixes,
     )
 
-    # TODO - Manage columns
-    pass  # TODO
+    # HACK - Properly manage columns
+    join_table._extract_col_defs()
 
     return join_table
 

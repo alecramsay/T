@@ -221,6 +221,144 @@ class TestTableVerbs:
 
         assert actual == expected
 
+    def test_join_verb(self) -> None:
+        # Join census data
+        y_table: Table = Table()
+        y_table.read("data/rd/NC/2020_precinct_assignments_NC.csv")
+        x_table: Table = Table()
+        x_table.read("data/rd/NC/2020_census_NC.csv")
+
+        f: JoinVerb = JoinVerb(y_table, x_table)
+        # join_key: str = "GEOID20"
+        # f: JoinVerb = JoinVerb(y_table, x_table, join_key, join_key)
+        f.apply()
+
+        assert isinstance(f._new_table, Table)
+        assert f._new_table.n_cols() == (x_table.n_cols() + y_table.n_cols() - 1)
+
+        # # Ignore duplicate columns - Name, Email, OrgID, and END
+
+        # y_col_names: list[str] = ["Name", "Email", "OrgID", "END", "Test1"]
+        # y_cols: list[Column] = [Column(x) for x in y_col_names]
+        # y_table = Table(y_cols)
+        # file1: list[dict[str, Any]] = [
+        #     {
+        #         "Name": "Alice",
+        #         "Email": "alice@gmail.com",
+        #         "OrgID": 3,
+        #         "END": "#",
+        #         "Test1": "A",
+        #     },
+        #     {
+        #         "Name": "Bob",
+        #         "Email": "bob@comcast.net",
+        #         "OrgID": 1,
+        #         "END": "#",
+        #         "Test1": "C",
+        #     },
+        #     {
+        #         "Name": "Carol",
+        #         "Email": "carol@yahoo.com",
+        #         "OrgID": 2,
+        #         "END": "#",
+        #         "Test1": "B",
+        #     },
+        # ]
+        # for row in file1:
+        #     y_table.append(row)
+
+        # x_col_names: list[str] = ["Name", "Email", "OrgID", "END", "Test2"]
+        # x_cols: list[Column] = [Column(x) for x in x_col_names]
+        # x_table = Table(x_cols)
+        # file2: list[dict[str, Any]] = [
+        #     {
+        #         "Name": "Alice",
+        #         "Email": "alice@gmail.com",
+        #         "OrgID": 3,
+        #         "END": "#",
+        #         "Test2": "B",
+        #     },
+        #     {
+        #         "Name": "Bob",
+        #         "Email": "bob@comcast.net",
+        #         "OrgID": 1,
+        #         "END": "#",
+        #         "Test2": "A",
+        #     },
+        #     {
+        #         "Name": "Carol",
+        #         "Email": "carol@yahoo.com",
+        #         "OrgID": 2,
+        #         "END": "#",
+        #         "Test2": "D",
+        #     },
+        # ]
+        # for row in file2:
+        #     x_table.append(row)
+
+        # join_key = "Name"
+        # f = JoinVerb(y_table, x_table, join_key, join_key)
+        # f.apply()
+        # assert isinstance(f.new_table, Table)
+
+        # expected: list[dict[str, Any]] = [
+        #     {
+        #         "Name": "Alice",
+        #         "Email": "alice@gmail.com",
+        #         "OrgID": 3,
+        #         "END": "#",
+        #         "Test1": "A",
+        #         "Test2": "B",
+        #     },
+        #     {
+        #         "Name": "Bob",
+        #         "Email": "bob@comcast.net",
+        #         "OrgID": 1,
+        #         "END": "#",
+        #         "Test1": "C",
+        #         "Test2": "A",
+        #     },
+        #     {
+        #         "Name": "Carol",
+        #         "Email": "carol@yahoo.com",
+        #         "OrgID": 2,
+        #         "END": "#",
+        #         "Test1": "B",
+        #         "Test2": "D",
+        #     },
+        # ]
+        # names = f.new_table.col_names()
+        # for i, row in enumerate(f.new_table.rows):
+        #     for name in names:
+        #         assert row.get(name) == expected[i][name]
+
+        # # Alias duplicate columns
+
+        # y_col_names = ["ID", "a", "b"]
+        # y_cols = [Column(x) for x in y_col_names]
+        # y_table = Table(y_cols)
+        # rows1: list[dict[str, Any]] = [{"ID": "foo", "a": 1, "b": 2}]
+        # for row in rows1:
+        #     y_table.append(row)
+
+        # x_col_names = ["ID", "a", "c"]
+        # x_cols = [Column(x) for x in x_col_names]
+        # x_table = Table(x_cols)
+        # rows2: list[dict[str, Any]] = [{"ID": "foo", "a": 2, "c": 3}]
+        # for row in rows2:
+        #     x_table.append(row)
+
+        # join_key = "ID"
+        # f = JoinVerb(y_table, x_table, join_key, join_key, "foo_")
+        # f.apply()
+        # assert isinstance(f.new_table, Table)
+
+        # expected = [{"ID": "foo", "a": 1, "b": 2, "foo_a": 2, "c": 3}]
+        # names: list = f.new_table.col_names()
+        # for i, row in enumerate(f.new_table.rows):
+        #     for name in names:
+        #         assert row.get(name) == expected[i][name]
+
     def test_groupby_verb(self) -> None:
         sample: str = "precincts_with_counties.csv"
         x_table: Table = Table()
