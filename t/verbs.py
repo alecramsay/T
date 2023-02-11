@@ -391,7 +391,7 @@ class JoinVerb(Verb):
         how: str = "inner",
         y_col: str = None,
         x_col: str = None,
-        suffix=None,  # TODO
+        suffixes=("_x", None),
     ) -> None:
         super().__init__()
 
@@ -409,15 +409,12 @@ class JoinVerb(Verb):
         if x_col:
             self._validate_col_refs(x_col, x_table)
 
-        self._suffixes: tuple
-        if suffix:
-            if not isinstance(suffix, tuple) or len(suffix) != 2:
+        self._suffixes: tuple = suffixes
+        if suffixes:
+            if not isinstance(suffixes, tuple) or len(suffixes) != 2:
                 raise ValueError("Suffix must be a tuple of length 2.")
-            if (suffix[0] is None) and (suffix[1] is None):
+            if (suffixes[0] is None) and (suffixes[1] is None):
                 raise ValueError("One suffix must not be None.")
-            self._suffixes = suffix
-        else:
-            self._suffixes = ("_x", None)  # default
 
     def apply(self) -> Table:
         self._new_table = do_join(

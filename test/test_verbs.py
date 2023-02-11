@@ -236,12 +236,8 @@ class TestTableVerbs:
         assert isinstance(f._new_table, Table)
         assert f._new_table.n_cols() == (x_table.n_cols() + y_table.n_cols() - 1)
 
-        # # Ignore duplicate columns - Name, Email, OrgID, and END
-
-        # y_col_names: list[str] = ["Name", "Email", "OrgID", "END", "Test1"]
-        # y_cols: list[Column] = [Column(x) for x in y_col_names]
-        # y_table = Table(y_cols)
-        # file1: list[dict[str, Any]] = [
+        # TODO - Ignore duplicate columns - Name, Email, OrgID, and END
+        # data: list[dict[str, Any]] = [
         #     {
         #         "Name": "Alice",
         #         "Email": "alice@gmail.com",
@@ -264,13 +260,10 @@ class TestTableVerbs:
         #         "Test1": "B",
         #     },
         # ]
-        # for row in file1:
-        #     y_table.append(row)
+        # y_table = Table()
+        # y_table.read(data)
 
-        # x_col_names: list[str] = ["Name", "Email", "OrgID", "END", "Test2"]
-        # x_cols: list[Column] = [Column(x) for x in x_col_names]
-        # x_table = Table(x_cols)
-        # file2: list[dict[str, Any]] = [
+        # data: list[dict[str, Any]] = [
         #     {
         #         "Name": "Alice",
         #         "Email": "alice@gmail.com",
@@ -293,8 +286,8 @@ class TestTableVerbs:
         #         "Test2": "D",
         #     },
         # ]
-        # for row in file2:
-        #     x_table.append(row)
+        # x_table = Table()
+        # x_table.read(data)
 
         # join_key = "Name"
         # f = JoinVerb(y_table, x_table, join_key, join_key)
@@ -332,27 +325,22 @@ class TestTableVerbs:
         #     for name in names:
         #         assert row.get(name) == expected[i][name]
 
-        # # Alias duplicate columns
+        # TODO - Alias duplicate columns
 
-        # y_col_names = ["ID", "a", "b"]
-        # y_cols = [Column(x) for x in y_col_names]
-        # y_table = Table(y_cols)
-        # rows1: list[dict[str, Any]] = [{"ID": "foo", "a": 1, "b": 2}]
-        # for row in rows1:
-        #     y_table.append(row)
+        # data: list[dict[str, Any]] = [{"ID": "foo", "a": 1, "b": 2}]
+        # y_table = Table()
+        # y_table.test(data)
 
-        # x_col_names = ["ID", "a", "c"]
-        # x_cols = [Column(x) for x in x_col_names]
-        # x_table = Table(x_cols)
-        # rows2: list[dict[str, Any]] = [{"ID": "foo", "a": 2, "c": 3}]
-        # for row in rows2:
-        #     x_table.append(row)
+        # data: list[dict[str, Any]] = [{"ID": "foo", "a": 2, "c": 3}]
+        # x_table = Table()
+        # x_table.test(data)
 
-        # join_key = "ID"
-        # f = JoinVerb(y_table, x_table, join_key, join_key, "foo_")
+        # join_key: str = "ID"
+        # f = JoinVerb(y_table, x_table, y_col=join_key, x_col=join_key)
         # f.apply()
         # assert isinstance(f.new_table, Table)
 
+        # TODO - HERE
         # expected = [{"ID": "foo", "a": 1, "b": 2, "foo_a": 2, "c": 3}]
         # names: list = f.new_table.col_names()
         # for i, row in enumerate(f.new_table.rows):
