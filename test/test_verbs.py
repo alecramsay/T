@@ -234,8 +234,23 @@ class TestTableVerbs:
         assert isinstance(f._new_table, Table)
         assert f._new_table.n_cols() == (x_table.n_cols() + y_table.n_cols() - 1)
 
-        # Alias duplicate columns
+        ## Explicit join type
+        join_type: str = "inner"
+        f: JoinVerb = JoinVerb(y_table, x_table, how=join_type)
+        f.apply()
 
+        assert isinstance(f._new_table, Table)
+
+        ## Explicit validation
+        try:
+            validation: str = "1:1"
+            f: JoinVerb = JoinVerb(y_table, x_table, validate=validation)
+            f.apply()
+            assert True
+        except:
+            assert False
+
+        # Alias duplicate columns
         data: list[dict[str, Any]] = [{"ID": "foo", "a": 1, "b": 2}]
         y_table = Table()
         y_table.test(data)
@@ -252,6 +267,115 @@ class TestTableVerbs:
         expected: set[str] = set(["ID", "a_y", "a_x", "b", "c"])
         actual: set = set(f._new_table.col_names())
         assert actual == expected
+
+        ## Explicit suffixes
+        join_key: str = "ID"
+        suffixes = (None, "_mumble")
+        f = JoinVerb(y_table, x_table, on=join_key, suffixes=suffixes)
+        f.apply()
+        assert isinstance(f._new_table, Table)
+
+        expected: set[str] = set(["ID", "a", "a_mumble", "b", "c"])
+        actual: set = set(f._new_table.col_names())
+        assert actual == expected
+
+        # No shared columns
+        data: list[dict[str, Any]] = [{"a": 1, "b": 2, "c": 3}]
+        y_table = Table()
+        y_table.test(data)
+
+        data: list[dict[str, Any]] = [{"d": "foo", "e": "bas", "f": "bat"}]
+        x_table = Table()
+        x_table.test(data)
+
+        try:
+            f = JoinVerb(y_table, x_table)
+            f.apply()
+            assert False
+        except:
+            assert True
+
+        # Matching join keys but no shared columns
+        data: list[dict[str, Any]] = [{"a": 1, "b": 2, "c": 3}]
+        y_table = Table()
+        y_table.test(data)
+
+        data: list[dict[str, Any]] = [{"d": 1, "e": "bas", "f": "bat"}]
+        x_table = Table()
+        x_table.test(data)
+
+        try:
+            on: list[str] = [["a"], ["d"]]
+            f = JoinVerb(y_table, x_table, on=on)
+            f.apply()
+            assert True
+        except:
+            assert False
+
+        # Mismatched join keys
+        data: list[dict[str, Any]] = [{"a": 1, "b": 2, "c": 3}]
+        y_table = Table()
+        y_table.test(data)
+
+        data: list[dict[str, Any]] = [{"a": "foo", "e": "bas", "f": "bat"}]
+        x_table = Table()
+        x_table.test(data)
+
+        try:
+            f = JoinVerb(y_table, x_table)
+            f.apply()
+            assert False
+        except:
+            assert True
+
+        # Invalid parameters
+
+        data: list[dict[str, Any]] = [{"ID": "foo", "a": 1, "b": 2}]
+        y_table = Table()
+        y_table.test(data)
+
+        data: list[dict[str, Any]] = [{"ID": "foo", "c": 2, "d": 3}]
+        x_table = Table()
+        x_table.test(data)
+
+        ## Bad join key
+        try:
+            join_key: str = ["ID", ["ID", "c"]]
+            f = JoinVerb(y_table, x_table, on=join_key)
+            f.apply()
+            assert False
+        except:
+            assert True
+
+        ## Bad join type
+        try:
+            join_key: str = "ID"
+            join_type: str = "mumble"
+            f = JoinVerb(y_table, x_table, on=join_key, how=join_type)
+            f.apply()
+            assert False
+        except:
+            assert True
+
+        ## Bad suffixes
+        try:
+            join_key: str = "ID"
+            suffixes: tuple[str, str] = (None, None)
+            f = JoinVerb(y_table, x_table, on=join_key, suffixes=suffixes)
+            f.apply()
+            assert False
+        except:
+            assert True
+
+        ## Bad validate
+        try:
+            join_key: str = "ID"
+            validate: str = "mumble"
+            f = JoinVerb(y_table, x_table, on=join_key, validate=validate)
+            f.apply()
+            assert False
+        except:
+            assert True
 
     def test_groupby_verb(self) -> None:
         sample: str = "precincts_with_counties.csv"

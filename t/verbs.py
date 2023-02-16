@@ -356,6 +356,7 @@ class GroupByVerb(Verb):
 
 
 PD_JOIN_TYPES: list[str] = ["left", "right", "outer", "inner", "cross"]
+PD_VALIDATE_TYPES: list[str] = ["1:1", "1:m", "m:1", "m:m"]
 
 
 class JoinVerb(Verb):
@@ -460,7 +461,7 @@ class JoinVerb(Verb):
 
         # validate
         if validate:
-            if validate not in ["1:1", "1:m", "m:1", "m:m"]:
+            if validate not in PD_VALIDATE_TYPES:
                 raise ValueError(f"Invalid validate value '{validate}'.")
         self._validate: str = validate
 
