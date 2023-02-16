@@ -391,30 +391,30 @@ def joined_columns(
     """
 
     keys_match: bool = left_on == right_on
-    joined_columns: set[Column] = set()
+    joined_columns: list[Column] = list()
 
     for col in left._cols:
         if col.name in left_on:
-            joined_columns.add(col.copy())
+            joined_columns.append(col.copy())
         elif not right.has_column(col.name):
-            joined_columns.add(col.copy())
+            joined_columns.append(col.copy())
         else:
             new_col: Column = col.copy()
             if suffixes[0]:
                 new_col.set_name(col.name + suffixes[0])
-            joined_columns.add(new_col)
+            joined_columns.append(new_col)
 
     for col in right._cols:
         if col.name in right_on:
             if not keys_match:
-                joined_columns.add(col.copy())
+                joined_columns.append(col.copy())
         elif not left.has_column(col.name):
-            joined_columns.add(col.copy())
+            joined_columns.append(col.copy())
         else:
             new_col: Column = col.copy()
             if suffixes[1]:
                 new_col.set_name(col.name + suffixes[1])
-            joined_columns.add(new_col)
+            joined_columns.append(new_col)
 
     # Match the order of the columns in the joined table to the order
 
@@ -427,6 +427,9 @@ def joined_columns(
         for col in joined_columns:
             if col.name == col_ref:
                 ordered_columns.append(col)
+                break
+        else:
+            raise ValueError(f"Joined column {col_ref} not found!")
 
     return ordered_columns
 
