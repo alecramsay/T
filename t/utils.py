@@ -25,4 +25,8 @@ def parse_spec(spec) -> tuple:
     return first, second
 
 
+def is_list_of_str(obj) -> bool:
+    return isinstance(obj, list) and all(isinstance(elem, str) for elem in obj)
+
+
 ### END ###

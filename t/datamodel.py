@@ -332,6 +332,7 @@ def do_join(
     left_on: str,
     right_on: str,
     suffixes,
+    validate: str = None,
 ) -> Table:
     """Join two tables
 
@@ -346,9 +347,10 @@ def do_join(
         left_on=left_on,
         right_on=right_on,
         suffixes=suffixes,
+        validate=validate,
     )
 
-    # HACK - Properly manage columns
+    # TODO - Properly manage columns
     join_table._extract_col_defs()
 
     return join_table

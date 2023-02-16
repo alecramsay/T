@@ -369,18 +369,22 @@ class JoinVerb(Verb):
     y_table : left
     x_table : right
 
-    how : {'left', 'right', 'outer', 'inner', 'cross'}, default 'inner'
+    how (optional) : {'left', 'right', 'outer', 'inner', 'cross'}, default 'inner'
+    - left: use only keys from left frame, similar to a SQL left outer join; preserve key order.
+    - right: use only keys from right frame, similar to a SQL right outer join; preserve key order.
+    - outer: use union of keys from both frames, similar to a SQL full outer join; sort keys lexicographically.
+    - inner: use intersection of keys from both frames, similar to a SQL inner join; preserve the order of the left keys.
+    - cross: creates the cartesian product from both frames, preserves the order of the left keys.
 
-        Type of merge to be performed.
-        - left: use only keys from left frame, similar to a SQL left outer join; preserve key order.
-        - right: use only keys from right frame, similar to a SQL right outer join; preserve key order.
-        - outer: use union of keys from both frames, similar to a SQL full outer join; sort keys lexicographically.
-        - inner: use intersection of keys from both frames, similar to a SQL inner join; preserve the order of the left keys.
-        - cross: creates the cartesian product from both frames, preserves the order of the left keys.
+    on (optional)
+    - If no columns are specified, join on the shared columns (matching names + types).
+    - If one set of columns are specified, join on those -- make sure they exist in both and data types match.
+    - If two sets of columns are specified -- make sure they exist and data types match.
 
-    y_col : left_on
-    x_col : right_on
-    suffixes : ('_x', None) by default
+    suffixes (optional) : ("_y", "_x") is default -- Note: This is reversed.
+
+    validate (optional) : {"1:1", "1:m", "m:1", "m:m", None}, default None
+
     """
 
     def __init__(
@@ -389,32 +393,76 @@ class JoinVerb(Verb):
         x_table: Table,
         *,
         how: str = "inner",
-        y_col: str = None,
-        x_col: str = None,
-        suffixes=("_x", None),
+        on=None,
+        suffixes=(
+            "_y",
+            "_x",
+        ),  # Note: This is reversed from Pandas, to match T stack semantics.
+        validate: str = None,
     ) -> None:
         super().__init__()
 
         self._y_table = y_table
         self._x_table = x_table
 
+        # how
         self._how: str = how
         if how not in PD_JOIN_TYPES:
             raise ValueError(f"Invalid join type '{how}'.")
 
-        self._y_col: str = y_col
-        self._x_col: str = x_col
-        if y_col:
-            self._validate_col_refs(y_col, y_table)
-        if x_col:
-            self._validate_col_refs(x_col, x_table)
+        # on (columns)
+        self._y_col: str | list[str]
+        self._x_col: str | list[str]
 
+        if on is None:
+            # No columns are specified -- infer them
+            shared: list[str] = infer_join_cols(y_table, x_table)
+            if len(shared) == 1:
+                self._y_col: str = shared[0]
+                self._x_col: str = shared[0]
+            else:
+                self._y_col: str = shared
+                self._x_col: str = shared
+
+        elif isinstance(on, str):
+            # One column is specified -- make sure it exists in both tables with matching types
+            cols_match(y_table, x_table, [on], [on])
+            self._y_col: str = on
+            self._x_col: str = on
+
+        elif is_list_of_str(on):
+            # One list of columns
+            cols_match(y_table, x_table, on, on)
+            self._y_col: str = on
+            self._x_col: str = on
+
+        elif (
+            isinstance(on, list)
+            and len(on) == 2
+            and is_list_of_str(on[0])
+            and is_list_of_str(on[1])
+        ):
+            # Two lists of columns
+            cols_match(y_table, x_table, on[0], on[1])
+            self._y_col: str = on[0]
+            self._x_col: str = on[1]
+
+        else:
+            raise ValueError(f"on is not a specification of JOIN columns: {on}")
+
+        # suffixes
         self._suffixes: tuple = suffixes
         if suffixes:
             if not isinstance(suffixes, tuple) or len(suffixes) != 2:
                 raise ValueError("Suffix must be a tuple of length 2.")
             if (suffixes[0] is None) and (suffixes[1] is None):
                 raise ValueError("One suffix must not be None.")
+
+        # validate
+        if validate:
+            if validate not in ["1:1", "1:m", "m:1", "m:m"]:
+                raise ValueError(f"Invalid validate value '{validate}'.")
+        self._validate: str = validate
 
     def apply(self) -> Table:
         self._new_table = do_join(
@@ -424,9 +472,56 @@ class JoinVerb(Verb):
             self._y_col,
             self._x_col,
             self._suffixes,
+            self._validate,
         )
 
         return self._new_table
+
+
+### JOIN HELPERS ###
+
+
+def infer_join_cols(y_table: Table, x_table: Table) -> list[str]:
+    """Given two tables and zero or more join keys, infer the join keys."""
+
+    y_col_names: list[str] = y_table.col_names()
+    x_col_names: list[str] = x_table.col_names()
+    shared: list[str] = list(set(x_col_names) & set(y_col_names))
+    if len(shared) == 0:
+        raise ValueError(
+            "There are no shared columns to JOIN on. Specify the JOIN columns to use."
+        )
+
+    y_col_types: list[str] = [y_table.get_column(x).type for x in shared]
+    x_col_types: list[str] = [x_table.get_column(x).type for x in shared]
+
+    if y_col_types != x_col_types:
+        raise ValueError(
+            "Types don't match for shared columns: "
+            + str(shared)
+            + "."
+            + " Specify matching columns to JOIN on."
+        )
+
+    return shared
+
+
+def cols_match(
+    y_table: Table, x_table: Table, y_cols: list[str], x_cols: list[str]
+) -> bool:
+    """Check that the columns in two tables match."""
+
+    for col in y_cols:
+        y_table.is_column(col)
+    for col in x_cols:
+        x_table.is_column(col)
+    for y_col, x_col in zip(y_cols, x_cols):
+        if y_table.get_column(y_col).type != x_table.get_column(x_col).type:
+            raise ValueError(
+                f"JOIN columns ({y_col}, {x_col}) have different types in the two tables."
+            )
+
+    return True
 
 
 class UnionVerb(Verb):
