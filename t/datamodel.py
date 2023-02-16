@@ -45,6 +45,11 @@ class Column:
         self.default = None
         self.format: str = None
 
+    def copy(self) -> "Column":
+        """Return a copy of the column"""
+
+        return copy.deepcopy(self)
+
     def set_default(self, default) -> None:
         self.default: Any = default
 
@@ -168,13 +173,21 @@ class Table:
     def col_types(self) -> list[str]:
         return [c.type for c in self._cols]
 
-    def is_column(self, name) -> bool:
-        """Does the table have a column called <name>?"""
+    def has_column(self, name) -> bool:
+        """Does the table have a column called <name>? (soft fail)"""
 
         if name in self.col_names():
             return True
+        else:
+            return False
 
-        raise Exception("Column {0} not in table.".format(name))
+    def is_column(self, name) -> bool:
+        """Does the table have a column called <name>? (hard fail)"""
+
+        if self.has_column(name):
+            return True
+        else:
+            raise Exception("Column {0} not in table.".format(name))
 
     def get_column(self, name) -> Column:
         for col in self._cols:
@@ -350,10 +363,72 @@ def do_join(
         validate=validate,
     )
 
-    # TODO - Properly manage columns
-    join_table._extract_col_defs()
+    # Preserve aliases with this:
+    join_table._cols = joined_columns(
+        join_table, left, right, left_on, right_on, suffixes
+    )
+    # Instead of blasting them with this:
+    # join_table._extract_col_defs()
 
     return join_table
+
+
+def joined_columns(
+    joined: Table,
+    left: Table,
+    right: Table,
+    left_on: list[str],
+    right_on: list[str],
+    suffixes: tuple[str, str],
+) -> list[Column]:
+    """Return the column (objects, not names) resulting from a join:
+
+    - The union of the columns from the left (y) and right (x) tables
+    - Except for the join keys *with the same name* which are not duplicated
+    - Matching non-join keys are duplicated with suffixes
+
+    NOTE - This routine assumes all column references are valid.
+    """
+
+    keys_match: bool = left_on == right_on
+    joined_columns: set[Column] = set()
+
+    for col in left._cols:
+        if col.name in left_on:
+            joined_columns.add(col.copy())
+        elif not right.has_column(col.name):
+            joined_columns.add(col.copy())
+        else:
+            new_col: Column = col.copy()
+            if suffixes[0]:
+                new_col.set_name(col.name + suffixes[0])
+            joined_columns.add(new_col)
+
+    for col in right._cols:
+        if col.name in right_on:
+            if not keys_match:
+                joined_columns.add(col.copy())
+        elif not left.has_column(col.name):
+            joined_columns.add(col.copy())
+        else:
+            new_col: Column = col.copy()
+            if suffixes[1]:
+                new_col.set_name(col.name + suffixes[1])
+            joined_columns.add(new_col)
+
+    # Match the order of the columns in the joined table to the order
+
+    join_order: list[str] = list(joined._data.columns)
+    if len(join_order) != len(joined_columns):
+        raise ValueError("Mismatched column counts!")
+
+    ordered_columns: list[Column] = list()
+    for col_ref in join_order:
+        for col in joined_columns:
+            if col.name == col_ref:
+                ordered_columns.append(col)
+
+    return ordered_columns
 
 
 ### END ###

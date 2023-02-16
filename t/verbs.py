@@ -412,30 +412,30 @@ class JoinVerb(Verb):
             raise ValueError(f"Invalid join type '{how}'.")
 
         # on (columns)
-        self._y_col: str | list[str]
-        self._x_col: str | list[str]
+        self._y_cols: str | list[str]
+        self._x_cols: str | list[str]
 
         if on is None:
             # No columns are specified -- infer them
             shared: list[str] = infer_join_cols(y_table, x_table)
             if len(shared) == 1:
-                self._y_col: str = shared[0]
-                self._x_col: str = shared[0]
+                self._y_cols: str = shared[0]
+                self._x_cols: str = shared[0]
             else:
-                self._y_col: str = shared
-                self._x_col: str = shared
+                self._y_cols: str = shared
+                self._x_cols: str = shared
 
         elif isinstance(on, str):
             # One column is specified -- make sure it exists in both tables with matching types
             cols_match(y_table, x_table, [on], [on])
-            self._y_col: str = on
-            self._x_col: str = on
+            self._y_cols: str = on
+            self._x_cols: str = on
 
         elif is_list_of_str(on):
             # One list of columns
             cols_match(y_table, x_table, on, on)
-            self._y_col: str = on
-            self._x_col: str = on
+            self._y_cols: str = on
+            self._x_cols: str = on
 
         elif (
             isinstance(on, list)
@@ -445,8 +445,8 @@ class JoinVerb(Verb):
         ):
             # Two lists of columns
             cols_match(y_table, x_table, on[0], on[1])
-            self._y_col: str = on[0]
-            self._x_col: str = on[1]
+            self._y_cols: str = on[0]
+            self._x_cols: str = on[1]
 
         else:
             raise ValueError(f"on is not a specification of JOIN columns: {on}")
@@ -470,8 +470,8 @@ class JoinVerb(Verb):
             self._y_table,
             self._x_table,
             self._how,
-            self._y_col,
-            self._x_col,
+            self._y_cols,
+            self._x_cols,
             self._suffixes,
             self._validate,
         )
