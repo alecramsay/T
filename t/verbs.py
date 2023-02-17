@@ -10,6 +10,7 @@ from typing import NoReturn
 
 from .constants import *
 from .utils import *
+from .expressions import *
 from .datamodel import *
 
 
@@ -217,7 +218,20 @@ class SelectVerb(Verb):
         self._x_table: Table = x_table
         self._expr: str = expr
 
-        # TODO - validate expr
+        # Check that the expression has valid *syntax* before calling this.
+        # Here check that all column references are valid (*semantics*).
+
+        tokens: list[str] = tokenize(expr)
+        col_names: list[str] = x_table.col_names()
+        delimiters: list[str] = [d.strip() for d in EXPR_DELIMS if d != " "] + ["=="]
+
+        for token in tokens:
+            if token in delimiters:
+                continue
+            if is_literal(token):
+                continue
+            if token not in col_names:
+                raise Exception(f"Invalid column reference: {token}")
 
     def apply(self) -> Table:
         self._new_table: Table = self._x_table.copy()

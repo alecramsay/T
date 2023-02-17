@@ -170,6 +170,18 @@ class TestRowVerbs:
 
         assert actual == expected
 
+        # Bad column name
+        try:
+            expr: str = "county == '019'"
+            x_table: Table = Table()
+            x_table.test(data)
+
+            f = SelectVerb(x_table, expr)
+            f.apply()
+            assert False
+        except:
+            assert True
+
     def test_first_verb(self) -> None:
         sample: str = "2020_census_AZ(PARTIAL).csv"  # 100 rows
         x_table: Table = Table()

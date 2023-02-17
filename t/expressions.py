@@ -4,10 +4,11 @@
 EXPRESSION HANDLING for SELECT & DERIVE
 """
 
+import ast
 
 ### CONSTANTS ###
 
-EXPR_DELIMS: list[str] = " ,|()[]{}<>=+-*/"
+EXPR_DELIMS: str = " ,|()[]{}<>=+-*/"
 # EXPR_DELIMS = " ,'|()[]{}<>=+-*/"  # NOTE - with single quotes
 # EXPR_DELIMS = " ,'|()[]<>=+-*/"    # NOTE - without {}'s
 
@@ -40,6 +41,19 @@ def tokenize(expr: str) -> list[str]:
     tokens = [tok for tok in tokens if len(tok) > 0]
 
     return tokens
+
+
+def is_literal(tok: str) -> bool:
+    """Return True if tok is a Python literal, else False.
+
+    NOTE - Not all literals are supported.
+    """
+
+    try:
+        ast.literal_eval(tok)
+        return True
+    except ValueError:
+        return False
 
 
 ### END ###
