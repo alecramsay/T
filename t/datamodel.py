@@ -283,7 +283,7 @@ class Table:
 
         self._data = self._data.sample(n)
 
-    def do_derive(self, name: str, formula: str) -> None:
+    def do_derive(self, name: str, tokens: list[str]) -> None:
         """Derive a new column from the table
 
         Pandas:
@@ -292,7 +292,10 @@ class Table:
         df["county_fips"] = df["GEOID20"].str[2:5]
         """
 
-        pass
+        # TODO - Re-write tokenized expression in df format
+        # TODO - Handle substring operations
+
+        pass  # TODO
 
     def do_sort(self, by_list: list[str], ascending_list: list[bool]) -> None:
         """Sort the table by the specified columns in the specified order"""

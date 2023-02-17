@@ -292,7 +292,24 @@ class DeriveVerb(Verb):
     df['new_col'] = df['col1'] + df['col2']
     """
 
-    pass  # TODO
+    def __init__(self, x_table, name, expr) -> None:
+        super().__init__()
+
+        self._name: str = name
+        self._x_table: Table = x_table
+        self._expr: str = expr
+
+        # TODO - Validate new column name
+        # TODO - Validate expression
+        self._tokens: list[str] = tokenize(expr)
+
+        pass  # TODO
+
+    def apply(self) -> Table:
+        self._new_table: Table = self._x_table.copy()
+        self._new_table.do_derive(self._name, self._tokens)
+
+        return self._new_table
 
 
 ### TABLE FILTERS ###
