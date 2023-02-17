@@ -299,11 +299,19 @@ class DeriveVerb(Verb):
         self._x_table: Table = x_table
         self._expr: str = expr
 
-        # TODO - Validate new column name
-        # TODO - Validate expression
-        self._tokens: list[str] = tokenize(expr)
+        # Validate new column name
+        self._new_col_refs: list[str] = [name.strip()]
+        self._validate_new_col_refs()
 
-        pass  # TODO
+        # Before calling this, check that the forumla has the right left-hand side,
+        # '=', and right-hand side format and that the rhs expression has valid *syntax*.
+        # Here check that all column references are valid (*semantics*).
+
+        tokens: list[str] = tokenize(expr)
+        col_names: list[str] = x_table.col_names()
+
+        has_valid_col_refs(tokens, col_names)
+        self._tokens: list[str] = tokenize(expr)
 
     def apply(self) -> Table:
         self._new_table: Table = self._x_table.copy()
