@@ -230,8 +230,6 @@ class SelectVerb(Verb):
 
         return self._new_table
 
-    pass  # TODO
-
 
 class FirstVerb(Verb):
     """FIRST (aka 'take')"""

@@ -257,7 +257,10 @@ class Table:
                 col.set_alias(aliases[col.name])
 
     def do_select(self, expr: str) -> None:
-        """Select rows of the table that satisfy the specified expression"""
+        """Select rows of the table that satisfy the specified expression
+
+        Validate the expression & columns referenced in it before calling this.
+        """
 
         self._data = self._data.query(expr)
 
