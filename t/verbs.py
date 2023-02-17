@@ -209,6 +209,27 @@ class AliasVerb(Verb):
 
 
 class SelectVerb(Verb):
+    """SELECT (aka 'filter' and 'where')
+
+    Pandas - https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.query.html
+    df.query('name=="Vienna"')
+    df.query('population>1e6 and area<1000')
+    """
+
+    def __init__(self, x_table: Table, expr: str) -> None:
+        super().__init__()
+
+        self._x_table: Table = x_table
+        self._expr: str = expr
+
+        # TODO - validate expr
+
+    def apply(self) -> Table:
+        self._new_table: Table = self._x_table.copy()
+        self._new_table.do_select(self._expr)
+
+        return self._new_table
+
     pass  # TODO
 
 
@@ -265,6 +286,12 @@ class CastVerb(Verb):
 
 
 class DeriveVerb(Verb):
+    """DERIVE -- add new columns to the table
+
+    Pandas:
+    df['new_col'] = df['col1'] + df['col2']
+    """
+
     pass  # TODO
 
 

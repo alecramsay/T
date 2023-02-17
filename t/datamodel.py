@@ -256,6 +256,11 @@ class Table:
             if col.name in aliases:
                 col.set_alias(aliases[col.name])
 
+    def do_select(self, expr: str) -> None:
+        """Select rows of the table that satisfy the specified expression"""
+
+        self._data = self._data.query(expr)
+
     def do_first(self, n=5) -> None:
         """Select the first n rows of the table"""
 
