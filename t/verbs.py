@@ -223,10 +223,11 @@ class SelectVerb(Verb):
 
         tokens: list[str] = tokenize(expr)
         col_names: list[str] = x_table.col_names()
-        delimiters: list[str] = [d.strip() for d in EXPR_DELIMS if d != " "] + ["=="]
 
         for token in tokens:
-            if token in delimiters:
+            if token in EXPR_TOKS:
+                if token == "=":
+                    raise Exception("Use '==' for equality comparison.")
                 continue
             if is_literal(token):
                 continue

@@ -12,6 +12,8 @@ EXPR_DELIMS: str = " ,|()[]{}<>=+-*/"
 # EXPR_DELIMS = " ,'|()[]{}<>=+-*/"  # NOTE - with single quotes
 # EXPR_DELIMS = " ,'|()[]<>=+-*/"    # NOTE - without {}'s
 
+EXPR_TOKS: list[str] = [d.strip() for d in EXPR_DELIMS if d != " "] + ["=="]
+
 
 def tokenize(expr: str) -> list[str]:
     tokens: list[str] = list()
