@@ -148,10 +148,11 @@ class Table:
 
     ### PUBLIC METHODS ###
 
-    def n_cols(self):
+    def n_cols(self) -> int:
+        assert len(self._cols) == self._data.shape[1]
         return len(self._cols)
 
-    def n_rows(self):
+    def n_rows(self) -> int:
         return self._data.shape[0]
 
     def col_names(self) -> list[str]:
@@ -296,7 +297,10 @@ class Table:
         # TODO - Re-write tokenized expression in df format
         # TODO - Handle substring operations
 
-        pass  # TODO
+        # TODO - Add new column to self._cols
+
+        # Cross-check the # columns matches the # in the dataframe
+        self.n_cols()
 
     def do_sort(self, by_list: list[str], ascending_list: list[bool]) -> None:
         """Sort the table by the specified columns in the specified order"""
