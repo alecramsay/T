@@ -259,6 +259,10 @@ class Table:
     def do_select(self, expr: str) -> None:
         """Select rows of the table that satisfy the specified expression
 
+        Pandas - https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.query.html
+        df.query('name=="Vienna"')
+        df.query('population>1e6 and area<1000')
+
         Validate the expression & columns referenced in it before calling this.
         """
 

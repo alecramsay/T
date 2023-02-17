@@ -209,12 +209,7 @@ class AliasVerb(Verb):
 
 
 class SelectVerb(Verb):
-    """SELECT (aka 'filter' and 'where')
-
-    Pandas - https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.query.html
-    df.query('name=="Vienna"')
-    df.query('population>1e6 and area<1000')
-    """
+    """SELECT (aka 'filter' and 'where')"""
 
     def __init__(self, x_table: Table, expr: str) -> None:
         super().__init__()
