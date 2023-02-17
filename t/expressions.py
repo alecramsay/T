@@ -58,4 +58,24 @@ def is_literal(tok: str) -> bool:
         return False
 
 
+def has_valid_col_refs(tokens: list[str], names: list[str]) -> bool:
+    """Tokenized expression has valid column references.
+
+    Either a SELECT expression or the right-hand side of a DERIVE expression,
+    i.e., cannot contain single equals signs.
+    """
+
+    for token in tokens:
+        if token in EXPR_TOKS:
+            if token == "=":
+                raise Exception("Use '==' for equality comparison.")
+            continue
+        if is_literal(token):
+            continue
+        if token not in names:
+            raise Exception(f"Invalid column reference: {token}")
+
+    return True
+
+
 ### END ###

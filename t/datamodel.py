@@ -283,6 +283,17 @@ class Table:
 
         self._data = self._data.sample(n)
 
+    def do_derive(self, name: str, formula: str) -> None:
+        """Derive a new column from the table
+
+        Pandas:
+
+        df["Minority_2020_tot"] = df["Tot_2020_tot"] - df["Wh_2020_tot"]
+        df["county_fips"] = df["GEOID20"].str[2:5]
+        """
+
+        pass
+
     def do_sort(self, by_list: list[str], ascending_list: list[bool]) -> None:
         """Sort the table by the specified columns in the specified order"""
 

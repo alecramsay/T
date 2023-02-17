@@ -110,7 +110,7 @@ class Verb:
 
 
 class KeepVerb(Verb):
-    """KEEP (aka 'select')"""
+    """KEEP columns"""
 
     def __init__(self, x_table, keep_cols) -> None:
         super().__init__()
@@ -128,7 +128,7 @@ class KeepVerb(Verb):
 
 
 class DropVerb(Verb):
-    """DROP (i.e., explicit not-selected/kept)"""
+    """DROP columns"""
 
     def __init__(self, x_table, drop_cols) -> None:
         super().__init__()
@@ -150,7 +150,7 @@ class DropVerb(Verb):
 
 
 class RenameVerb(Verb):
-    """RENAME specified columns & keep everything else"""
+    """RENAME specific columns"""
 
     def __init__(self, x_table, col_specs) -> None:
         super().__init__()
@@ -210,7 +210,7 @@ class AliasVerb(Verb):
 
 
 class SelectVerb(Verb):
-    """SELECT (aka 'filter' and 'where')"""
+    """SELECT rows"""
 
     def __init__(self, x_table: Table, expr: str) -> None:
         super().__init__()
@@ -224,15 +224,7 @@ class SelectVerb(Verb):
         tokens: list[str] = tokenize(expr)
         col_names: list[str] = x_table.col_names()
 
-        for token in tokens:
-            if token in EXPR_TOKS:
-                if token == "=":
-                    raise Exception("Use '==' for equality comparison.")
-                continue
-            if is_literal(token):
-                continue
-            if token not in col_names:
-                raise Exception(f"Invalid column reference: {token}")
+        has_valid_col_refs(tokens, col_names)
 
     def apply(self) -> Table:
         self._new_table: Table = self._x_table.copy()
@@ -242,7 +234,7 @@ class SelectVerb(Verb):
 
 
 class FirstVerb(Verb):
-    """FIRST (aka 'take')"""
+    """FIRST n rows"""
 
     def __init__(self, x_table, n, pct=None) -> None:
         super().__init__()
@@ -258,7 +250,7 @@ class FirstVerb(Verb):
 
 
 class LastVerb(Verb):
-    """LAST (complement of 'first')"""
+    """LAST n rows"""
 
     def __init__(self, x_table, n, pct=None) -> None:
         super().__init__()
@@ -274,7 +266,7 @@ class LastVerb(Verb):
 
 
 class SampleVerb(Verb):
-    """SAMPLE (like 'first' except it's randomly selected rows)"""
+    """SAMPLE n rows"""
 
     def __init__(self, x_table, n, pct=None) -> None:
         super().__init__()
@@ -294,7 +286,7 @@ class CastVerb(Verb):
 
 
 class DeriveVerb(Verb):
-    """DERIVE -- add new columns to the table
+    """DERIVE new column from existing columns
 
     Pandas:
     df['new_col'] = df['col1'] + df['col2']
@@ -307,7 +299,7 @@ class DeriveVerb(Verb):
 
 
 class SortVerb(Verb):
-    """SORT -- sort rows in place. <<< 'ORDER_BY'"""
+    """SORT rows'"""
 
     def __init__(self, x_table, col_specs) -> None:
         super().__init__()
@@ -395,7 +387,7 @@ PD_VALIDATE_TYPES: list[str] = ["1:1", "1:m", "m:1", "m:m"]
 
 
 class JoinVerb(Verb):
-    """JOIN the two tables on the top of the stack & return a new table.
+    """JOIN two tables
 
     https://en.wikipedia.org/wiki/Join_(SQL)
 
