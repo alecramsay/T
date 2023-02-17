@@ -133,6 +133,43 @@ class TestRowVerbs:
                 actual = col.alias
                 assert actual == expected
 
+    def test_select_verb(self) -> None:
+        expr: str = "county_fips == '019'"
+
+        # No match
+        data: dict[str, list] = {
+            "GEOID20": ["370210001.1"],
+            "Tot_2010_tot": [2310],
+            "county_fips": ["021"],
+        }
+        x_table: Table = Table()
+        x_table.test(data)
+
+        f: SelectVerb = SelectVerb(x_table, expr)
+        f.apply()
+
+        actual: int = f._new_table.n_rows()
+        expected: int = 0
+
+        assert actual == expected
+
+        # Match
+        data: dict[str, list] = {
+            "GEOID20": ["370210001.1"],
+            "Tot_2010_tot": [2310],
+            "county_fips": ["019"],
+        }
+        x_table: Table = Table()
+        x_table.test(data)
+
+        f = SelectVerb(x_table, expr)
+        f.apply()
+
+        actual = f._new_table.n_rows()
+        expected = 1
+
+        assert actual == expected
+
     def test_first_verb(self) -> None:
         sample: str = "2020_census_AZ(PARTIAL).csv"  # 100 rows
         x_table: Table = Table()
