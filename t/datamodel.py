@@ -294,11 +294,11 @@ class Table:
         df["county_fips"] = df["GEOID20"].str[2:5]
         """
 
+        # TODO - regroup slice operations
+
         df: pd.DataFrame = self._data
         expr: str = rewrite_expr("df", tokens, self.col_names())
         df[name] = eval(expr)
-
-        # TODO - Handle substring ops
 
         # Add new column metadata
         dtype: str = df[name].dtype.name

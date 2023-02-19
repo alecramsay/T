@@ -28,11 +28,16 @@ class TestExpressions:
     def test_rewrite_expr(self) -> None:
         df: str = "df"
         names: list[str] = ["GEOID20", "Tot_2020_tot", "Wh_2020_tot"]
-        # tokens = ['GEOID20'].str[2:5]")
 
+        # Simple expression
         tokens: list[str] = ["Tot_2020_tot", "-", "Wh_2020_tot"]
         actual: str = rewrite_expr(df, tokens, names)
         expected: str = "df['Tot_2020_tot'] - df['Wh_2020_tot']"
+
+        # Expression with a slice operator
+        tokens: list[str] = ["GEOID20", "slice[2:5]"]
+        actual: str = rewrite_expr(df, tokens, names)
+        expected: str = "df['GEOID20'].str[2:5]"
 
 
 ### END ###

@@ -87,12 +87,20 @@ def rewrite_expr(df: str, tokens: list[str], names: list[str]) -> bool:
             expr = expr + token
         elif is_literal(token):
             expr = expr + token
+        elif token.startswith("slice"):
+            expr = expr + rewrite_slice(token)
         elif token in names:
             expr = expr + f"{df}['{token}']"
         else:
             raise Exception(f"Invalid column reference: {token}")
 
     return expr
+
+
+def rewrite_slice(tok: str) -> str:
+    """Rewrite a grouped slice expression (e.g., 'slice[2:5]') into a valid Python Pandas expression."""
+
+    return tok.replace("slice", ".str")
 
 
 ### END ###
