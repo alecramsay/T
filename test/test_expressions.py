@@ -39,5 +39,31 @@ class TestExpressions:
         actual: str = rewrite_expr(df, tokens, names)
         expected: str = "df['GEOID20'].str[2:5]"
 
+    def test_is_slice(self) -> None:
+        tok: str
+        skip: int
+
+        # Not a slice
+        tok, skip = is_slice(["[", "foo"])
+        assert not tok
+
+        # Only a slice operator
+        tok, skip = is_slice(["[", 2, ":", 5, "]"])
+        assert tok
+        assert skip == 5
+
+        # Slice operator and more
+        tok, skip = is_slice(["[", 2, ":", 5, "]", "+", "foo"])
+        assert tok
+        assert skip == 5
+
+        # Not a slice operator
+        tok, skip = is_slice(["[", 2, ":", 5])
+        assert not tok
+
+        # Not a slice operator
+        tok, skip = is_slice(["[", "foo", ":", "bar", "]"])
+        assert not tok
+
 
 ### END ###
