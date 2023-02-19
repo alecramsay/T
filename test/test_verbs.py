@@ -263,6 +263,25 @@ class TestRowVerbs:
 
         assert actual == expected
 
+    def test_derive_verb(self) -> None:
+        data: dict[str, list] = {
+            "GEOID20": ["370210001.1"],
+            "Tot_2020_tot": [2310],
+            "Wh_2020_tot": [987],
+        }
+        x_table: Table = Table()
+        x_table.test(data)
+
+        name: str = "Minority_2020_tot"
+        expr: str = "Tot_2020_tot - Wh_2020_tot"
+        f: DeriveVerb = DeriveVerb(x_table, name, expr)
+        new_table: Table = f.apply()
+
+        actual: int = f._new_table.n_cols()
+        expected: int = 4
+
+        assert actual == expected
+
 
 class TestTableVerbs:
     def test_sort_verb(self) -> None:

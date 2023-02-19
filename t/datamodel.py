@@ -13,6 +13,7 @@ import pprint
 
 from .constants import *
 from .readwrite import DelimitedFileReader
+from .expressions import *
 
 ### PANDAS DATA TYPES ###
 
@@ -293,11 +294,16 @@ class Table:
         df["county_fips"] = df["GEOID20"].str[2:5]
         """
 
-        # TODO - HERE
-        # TODO - Re-write tokenized expression in df format
-        # TODO - Handle substring operations
+        df: pd.DataFrame = self._data
+        expr: str = rewrite_expr("df", tokens, self.col_names())
+        df[name] = eval(expr)
 
-        # TODO - Add new column to self._cols
+        # TODO - Handle substring ops
+
+        # Add new column metadata
+        dtype: str = df[name].dtype.name
+        new_col: Column = Column(name, dtype)
+        self._cols.append(new_col)
 
         # Cross-check the # columns matches the # in the dataframe
         self.n_cols()

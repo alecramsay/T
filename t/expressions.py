@@ -12,7 +12,7 @@ EXPR_DELIMS: str = " ,|()[]{}<>=+-*/"
 # EXPR_DELIMS = " ,'|()[]{}<>=+-*/"  # NOTE - with single quotes
 # EXPR_DELIMS = " ,'|()[]<>=+-*/"    # NOTE - without {}'s
 
-EXPR_TOKS: list[str] = [d.strip() for d in EXPR_DELIMS if d != " "] + ["=="]
+DELIM_TOKS: list[str] = [d.strip() for d in EXPR_DELIMS if d != " "] + ["=="]
 
 
 def tokenize(expr: str) -> list[str]:
@@ -66,7 +66,7 @@ def has_valid_col_refs(tokens: list[str], names: list[str]) -> bool:
     """
 
     for token in tokens:
-        if token in EXPR_TOKS:
+        if token in DELIM_TOKS:
             if token == "=":
                 raise Exception("Use '==' for equality comparison.")
             continue
@@ -76,6 +76,23 @@ def has_valid_col_refs(tokens: list[str], names: list[str]) -> bool:
             raise Exception(f"Invalid column reference: {token}")
 
     return True
+
+
+def rewrite_expr(df: str, tokens: list[str], names: list[str]) -> bool:
+    """Rewrite the tokens of a (right-hand side) expression into a valid Python Pandas expression."""
+
+    expr: str = ""
+    for token in tokens:
+        if token in DELIM_TOKS:
+            expr = expr + token
+        elif is_literal(token):
+            expr = expr + token
+        elif token in names:
+            expr = expr + f"{df}['{token}']"
+        else:
+            raise Exception(f"Invalid column reference: {token}")
+
+    return expr
 
 
 ### END ###
