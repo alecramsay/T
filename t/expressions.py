@@ -8,9 +8,10 @@ import ast
 
 ### CONSTANTS ###
 
-EXPR_DELIMS: str = " ,|()[]{}<>=+-*/"
-# EXPR_DELIMS = " ,'|()[]{}<>=+-*/"  # NOTE - with single quotes
-# EXPR_DELIMS = " ,'|()[]<>=+-*/"    # NOTE - without {}'s
+EXPR_DELIMS: str = " ,|()[]{}<>=+-*/:"  # NOTE - with colon
+# EXPR_DELIMS: str = " ,|()[]{}<>=+-*/"
+# EXPR_DELIMS: str = " ,'|()[]{}<>=+-*/"  # NOTE - with single quotes
+# EXPR_DELIMS: str = " ,'|()[]<>=+-*/"    # NOTE - without {}'s
 
 DELIM_TOKS: list[str] = [d.strip() for d in EXPR_DELIMS if d != " "] + ["=="]
 
@@ -101,12 +102,26 @@ def regroup_slices(tokens: list[str]) -> list[str]:
     """Regroup slice operations into single tokens."""
 
     new_tokens: list[str] = list()
+    skip: int = 0
 
     for i, tok in enumerate(tokens):
+        if skip > 0:
+            skip = skip - 1
+            continue
+
         if tok == "[":  # Beginning of a slice
-            pass
-        else:
-            new_tokens.append(tok)
+            grouped: str
+            grouped, skip = is_slice(tokens[i:])
+
+            if grouped is not None:
+                new_tokens.append("slice" + grouped)
+                skip -= 1
+                continue
+            else:
+                new_tokens.append(tok)
+                continue
+
+        new_tokens.append(tok)
 
     return new_tokens
 

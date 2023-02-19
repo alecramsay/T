@@ -294,7 +294,8 @@ class Table:
         df["county_fips"] = df["GEOID20"].str[2:5]
         """
 
-        # TODO - regroup slice operations
+        # Regroup slice operations
+        tokens: list[str] = regroup_slices(tokens)
 
         df: pd.DataFrame = self._data
         expr: str = rewrite_expr("df", tokens, self.col_names())

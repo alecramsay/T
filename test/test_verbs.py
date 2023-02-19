@@ -264,6 +264,7 @@ class TestRowVerbs:
         assert actual == expected
 
     def test_derive_verb(self) -> None:
+        # Simple expression
         data: dict[str, list] = {
             "GEOID20": ["370210001.1"],
             "Tot_2020_tot": [2310],
@@ -277,7 +278,26 @@ class TestRowVerbs:
         f: DeriveVerb = DeriveVerb(x_table, name, expr)
         new_table: Table = f.apply()
 
-        actual: int = f._new_table.n_cols()
+        actual: int = new_table.n_cols()
+        expected: int = 4
+
+        assert actual == expected
+
+        # Expression with slice operator
+        data: dict[str, list] = {
+            "GEOID20": ["370210001.1"],
+            "Tot_2020_tot": [2310],
+            "Wh_2020_tot": [987],
+        }
+        x_table: Table = Table()
+        x_table.test(data)
+
+        name: str = "county_fips"
+        expr: str = "GEOID20[2:5]"
+        f: DeriveVerb = DeriveVerb(x_table, name, expr)
+        new_table: Table = f.apply()
+
+        actual: int = new_table.n_cols()
         expected: int = 4
 
         assert actual == expected

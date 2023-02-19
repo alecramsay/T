@@ -65,5 +65,19 @@ class TestExpressions:
         tok, skip = is_slice(["[", "foo", ":", "bar", "]"])
         assert not tok
 
+    def test_regroup_slices(self) -> None:
+        tokens: list[str]
+        new_tokens: list[str]
+
+        # Only a slice operator
+        tokens = ["[", 2, ":", 5, "]"]
+        new_tokens = regroup_slices(tokens)
+        assert new_tokens == ["slice[2:5]"]
+
+        # Slice operator and more
+        tokens = ["[", 2, ":", 5, "]", "+", "foo"]
+        new_tokens = regroup_slices(tokens)
+        assert new_tokens == ["slice[2:5]", "+", "foo"]
+
 
 ### END ###
