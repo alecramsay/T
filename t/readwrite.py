@@ -9,7 +9,11 @@ import ast
 import datetime
 import dateutil.parser
 import pandas as pd
-from typing import Type
+from importlib.machinery import SourceFileLoader
+import inspect
+
+from types import ModuleType
+from typing import Any, Type
 
 from .constants import *
 from .excel import *
@@ -273,6 +277,19 @@ class FileSpec:
         self.abs_path: str = os.path.abspath(path)
         self.name: str = name.lower() if (name) else os.path.basename(file_name).lower()
         self.extension: str = file_extension
+
+
+### IMPORTING FUNCTIONS ###
+
+
+def fns_from_path(rel_path) -> dict[str, ModuleType]:
+    abs_path: str = FileSpec(rel_path).abs_path
+
+    mod: ModuleType = SourceFileLoader("module.name", abs_path).load_module()
+    pairs: list[tuple[str, Any]] = inspect.getmembers(mod, inspect.isfunction)
+    fns_dict: dict[str, Any] = {k: v for k, v in pairs}
+
+    return fns_dict
 
 
 ### END ###
