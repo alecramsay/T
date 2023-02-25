@@ -6,6 +6,8 @@ EXPRESSION HANDLING for SELECT & DERIVE
 
 import ast
 
+from .udf import UDF
+
 ### CONSTANTS ###
 
 EXPR_DELIMS: str = " ,|()[]{}<>=+-*/:"  # NOTE - with colon
@@ -71,8 +73,7 @@ TODO
 def has_valid_col_refs(tokens: list[str], names: list[str]) -> bool:
     """Tokenized expression has valid column references.
 
-    Either a SELECT expression or the right-hand side of a DERIVE expression,
-    i.e., cannot contain single equals signs.
+    For validating SELECT expressions. Cannot contain single equals signs.
     """
 
     for tok in tokens:
@@ -84,6 +85,32 @@ def has_valid_col_refs(tokens: list[str], names: list[str]) -> bool:
             continue
         if tok not in names:
             raise Exception(f"Invalid column reference: {tok}")
+
+    return True
+
+
+def has_valid_refs(
+    tokens: list[str], col_names: list[str], udf_names: list[str]
+) -> bool:
+    """Tokenized expression has valid column -or- UDF references.
+
+    For validating the right-hand side of a DERIVE expression.
+    Cannot contain single equals signs.
+    """
+
+    for tok in tokens:
+        if tok in DELIM_TOKS:
+            if tok == "=":
+                raise Exception("Use '==' for equality comparison.")
+            continue
+        if is_literal(tok):
+            continue
+        if tok in col_names:
+            continue
+        if tok in udf_names:
+            continue
+
+        raise Exception(f"Invalid reference in DERIVE expression: {tok}")
 
     return True
 
@@ -133,16 +160,6 @@ def regroup_slices(tokens: list[str]) -> list[str]:
         new_tokens.append(tok)
 
     return new_tokens
-
-
-def is_int(tok: str) -> bool:
-    """Return True if tok is an integer, else False."""
-
-    try:
-        int(tok)
-        return True
-    except ValueError:
-        return False
 
 
 def is_slice(tokens: list[str]) -> tuple[str, int]:
@@ -216,6 +233,49 @@ def is_slice(tokens: list[str]) -> tuple[str, int]:
 
     # Potential slice not completed
     return None, 0
+
+
+def collapse_udf_calls(tokens: list[str], udf: UDF = None) -> list[str]:
+    """Collapse UDF calls back into single tokens."""
+
+    if not udf:
+        return tokens
+
+    new_tokens: list[str] = list()
+    in_udf: bool = False
+    udf_call: str = ""
+
+    for i, tok in enumerate(tokens):
+        if not in_udf and not udf.is_udf(tok):
+            new_tokens.append(tok)
+            continue
+
+        if not in_udf and udf.is_udf(tok):
+            in_udf = True
+            udf_call = tok
+            continue
+
+        if in_udf:
+            udf_call += tok
+            if tok == ")":
+                new_tokens.append(udf_call)
+                udf_call = ""
+                in_udf = False
+
+    if in_udf:
+        raise Exception(f"UDF call not completed: {udf_call}")
+
+    return new_tokens
+
+
+def is_int(tok: str) -> bool:
+    """Return True if tok is an integer, else False."""
+
+    try:
+        int(tok)
+        return True
+    except ValueError:
+        return False
 
 
 def rewrite_slice(tok: str) -> str:

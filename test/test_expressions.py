@@ -79,5 +79,44 @@ class TestExpressions:
         new_tokens = regroup_slices(tokens)
         assert new_tokens == ["slice[2:5]", "+", "foo"]
 
+    def test_has_valid_refs(self) -> None:
+        expr: str = "composite(D_2020_ag, D_2020_gov, D_2016_sen, D_2020_sen, D_2016_pres, D_2020_pres)"
+        tokens: list[str] = tokenize(expr)
+        col_names: list[str] = [
+            "D_2020_ag",
+            "D_2020_gov",
+            "D_2016_sen",
+            "D_2020_sen",
+            "D_2016_pres",
+            "D_2020_pres",
+        ]
+        udf_names: list[str] = ["composite", "vote_share", "est_seat_probability"]
+
+        try:
+            has_valid_refs(tokens, col_names, udf_names)
+            assert True
+        except:
+            assert False
+
+    def test_collapse_udf_calls(self) -> None:
+        rel_path: str = "user/alec.py"
+        udf: UDF = UDF(rel_path)
+
+        # Simple UDF call
+        call_expr: str = "composite(D_2020_ag, D_2020_gov, D_2016_sen, D_2020_sen, D_2016_pres, D_2020_pres)"
+        tokens: list[str] = tokenize(call_expr)
+
+        actual: list[str] = collapse_udf_calls(tokens, udf)
+        expected: list[str] = [call_expr.replace(" ", "")]
+        assert actual == expected
+
+        # Unclosed UDF ref
+        try:
+            tokens: list[str] = tokenize(call_expr[:-1])
+            actual: list[str] = collapse_udf_calls(tokens, udf)
+            assert False
+        except:
+            assert True
+
 
 ### END ###

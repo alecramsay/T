@@ -14,6 +14,7 @@ import pprint
 from .constants import *
 from .readwrite import DelimitedFileReader
 from .expressions import *
+from .udf import UDF
 
 ### PANDAS DATA TYPES ###
 
@@ -285,7 +286,7 @@ class Table:
 
         self._data = self._data.sample(n)
 
-    def do_derive(self, name: str, tokens: list[str]) -> None:
+    def do_derive(self, name: str, tokens: list[str], udf: UDF = None) -> None:
         """Derive a new column from the table
 
         Pandas:
@@ -297,8 +298,9 @@ class Table:
         # Regroup slice operations
         tokens: list[str] = regroup_slices(tokens)
 
-        # Handle UDFs
-        # TODO - Define wrappers
+        # TODO - Define wrappers for UDFs
+        if udf:
+            tokens = collapse_udf_calls(tokens, udf)
 
         # TODO - Rewrite the expression using Pandas dataframe syntax
         expr: str = rewrite_expr("df", tokens, self.col_names())

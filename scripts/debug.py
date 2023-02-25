@@ -51,12 +51,18 @@ from t import *
 
 rel_path: str = "user/alec.py"
 udf: UDF = UDF(rel_path)
+udf_names: list[str] = udf.names()
 
 call_expr: str = (
     "composite(D_2020_ag, D_2020_gov, D_2016_sen, D_2020_sen, D_2016_pres, D_2020_pres)"
 )
-udf_name: str = "composite"
-source: str = udf.source(udf_name)
+tokens: list[str] = tokenize(call_expr)
+
+# Collapse UDF calls
+new_tokens: list[str] = collapse_udf_calls(tokens, udf)
+
+pass
+#
 
 col_names: list[str] = [
     "D_2020_ag",
@@ -67,16 +73,23 @@ col_names: list[str] = [
     "D_2020_pres",
 ]
 
+has_valid_refs(tokens, col_names, udf_names)
+
+pass
+#
+
+udf_name: str = "composite"
+source: str = udf.source(udf_name)
+
 arg_map: dict[str, str] = map_args(call_expr, source)
-alias: str = udf.alias(udf_name)
+ref: int = udf.count(udf_name)
+alias: str = udf.alias(udf_name, ref)
 wrapper: str = udf.wrap(alias, udf_name, arg_map)
 exec(wrapper)
 
 pass  # TODO - HERE
 
 #
-
-tokens: list[str] = tokenize(call_expr)
 
 re_source: str = ""
 for tok in tokens:

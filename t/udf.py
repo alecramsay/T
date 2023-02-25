@@ -5,6 +5,7 @@ USER-DEFINED FUNCTIONS
 """
 
 import inspect
+from collections import defaultdict
 from typing import Any
 
 from .readwrite import fns_from_path
@@ -13,18 +14,34 @@ from .readwrite import fns_from_path
 class UDF:
     def __init__(self, rel_path: str) -> None:
         self.user_fns: dict[str, Any] = fns_from_path(rel_path)
+        self.ref_counts: dict[str, int] = defaultdict(int)
+
+    def names(self) -> list[str]:
+        """Return a list of user-defined function names."""
+
+        return list(self.user_fns.keys())
 
     def source(self, fn_name: str) -> str:
         """Return the source code for a user-defined function."""
 
         return inspect.getsource(self.user_fns[fn_name])
 
-    def alias(self, fn_name: str) -> str:
+    def count(self, fn_name: str) -> int:
+        """Return the number of times a function has been referenced."""
+
+        self.ref_counts[fn_name] += 1
+
+        return self.ref_counts[fn_name]
+
+    def reset(self) -> None:
+        """Reset the reference counts for all functions."""
+
+        self.ref_counts = defaultdict(int)
+
+    def alias(self, fn_name: str, ref: int) -> str:
         """Create a wrapper function name from the wrapped function name."""
 
-        # TODO - Add a counter to the alias to avoid collisions
-
-        return f"_re_{fn_name}"
+        return f"_re_{fn_name}_{str(ref)}"
 
     def wrap(self, alias: str, udf_name: str, arg_map: dict[str, str]) -> str:
         """Generate source for a wrapper function that converts a UDF to a Pandas-compatible row function."""

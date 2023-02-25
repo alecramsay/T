@@ -12,6 +12,7 @@ from .constants import *
 from .utils import *
 from .expressions import *
 from .datamodel import *
+from .udf import *
 
 
 AGG_FNS: list[str] = ["count", "min", "max", "std", "sum", "mean", "median"]
@@ -292,12 +293,13 @@ class DeriveVerb(Verb):
     df['new_col'] = df['col1'] + df['col2']
     """
 
-    def __init__(self, x_table, name, expr) -> None:
+    def __init__(self, x_table, name, expr, udf=None) -> None:
         super().__init__()
 
         self._name: str = name
         self._x_table: Table = x_table
         self._expr: str = expr
+        self._udf: UDF = udf
 
         # Validate new column name
         self._new_col_refs: list[str] = [name.strip()]
@@ -310,15 +312,14 @@ class DeriveVerb(Verb):
         tokens: list[str] = tokenize(expr)
         col_names: list[str] = x_table.col_names()
 
-        # TODO - Validate column & UDF references
-        has_valid_col_refs(tokens, col_names)
+        # Validate column & UDF references
+        udf_names: list[str] = self._udf.names() if self._udf else []
+        has_valid_refs(tokens, col_names, udf_names)
         self._tokens: list[str] = tokenize(expr)
 
     def apply(self) -> Table:
         self._new_table: Table = self._x_table.copy()
-
-        # TODO - Pass UDF environment to do_derive()
-        self._new_table.do_derive(self._name, self._tokens)
+        self._new_table.do_derive(self._name, self._tokens, self._udf)
 
         return self._new_table
 
