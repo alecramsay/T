@@ -295,18 +295,13 @@ class Table:
         df["county_fips"] = df["GEOID20"].str[2:5]
         """
 
-        # Rewrite slice operations
-        tokens: list[str] = mark_slices(tokens)
+        expr: str
+        wrappers: list[str]
+        expr, wrappers = rewrite_expr(tokens, self.col_names(), udf)
 
-        # Rewrite UDF references & define wrappers for them
-        if udf:
-            wrappers: list[str]
-            tokens, wrappers = mark_udf_calls(tokens, udf)
+        if udf and wrappers:
             for wrapper in wrappers:
                 exec(wrapper)
-
-        # TODO - Rewrite the expression using Pandas dataframe syntax
-        expr: str = rewrite_expr("df", tokens, self.col_names())
 
         df: pd.DataFrame = self._data
         df[name] = eval(expr)

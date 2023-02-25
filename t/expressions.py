@@ -48,6 +48,25 @@ def tokenize(expr: str) -> list[str]:
     return tokens
 
 
+def rewrite_expr(
+    tokens: list[str], col_names: list[str], udf: UDF = None
+) -> tuple[str, list[str]]:
+    """Rewrite expression using Pandas dataframe syntax."""
+
+    # Mark the slice operations
+    tokens: list[str] = mark_slices(tokens)
+
+    # Mark UDF references & define wrappers for them
+    wrappers: list[str] = None
+    if udf:
+        tokens, wrappers = mark_udf_calls(tokens, udf)
+
+    # Rewrite the expression using Pandas dataframe syntax
+    expr: str = generate_df_syntax(tokens, col_names)
+
+    return expr, wrappers
+
+
 def is_literal(tok: str) -> bool:
     """Return True if tok is a Python literal, else False.
 
@@ -106,8 +125,8 @@ def has_valid_refs(
     return True
 
 
-def rewrite_expr(
-    df: str, tokens: list[str], col_names: list[str], udf: UDF = None
+def generate_df_syntax(
+    tokens: list[str], col_names: list[str], udf: UDF = None
 ) -> bool:
     """Rewrite the tokens of a (right-hand side) expression into a valid Python Pandas expression.
 
@@ -121,16 +140,27 @@ def rewrite_expr(
     for tok in tokens:
         if tok in DELIM_TOKS:
             expr = expr + tok
+        elif tok in col_names:
+            expr = expr + col_rewrite_rule(tok)
+        elif is_slice(tok):
+            expr = expr + slice_rewrite_rule(tok)
+        elif is_udf_call(tok, udf):
+            expr = expr + udf_rewrite_rule(tok, udf)
         elif is_literal(tok):
             expr = expr + tok
-        elif tok.startswith("slice"):
-            expr = expr + rewrite_slice(tok)
-        elif tok in col_names:
-            expr = expr + f"{df}['{tok}']"
         else:
             raise Exception(f"Invalid column reference: {tok}")
 
     return expr
+
+
+### COLUMN REFERENCES ###
+
+
+def col_rewrite_rule(tok: str) -> str:
+    """Rewrite rule for column references."""
+
+    return f"df['{tok}']"
 
 
 ### SLICES ###
@@ -149,7 +179,7 @@ def mark_slices(tokens: list[str]) -> list[str]:
 
         if tok == "[":  # Beginning of a slice
             grouped: str
-            grouped, skip = is_slice(tokens[i:])
+            grouped, skip = get_slice_tokens(tokens[i:])
 
             if grouped is not None:
                 new_tokens.append("slice" + grouped)
@@ -164,7 +194,7 @@ def mark_slices(tokens: list[str]) -> list[str]:
     return new_tokens
 
 
-def is_slice(tokens: list[str]) -> tuple[str, int]:
+def get_slice_tokens(tokens: list[str]) -> tuple[str, int]:
     """Return a slice expression (as string) and how many tokens it consumes or None, 0 if not a slice."""
 
     state: str = None
@@ -247,7 +277,13 @@ def is_int(tok: str) -> bool:
         return False
 
 
-def rewrite_slice(tok: str) -> str:
+def is_slice(tok: str) -> bool:
+    """Return True if tok is a slice expression, else False."""
+
+    return tok.startswith("slice")
+
+
+def slice_rewrite_rule(tok: str) -> str:
     """Rewrite a grouped slice expression (e.g., 'slice[2:5]') into a valid Python Pandas expression."""
 
     return tok.replace("slice", ".str")
@@ -299,6 +335,28 @@ def mark_udf_calls(tokens: list[str], udf: UDF = None) -> tuple[list[str], list[
         raise Exception(f"UDF call not completed: {udf_call}")
 
     return new_tokens, wrappers
+
+
+def is_udf_call(tok: str, udf: UDF) -> bool:
+    """Return True if tok is a UDF call, else False."""
+
+    tokens: list[str] = tokenize(tok)
+
+    return all(
+        len(tokens) == 4, tokens[1] == "(", tokens[3] == ")", udf.is_udf(tokens[0])
+    )
+
+
+def udf_rewrite_rule(tok: str, udf: UDF) -> str:
+    """Rewrite a UDF call into a valid Python Pandas expression."""
+
+    tokens: list[str] = tokenize(tok)
+    udf_name: str = tokens[0]
+    ref: int = tokens[2]
+
+    alias: str = udf.alias(udf_name, ref)
+
+    return f"df.apply({alias}, axis=1)"
 
 
 ### END ###

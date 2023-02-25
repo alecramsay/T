@@ -46,13 +46,13 @@ class UDF:
     def wrap(self, alias: str, udf_name: str, arg_map: dict[str, str]) -> str:
         """Generate source for a wrapper function that converts a UDF to a Pandas-compatible row function."""
 
-        wrapper: str = f"def {udf_name}(row):\n"
+        wrapper: str = f"def {alias}(row):\n"
 
         for arg, col in arg_map.items():
             wrapper += f"    {arg} = '{col}'\n"
 
         args: str = ", ".join([f"row[{arg}]" for arg in arg_map.keys()])
-        wrapper += f"    return {alias}({args})\n"
+        wrapper += f"    return {udf_name}({args})\n"
 
         return wrapper
 

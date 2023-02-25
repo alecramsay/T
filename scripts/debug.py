@@ -20,31 +20,14 @@ def composite(ag, gov, sen1, sen2, pres1, pres2) -> float:
 
 expr: str = "composite(D_2020_ag, D_2020_gov, D_2016_sen, D_2020_sen, D_2016_pres, D_2020_pres))"
 tokens: list[str] = tokenize(expr)
-re_expr: str = rewrite_expr("df", tokens, self.col_names())
+re_expr: str = generate_df_syntax(tokens, self.col_names())
 
------
-
-def fn(row):
-    ...
-
-df.apply(fn, axis=1)                  <<< This form works
-
-TODO
-- Re-write full functions
-- UDF only
-- Constants, e.g., 1 - df[col]  <<< This works
-- UDF w/in a broader expression <<< These need to be re-written in call-specific way to accept a row
 """
 
 import inspect
 
 from t import *
 
-# TODO
-# - Get UDF
-# - Map function arguments to call arguments
-# - Generate a wrapper function
-# - Generate the Pandas expression
 
 # Setup
 
@@ -56,26 +39,26 @@ udf_names: list[str] = udf.names()
 call_expr: str = (
     "composite(D_2020_ag, D_2020_gov, D_2016_sen, D_2020_sen, D_2016_pres, D_2020_pres)"
 )
-tokens: list[str] = tokenize(call_expr)
+# tokens: list[str] = tokenize(call_expr)
 
-# Collapse UDF calls
-new_tokens: list[str] = mark_udf_calls(tokens, udf)
+# # Collapse UDF calls
+# new_tokens: list[str] = mark_udf_calls(tokens, udf)
 
-pass
-#
+# pass
+# #
 
-col_names: list[str] = [
-    "D_2020_ag",
-    "D_2020_gov",
-    "D_2016_sen",
-    "D_2020_sen",
-    "D_2016_pres",
-    "D_2020_pres",
-]
+# col_names: list[str] = [
+#     "D_2020_ag",
+#     "D_2020_gov",
+#     "D_2016_sen",
+#     "D_2020_sen",
+#     "D_2016_pres",
+#     "D_2020_pres",
+# ]
 
-has_valid_refs(tokens, col_names, udf_names)
+# has_valid_refs(tokens, col_names, udf_names)
 
-pass
+# pass
 #
 
 udf_name: str = "composite"
@@ -101,7 +84,7 @@ for tok in tokens:
         re_source += tok
 
 
-# re_expr: str = rewrite_expr("df", tokens, col_names)
+re_expr: str = generate_df_syntax(tokens, col_names)
 
 
 pass
