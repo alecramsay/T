@@ -310,11 +310,14 @@ class DeriveVerb(Verb):
         tokens: list[str] = tokenize(expr)
         col_names: list[str] = x_table.col_names()
 
+        # TODO - Validate column & UDF references
         has_valid_col_refs(tokens, col_names)
         self._tokens: list[str] = tokenize(expr)
 
     def apply(self) -> Table:
         self._new_table: Table = self._x_table.copy()
+
+        # TODO - Pass UDF environment to do_derive()
         self._new_table.do_derive(self._name, self._tokens)
 
         return self._new_table

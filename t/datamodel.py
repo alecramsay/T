@@ -297,8 +297,13 @@ class Table:
         # Regroup slice operations
         tokens: list[str] = regroup_slices(tokens)
 
-        df: pd.DataFrame = self._data
+        # Handle UDFs
+        # TODO - Define wrappers
+
+        # TODO - Rewrite the expression using Pandas dataframe syntax
         expr: str = rewrite_expr("df", tokens, self.col_names())
+
+        df: pd.DataFrame = self._data
         df[name] = eval(expr)
 
         # Add new column metadata
