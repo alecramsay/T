@@ -59,7 +59,7 @@ call_expr: str = (
 tokens: list[str] = tokenize(call_expr)
 
 # Collapse UDF calls
-new_tokens: list[str] = rewrite_udf_calls(tokens, udf)
+new_tokens: list[str] = mark_udf_calls(tokens, udf)
 
 pass
 #

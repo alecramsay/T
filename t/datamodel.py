@@ -295,13 +295,13 @@ class Table:
         df["county_fips"] = df["GEOID20"].str[2:5]
         """
 
-        # Regroup slice operations
-        tokens: list[str] = rewrite_slices(tokens)
+        # Rewrite slice operations
+        tokens: list[str] = mark_slices(tokens)
 
-        # Define wrappers for UDFs
+        # Rewrite UDF references & define wrappers for them
         if udf:
             wrappers: list[str]
-            tokens, wrappers = rewrite_udf_calls(tokens, udf)
+            tokens, wrappers = mark_udf_calls(tokens, udf)
             for wrapper in wrappers:
                 exec(wrapper)
 

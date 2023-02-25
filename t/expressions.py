@@ -61,15 +61,6 @@ def is_literal(tok: str) -> bool:
         return False
 
 
-"""
-TODO
-1. Load UDFs
-2. Validate column -or- UDF references in tokens list
-3. Wrap UDF calls & re-write UDF refs in tokens list
-4. Re-write expression to use Pandas df syntax
-"""
-
-
 def has_valid_col_refs(tokens: list[str], names: list[str]) -> bool:
     """Tokenized expression has valid column references.
 
@@ -115,8 +106,16 @@ def has_valid_refs(
     return True
 
 
-def rewrite_expr(df: str, tokens: list[str], names: list[str]) -> bool:
-    """Rewrite the tokens of a (right-hand side) expression into a valid Python Pandas expression."""
+def rewrite_expr(
+    df: str, tokens: list[str], col_names: list[str], udf: UDF = None
+) -> bool:
+    """Rewrite the tokens of a (right-hand side) expression into a valid Python Pandas expression.
+
+    - Slices have been rewritten, and
+    - UDF calls have been wrapped
+    """
+
+    # TODO - HERE
 
     expr: str = ""
     for tok in tokens:
@@ -126,7 +125,7 @@ def rewrite_expr(df: str, tokens: list[str], names: list[str]) -> bool:
             expr = expr + tok
         elif tok.startswith("slice"):
             expr = expr + rewrite_slice(tok)
-        elif tok in names:
+        elif tok in col_names:
             expr = expr + f"{df}['{tok}']"
         else:
             raise Exception(f"Invalid column reference: {tok}")
@@ -134,7 +133,10 @@ def rewrite_expr(df: str, tokens: list[str], names: list[str]) -> bool:
     return expr
 
 
-def rewrite_slices(tokens: list[str]) -> list[str]:
+### SLICES ###
+
+
+def mark_slices(tokens: list[str]) -> list[str]:
     """Regroup slice operations into single tokens."""
 
     new_tokens: list[str] = list()
@@ -235,9 +237,26 @@ def is_slice(tokens: list[str]) -> tuple[str, int]:
     return None, 0
 
 
-def rewrite_udf_calls(
-    tokens: list[str], udf: UDF = None
-) -> tuple[list[str], list[str]]:
+def is_int(tok: str) -> bool:
+    """Return True if tok is an integer, else False."""
+
+    try:
+        int(tok)
+        return True
+    except ValueError:
+        return False
+
+
+def rewrite_slice(tok: str) -> str:
+    """Rewrite a grouped slice expression (e.g., 'slice[2:5]') into a valid Python Pandas expression."""
+
+    return tok.replace("slice", ".str")
+
+
+### UDFs ###
+
+
+def mark_udf_calls(tokens: list[str], udf: UDF = None) -> tuple[list[str], list[str]]:
     """Collapse UDF calls back into single tokens & wrap the UDF."""
 
     if not udf:
@@ -280,22 +299,6 @@ def rewrite_udf_calls(
         raise Exception(f"UDF call not completed: {udf_call}")
 
     return new_tokens, wrappers
-
-
-def is_int(tok: str) -> bool:
-    """Return True if tok is an integer, else False."""
-
-    try:
-        int(tok)
-        return True
-    except ValueError:
-        return False
-
-
-def rewrite_slice(tok: str) -> str:
-    """Rewrite a grouped slice expression (e.g., 'slice[2:5]') into a valid Python Pandas expression."""
-
-    return tok.replace("slice", ".str")
 
 
 ### END ###
