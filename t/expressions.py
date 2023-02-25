@@ -62,7 +62,7 @@ def rewrite_expr(
         tokens, wrappers = mark_udf_calls(tokens, udf)
 
     # Rewrite the expression using Pandas dataframe syntax
-    expr: str = generate_df_syntax(tokens, col_names)
+    expr: str = generate_df_syntax(tokens, col_names, udf)
 
     return expr, wrappers
 
@@ -133,8 +133,6 @@ def generate_df_syntax(
     - Slices have been rewritten, and
     - UDF calls have been wrapped
     """
-
-    # TODO - HERE
 
     expr: str = ""
     for tok in tokens:
@@ -343,7 +341,7 @@ def is_udf_call(tok: str, udf: UDF) -> bool:
     tokens: list[str] = tokenize(tok)
 
     return all(
-        len(tokens) == 4, tokens[1] == "(", tokens[3] == ")", udf.is_udf(tokens[0])
+        [len(tokens) == 4, tokens[1] == "(", tokens[3] == ")", udf.is_udf(tokens[0])]
     )
 
 
