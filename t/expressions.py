@@ -6,7 +6,7 @@ EXPRESSION HANDLING for SELECT & DERIVE
 
 import ast
 
-from .udf import UDF
+from .udf import *
 
 ### CONSTANTS ###
 
@@ -134,7 +134,7 @@ def rewrite_expr(df: str, tokens: list[str], names: list[str]) -> bool:
     return expr
 
 
-def regroup_slices(tokens: list[str]) -> list[str]:
+def rewrite_slices(tokens: list[str]) -> list[str]:
     """Regroup slice operations into single tokens."""
 
     new_tokens: list[str] = list()
@@ -235,15 +235,19 @@ def is_slice(tokens: list[str]) -> tuple[str, int]:
     return None, 0
 
 
-def collapse_udf_calls(tokens: list[str], udf: UDF = None) -> list[str]:
-    """Collapse UDF calls back into single tokens."""
+def rewrite_udf_calls(
+    tokens: list[str], udf: UDF = None
+) -> tuple[list[str], list[str]]:
+    """Collapse UDF calls back into single tokens & wrap the UDF."""
 
     if not udf:
-        return tokens
+        return tokens, []
 
     new_tokens: list[str] = list()
+    wrappers: list[str] = list()
+
     in_udf: bool = False
-    udf_call: str = ""
+    udf_name: str = ""
 
     for i, tok in enumerate(tokens):
         if not in_udf and not udf.is_udf(tok):
@@ -253,19 +257,29 @@ def collapse_udf_calls(tokens: list[str], udf: UDF = None) -> list[str]:
         if not in_udf and udf.is_udf(tok):
             in_udf = True
             udf_call = tok
+            udf_name = tok
             continue
 
         if in_udf:
-            udf_call += tok
             if tok == ")":
-                new_tokens.append(udf_call)
-                udf_call = ""
+                # Wrap the UDF calls
+                source: str = udf.source(udf_name)
+                arg_map: dict[str, str] = map_args(udf_call, source)
+                ref: int = udf.count(udf_name)
+                alias: str = udf.alias(udf_name, ref)
+                wrapper: str = udf.wrap(alias, udf_name, arg_map)
+                wrappers.append(wrapper)
+
+                # Replace the UDF call with the info to reference the wrapper
+                new_tokens.append(f"{udf_name}({ref})")
+
+                udf_name = ""
                 in_udf = False
 
     if in_udf:
         raise Exception(f"UDF call not completed: {udf_call}")
 
-    return new_tokens
+    return new_tokens, wrappers
 
 
 def is_int(tok: str) -> bool:

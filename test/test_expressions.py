@@ -71,12 +71,12 @@ class TestExpressions:
 
         # Only a slice operator
         tokens = ["[", 2, ":", 5, "]"]
-        new_tokens = regroup_slices(tokens)
+        new_tokens = rewrite_slices(tokens)
         assert new_tokens == ["slice[2:5]"]
 
         # Slice operator and more
         tokens = ["[", 2, ":", 5, "]", "+", "foo"]
-        new_tokens = regroup_slices(tokens)
+        new_tokens = rewrite_slices(tokens)
         assert new_tokens == ["slice[2:5]", "+", "foo"]
 
     def test_has_valid_refs(self) -> None:
@@ -106,14 +106,14 @@ class TestExpressions:
         call_expr: str = "composite(D_2020_ag, D_2020_gov, D_2016_sen, D_2020_sen, D_2016_pres, D_2020_pres)"
         tokens: list[str] = tokenize(call_expr)
 
-        actual: list[str] = collapse_udf_calls(tokens, udf)
-        expected: list[str] = [call_expr.replace(" ", "")]
-        assert actual == expected
+        tokens, wrappers = rewrite_udf_calls(tokens, udf)
+        expected: list[str] = ["composite(1)"]
+        assert tokens == expected
 
         # Unclosed UDF ref
         try:
             tokens: list[str] = tokenize(call_expr[:-1])
-            actual: list[str] = collapse_udf_calls(tokens, udf)
+            tokens, wrappers = rewrite_udf_calls(tokens, udf)
             assert False
         except:
             assert True

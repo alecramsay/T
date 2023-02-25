@@ -296,11 +296,14 @@ class Table:
         """
 
         # Regroup slice operations
-        tokens: list[str] = regroup_slices(tokens)
+        tokens: list[str] = rewrite_slices(tokens)
 
-        # TODO - Define wrappers for UDFs
+        # Define wrappers for UDFs
         if udf:
-            tokens = collapse_udf_calls(tokens, udf)
+            wrappers: list[str]
+            tokens, wrappers = rewrite_udf_calls(tokens, udf)
+            for wrapper in wrappers:
+                exec(wrapper)
 
         # TODO - Rewrite the expression using Pandas dataframe syntax
         expr: str = rewrite_expr("df", tokens, self.col_names())
