@@ -14,15 +14,6 @@ def composite(ag, gov, sen1, sen2, pres1, pres2) -> float:
     return ((ag + gov) / 2 + (sen1 + sen2) / 2 + (pres1 + pres2) / 2) / 3
 
 
-# TODO - DELETE
-# composite: Callable[..., Any] = (
-#     lambda ag, gov, sen1, sen2, pres1, pres2: (
-#         (ag + gov) / 2 + (sen1 + sen2) / 2 + (pres1 + pres2) / 2
-#     )
-#     / 3
-# )
-
-
 def vote_share(d_votes, r_votes) -> float:
     two_party_votes: int = d_votes + r_votes
     return d_votes / two_party_votes

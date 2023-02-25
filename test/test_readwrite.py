@@ -349,4 +349,11 @@ class TestDataTypes:
     pass
 
 
+class TestUDF:
+    def test_udf(self) -> None:
+        rel_path: str = "user/alec.py"
+        user_fns: dict[str, Any] = fns_from_path(rel_path)
+        assert len(user_fns) == 3
+
+
 ### END ###

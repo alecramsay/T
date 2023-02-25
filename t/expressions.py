@@ -59,6 +59,15 @@ def is_literal(tok: str) -> bool:
         return False
 
 
+"""
+TODO
+1. Load UDFs
+2. Validate column -or- UDF references in tokens list
+3. Wrap UDF calls & re-write UDF refs in tokens list
+4. Re-write expression to use Pandas df syntax
+"""
+
+
 def has_valid_col_refs(tokens: list[str], names: list[str]) -> bool:
     """Tokenized expression has valid column references.
 
