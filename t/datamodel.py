@@ -291,20 +291,29 @@ class Table:
 
         Pandas:
 
-        df["Minority_2020_tot"] = df["Tot_2020_tot"] - df["Wh_2020_tot"]
-        df["county_fips"] = df["GEOID20"].str[2:5]
+        derive(Minority_2020_tot, Tot_2020_tot - Wh_2020_tot
+        derive(county_fips, GEOID20[2:5]
+        derive(D_pct, vote_share(D_2020_pres, R_2020_pres)
         """
 
         expr: str
         wrappers: list[str]
         expr, wrappers = rewrite_expr(tokens, self.col_names(), udf)
 
-        if udf and wrappers:
-            for wrapper in wrappers:
-                exec(wrapper)
+        env: dict = dict()
+        if udf:
+            for k, v in udf.user_fns.items():
+                env[k] = v
+            if wrappers:
+                for wrapper in wrappers:
+                    exec(wrapper, env)
 
         df: pd.DataFrame = self._data
-        df[name] = eval(expr)
+
+        # env.update(wrapped)
+        env.update({"df": df})
+
+        df[name] = eval(expr, env)
 
         # Add new column metadata
         dtype: str = df[name].dtype.name

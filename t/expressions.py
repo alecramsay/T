@@ -309,11 +309,12 @@ def mark_udf_calls(tokens: list[str], udf: UDF = None) -> tuple[list[str], list[
 
         if not in_udf and udf.is_udf(tok):
             in_udf = True
-            udf_call = tok
+            udf_call: str = tok
             udf_name = tok
             continue
 
         if in_udf:
+            udf_call = udf_call + tok
             if tok == ")":
                 # Wrap the UDF calls
                 source: str = udf.source(udf_name)

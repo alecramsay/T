@@ -302,6 +302,23 @@ class TestRowVerbs:
 
         assert actual == expected
 
+        # Expression with UDF
+
+        x_table: Table = Table()
+        x_table.read("data/rd/NC/2020_election_NC.csv")
+        expected = len(x_table._data.columns) + 1
+
+        rel_path: str = "user/alec.py"
+        udf: UDF = UDF(rel_path)
+
+        name: str = "D_pct"
+        expr: str = "vote_share(D_2020_pres, R_2020_pres)"
+        f: DeriveVerb = DeriveVerb(x_table, name, expr, udf)
+        new_table: Table = f.apply()
+        actual = len(new_table._data.columns)
+
+        assert actual == expected
+
 
 class TestTableVerbs:
     def test_sort_verb(self) -> None:
