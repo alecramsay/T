@@ -5,6 +5,7 @@ EXPRESSION HANDLING for SELECT & DERIVE
 """
 
 import ast
+from typing import Optional
 
 from .udf import *
 
@@ -49,15 +50,15 @@ def tokenize(expr: str) -> list[str]:
 
 
 def rewrite_expr(
-    tokens: list[str], col_names: list[str], udf: UDF = None
+    tokens: list[str], col_names: list[str], udf: Optional[UDF] = None
 ) -> tuple[str, list[str]]:
     """Rewrite expression using Pandas dataframe syntax."""
 
     # Mark the slice operations
-    tokens: list[str] = mark_slices(tokens)
+    tokens = mark_slices(tokens)
 
     # Mark UDF references & define wrappers for them
-    wrappers: list[str] = None
+    wrappers: list[str] = []
     if udf:
         tokens, wrappers = mark_udf_calls(tokens, udf)
 
@@ -126,8 +127,8 @@ def has_valid_refs(
 
 
 def generate_df_syntax(
-    tokens: list[str], col_names: list[str], udf: UDF = None
-) -> bool:
+    tokens: list[str], col_names: list[str], udf: Optional[UDF] = None
+) -> str:
     """Rewrite the tokens of a (right-hand side) expression into a valid Python Pandas expression.
 
     - Slices have been rewritten, and
@@ -195,7 +196,7 @@ def mark_slices(tokens: list[str]) -> list[str]:
 def get_slice_tokens(tokens: list[str]) -> tuple[str, int]:
     """Return a slice expression (as string) and how many tokens it consumes or None, 0 if not a slice."""
 
-    state: str = None
+    state: str = ""
 
     expr: str = ""
     skip: int = 0
@@ -220,7 +221,7 @@ def get_slice_tokens(tokens: list[str]) -> tuple[str, int]:
                 skip = skip + 1
                 continue
 
-            return None, 0
+            return "", 0
 
         if state == "start":
             if tok == ":":  # Slice with start #
@@ -229,7 +230,7 @@ def get_slice_tokens(tokens: list[str]) -> tuple[str, int]:
                 skip = skip + 1
                 continue
 
-            return None, 0
+            return "", 0
 
         if state == "colon":
             if is_int(tok):
@@ -244,7 +245,7 @@ def get_slice_tokens(tokens: list[str]) -> tuple[str, int]:
                 skip = skip + 1
                 continue
 
-            return None, 0
+            return "", 0
 
         if state == "stop":
             if tok == "]":  # Slice with no stop #
@@ -253,7 +254,7 @@ def get_slice_tokens(tokens: list[str]) -> tuple[str, int]:
                 skip = skip + 1
                 continue
 
-            return None, 0
+            return "", 0
 
         if state == "close":
             return expr, skip  # More tokens after slice
@@ -262,7 +263,7 @@ def get_slice_tokens(tokens: list[str]) -> tuple[str, int]:
         return expr, skip  # No more tokens after slice
 
     # Potential slice not completed
-    return None, 0
+    return "", 0
 
 
 def is_int(tok: str) -> bool:
@@ -290,7 +291,9 @@ def slice_rewrite_rule(tok: str) -> str:
 ### UDFs ###
 
 
-def mark_udf_calls(tokens: list[str], udf: UDF = None) -> tuple[list[str], list[str]]:
+def mark_udf_calls(
+    tokens: list[str], udf: Optional[UDF] = None
+) -> tuple[list[str], list[str]]:
     """Collapse UDF calls back into single tokens & wrap the UDF."""
 
     if not udf:
@@ -301,6 +304,7 @@ def mark_udf_calls(tokens: list[str], udf: UDF = None) -> tuple[list[str], list[
 
     in_udf: bool = False
     udf_name: str = ""
+    udf_call: str = ""
 
     for i, tok in enumerate(tokens):
         if not in_udf and not udf.is_udf(tok):
@@ -309,7 +313,7 @@ def mark_udf_calls(tokens: list[str], udf: UDF = None) -> tuple[list[str], list[
 
         if not in_udf and udf.is_udf(tok):
             in_udf = True
-            udf_call: str = tok
+            udf_call = tok
             udf_name = tok
             continue
 
@@ -336,8 +340,11 @@ def mark_udf_calls(tokens: list[str], udf: UDF = None) -> tuple[list[str], list[
     return new_tokens, wrappers
 
 
-def is_udf_call(tok: str, udf: UDF) -> bool:
+def is_udf_call(tok: str, udf: Optional[UDF]) -> bool:
     """Return True if tok is a UDF call, else False."""
+
+    if not udf:
+        return False
 
     tokens: list[str] = tokenize(tok)
 
@@ -346,12 +353,15 @@ def is_udf_call(tok: str, udf: UDF) -> bool:
     )
 
 
-def udf_rewrite_rule(tok: str, udf: UDF) -> str:
+def udf_rewrite_rule(tok: str, udf: Optional[UDF]) -> str:
     """Rewrite a UDF call into a valid Python Pandas expression."""
+
+    if not udf:
+        raise Exception(f"UDF not defined: {tok}")
 
     tokens: list[str] = tokenize(tok)
     udf_name: str = tokens[0]
-    ref: int = tokens[2]
+    ref: int = int(tokens[2])
 
     alias: str = udf.alias(udf_name, ref)
 

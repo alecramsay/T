@@ -47,17 +47,17 @@ class TestExpressions:
         assert not tok
 
         # Only a slice operator
-        tok, skip = get_slice_tokens(["[", 2, ":", 5, "]"])
+        tok, skip = get_slice_tokens(["[", str(2), ":", str(5), "]"])
         assert tok
         assert skip == 5
 
         # Slice operator and more
-        tok, skip = get_slice_tokens(["[", 2, ":", 5, "]", "+", "foo"])
+        tok, skip = get_slice_tokens(["[", str(2), ":", str(5), "]", "+", "foo"])
         assert tok
         assert skip == 5
 
         # Not a slice operator
-        tok, skip = get_slice_tokens(["[", 2, ":", 5])
+        tok, skip = get_slice_tokens(["[", str(2), ":", str(5)])
         assert not tok
 
         # Not a slice operator
@@ -69,12 +69,12 @@ class TestExpressions:
         new_tokens: list[str]
 
         # Only a slice operator
-        tokens = ["[", 2, ":", 5, "]"]
+        tokens = ["[", str(2), ":", str(5), "]"]
         new_tokens = mark_slices(tokens)
         assert new_tokens == ["slice[2:5]"]
 
         # Slice operator and more
-        tokens = ["[", 2, ":", 5, "]", "+", "foo"]
+        tokens = ["[", str(2), ":", str(5), "]", "+", "foo"]
         new_tokens = mark_slices(tokens)
         assert new_tokens == ["slice[2:5]", "+", "foo"]
 

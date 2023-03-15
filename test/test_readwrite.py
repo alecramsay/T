@@ -207,7 +207,7 @@ class TestIO:
             "None",
         ]
 
-        types: list[str] = [
+        types: list[type] = [
             str,
             int,
             float,
@@ -239,7 +239,7 @@ class TestIO:
             "memoryview(bytes(5))",
         ]
 
-        types: list[str] = [
+        types = [
             range,  # Not supported by ast.literal_eval
             frozenset,  # Not supported by ast.literal_eval
             bytearray,  # Not supported by ast.literal_eval
