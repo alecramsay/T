@@ -413,15 +413,25 @@ def do_join(
     """
 
     join_table: Table = Table()
-    join_table._data = pd.merge(
-        left._data,
-        right._data,
-        how=how,
-        left_on=left_on,
-        right_on=right_on,
-        suffixes=suffixes,
-        validate=validate,
-    )
+    if validate:
+        join_table._data = pd.merge(
+            left._data,
+            right._data,
+            how=how,
+            left_on=left_on,
+            right_on=right_on,
+            suffixes=suffixes,
+            validate=validate,
+        )
+    else:
+        join_table._data = pd.merge(
+            left._data,
+            right._data,
+            how=how,
+            left_on=left_on,
+            right_on=right_on,
+            suffixes=suffixes,
+        )
 
     # Preserve aliases with this:
     join_table._cols = joined_columns(
