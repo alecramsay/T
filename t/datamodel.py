@@ -5,7 +5,7 @@ The T data model for 2D tables with rows & columns
 """
 
 import pandas as pd
-from typing import Any, Type
+from typing import Any, Type, Literal
 from collections import namedtuple
 import re
 import copy
@@ -14,6 +14,7 @@ import pprint
 from .constants import *
 from .readwrite import DelimitedFileReader
 from .expressions import *
+from .udf import UDF
 
 ### PANDAS DATA TYPES ###
 
@@ -35,16 +36,16 @@ PD_GROUP_ABLE_TYPES: list[str] = ["int64", "float64", "datetime64", "timedelta64
 class Column:
     """Column definitions are meta data for managing aliases & data types"""
 
-    def __init__(self, name, dtype: str) -> None:
+    def __init__(self, name: str, dtype: str) -> None:
         """
         User-visible column names contain spaces & lowercase letters.
         Internal column names must be a valid identifiers.
         """
         self.name = Column.canonicalize_name(name)
-        self.alias = name if (name != self.name) else None  # Automatic aliasing
+        self.alias = name if (name != self.name) else ""  # Automatic aliasing
         self.type: str = dtype
         self.default = None
-        self.format: str = None
+        self.format: str = ""
 
     def copy(self) -> "Column":
         """Return a copy of the column"""
@@ -73,7 +74,7 @@ class Column:
 
         # Try to convert the name into a legal Python identifier
         if name.find(" ") > -1:
-            name: str = name.replace(" ", "_")
+            name = name.replace(" ", "_")
 
         if name.find("-") > -1:
             name = name.replace("-", "_")
@@ -108,8 +109,8 @@ class Table:
 
     def __init__(self) -> None:
         """Create an empty table to populate by hand or by reading a file"""
-        self._cols: list[Column] = None
-        self._data: pd.DataFrame = None
+        self._cols: list[Column] = []
+        self._data: pd.DataFrame = pd.DataFrame({})
 
     def read(
         self,
@@ -243,7 +244,7 @@ class Table:
         self._data = self._data[names]
         self._cols = [self.get_column(name) for name in names]
 
-    def do_rename_cols(self, renames: dict()) -> None:
+    def do_rename_cols(self, renames: dict) -> None:
         """Rename columns in the table"""
 
         self._data.rename(columns=renames, inplace=True)
@@ -251,7 +252,7 @@ class Table:
             if col.name in renames:
                 col.set_name(renames[col.name])
 
-    def do_alias_cols(self, aliases: dict()) -> None:
+    def do_alias_cols(self, aliases: dict) -> None:
         """Alias columns in the table"""
 
         for col in self._cols:
@@ -285,21 +286,36 @@ class Table:
 
         self._data = self._data.sample(n)
 
-    def do_derive(self, name: str, tokens: list[str]) -> None:
+    def do_derive(
+        self, name: str, tokens: list[str], udf: Optional[UDF] = None
+    ) -> None:
         """Derive a new column from the table
 
         Pandas:
 
-        df["Minority_2020_tot"] = df["Tot_2020_tot"] - df["Wh_2020_tot"]
-        df["county_fips"] = df["GEOID20"].str[2:5]
+        derive(Minority_2020_tot, Tot_2020_tot - Wh_2020_tot
+        derive(county_fips, GEOID20[2:5]
+        derive(D_pct, vote_share(D_2020_pres, R_2020_pres)
         """
 
-        # Regroup slice operations
-        tokens: list[str] = regroup_slices(tokens)
+        expr: str
+        wrappers: list[str]
+        expr, wrappers = rewrite_expr(tokens, self.col_names(), udf)
+
+        env: dict = dict()
+        if udf:
+            for k, v in udf.user_fns.items():
+                env[k] = v
+            if wrappers:
+                for wrapper in wrappers:
+                    exec(wrapper, env)
 
         df: pd.DataFrame = self._data
-        expr: str = rewrite_expr("df", tokens, self.col_names())
-        df[name] = eval(expr)
+
+        # env.update(wrapped)
+        env.update({"df": df})
+
+        df[name] = eval(expr, env)
 
         # Add new column metadata
         dtype: str = df[name].dtype.name
@@ -315,7 +331,7 @@ class Table:
         self._data.sort_values(by=by_list, ascending=ascending_list, inplace=True)
 
     def do_groupby(
-        self, by_list: list[str], agg_list: list[str], agg_fns: list[str]
+        self, by_list: list[str], agg_list: list[str], agg_fns: list
     ) -> None:
         """Group the table by the specified columns"""
 
@@ -376,14 +392,20 @@ def columns_match(table1, table2, match_names=True) -> bool:
     return True
 
 
+PD_JOIN_TYPES: list[str] = ["left", "right", "outer", "inner", "cross"]
+PD_VALIDATE_TYPES: list[str] = ["1:1", "1:m", "m:1", "m:m"]
+MergeHow = Literal["left", "right", "inner", "outer", "cross"]
+ValidationOptions = Literal["1:1", "1:m", "m:1", "m:m"]
+
+
 def do_join(
     left: Table,
     right: Table,
-    how: str,
-    left_on: str,
-    right_on: str,
+    how: MergeHow,
+    left_on: list[str],
+    right_on: list[str],
     suffixes,
-    validate: str = None,
+    validate: Optional[ValidationOptions],
 ) -> Table:
     """Join two tables
 
@@ -391,15 +413,25 @@ def do_join(
     """
 
     join_table: Table = Table()
-    join_table._data = pd.merge(
-        left._data,
-        right._data,
-        how=how,
-        left_on=left_on,
-        right_on=right_on,
-        suffixes=suffixes,
-        validate=validate,
-    )
+    if validate:
+        join_table._data = pd.merge(
+            left._data,
+            right._data,
+            how=how,
+            left_on=left_on,
+            right_on=right_on,
+            suffixes=suffixes,
+            validate=validate,
+        )
+    else:
+        join_table._data = pd.merge(
+            left._data,
+            right._data,
+            how=how,
+            left_on=left_on,
+            right_on=right_on,
+            suffixes=suffixes,
+        )
 
     # Preserve aliases with this:
     join_table._cols = joined_columns(

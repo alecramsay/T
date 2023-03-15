@@ -9,7 +9,11 @@ import ast
 import datetime
 import dateutil.parser
 import pandas as pd
-from typing import Type
+from importlib.machinery import SourceFileLoader
+import inspect
+
+from types import ModuleType
+from typing import Any, Type, Optional
 
 from .constants import *
 from .excel import *
@@ -17,8 +21,19 @@ from .excel import *
 PREREAD_LINES: int = 1000
 
 
+### PATHS ###
+
+
 class FileSpec:
-    pass  # Forward declaration
+    def __init__(self, path: str, name=None) -> None:
+        file_name: str
+        file_extension: str
+        file_name, file_extension = os.path.splitext(path)
+
+        self.rel_path: str = path
+        self.abs_path: str = os.path.abspath(path)
+        self.name: str = name.lower() if (name) else os.path.basename(file_name).lower()
+        self.extension: str = file_extension
 
 
 StandardDelimiters: dict[str, str] = {
@@ -55,6 +70,7 @@ class DelimitedFileReader:
     ) -> None:
         self.file: str = FileSpec(rel_path).abs_path
         self.delimiter: str = StandardDelimiters[delimiter]
+        # Translate to Pandas' header parameter
         self.header: int | None = 0 if header else None
 
     def read(self) -> pd.DataFrame:
@@ -67,7 +83,7 @@ class DelimitedFileReader:
 
 
 def read_delimited_file(
-    file: str, *, delimiter=StandardDelimiters["comma"], header: int = 0
+    file: str, *, delimiter=StandardDelimiters["comma"], header: Optional[int] = None
 ) -> pd.DataFrame:
     """Read a delimited text file, e.g., CSV
 
@@ -82,7 +98,7 @@ def read_delimited_file(
     Args:
         file (str): Absolute file path
         delimiter (str, optional): Delimiter. Defaults to ','.
-        header (int, optional): Header row. Defaults to 0.
+        header (int, optional): Header row. Defaults to None.
     """
 
     df: pd.DataFrame = pd.read_csv(
@@ -101,11 +117,11 @@ def read_delimited_file(
 
     inferred_types: list = [obj.infer() for obj in inferencers]
 
-    str_cols: dict[str, str] = dict()
+    str_cols: dict[Any, Any] = dict()
     dt_cols: list = list()
     for i, col in enumerate(list(df)):
         if inferred_types[i] == str:
-            str_cols[col] = "string"
+            str_cols[str(col)] = "string"
         elif inferred_types[i] == "pd.datetime":
             dt_cols.append(col)
 
@@ -254,25 +270,23 @@ def is_date_time(s: str) -> bool:
     """
 
     try:
-        dt: datetime = dateutil.parser.parse(s)
+        dt: Any = dateutil.parser.parse(s)
         return True
     except:
         return False
 
 
-### PATHS ###
+### IMPORTING FUNCTIONS ###
 
 
-class FileSpec:
-    def __init__(self, path: str, name=None) -> None:
-        file_name: str
-        file_extension: str
-        file_name, file_extension = os.path.splitext(path)
+def fns_from_path(rel_path) -> dict[str, ModuleType]:
+    abs_path: str = FileSpec(rel_path).abs_path
 
-        self.rel_path: str = path
-        self.abs_path: str = os.path.abspath(path)
-        self.name: str = name.lower() if (name) else os.path.basename(file_name).lower()
-        self.extension: str = file_extension
+    mod: ModuleType = SourceFileLoader("module.name", abs_path).load_module()
+    pairs: list[tuple[str, Any]] = inspect.getmembers(mod, inspect.isfunction)
+    fns_dict: dict[str, Any] = {k: v for k, v in pairs}
+
+    return fns_dict
 
 
 ### END ###

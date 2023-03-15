@@ -207,7 +207,7 @@ class TestIO:
             "None",
         ]
 
-        types: list[str] = [
+        types: list[type] = [
             str,
             int,
             float,
@@ -239,7 +239,7 @@ class TestIO:
             "memoryview(bytes(5))",
         ]
 
-        types: list[str] = [
+        types = [
             range,  # Not supported by ast.literal_eval
             frozenset,  # Not supported by ast.literal_eval
             bytearray,  # Not supported by ast.literal_eval
@@ -347,6 +347,13 @@ class TestDataTypes:
     #     assert t.col_types() == col_types
 
     pass
+
+
+class TestUDF:
+    def test_udf(self) -> None:
+        rel_path: str = "user/alec.py"
+        user_fns: dict[str, Any] = fns_from_path(rel_path)
+        assert len(user_fns) == 3
 
 
 ### END ###

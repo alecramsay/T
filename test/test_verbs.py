@@ -109,9 +109,10 @@ class TestRowVerbs:
 
         for col in f._new_table._cols:
             name: str = col.name
+            assert f._col_refs is not None
             if name in f._col_refs:
                 i: int = f._col_refs.index(name)
-                expected: str = f._new_col_refs[i].alias
+                expected: str = f._new_col_refs[i]
                 actual: str = col.alias
                 assert actual == expected
 
@@ -127,9 +128,10 @@ class TestRowVerbs:
 
         for col in g._new_table._cols:
             name = col.name
+            assert g._col_refs is not None
             if name in g._col_refs:
                 i = g._col_refs.index(name)
-                expected = g.new_cols[i].alias
+                expected: str = g._new_col_refs[i]
                 actual = col.alias
                 assert actual == expected
 
@@ -302,6 +304,23 @@ class TestRowVerbs:
 
         assert actual == expected
 
+        # Expression with UDF
+
+        x_table: Table = Table()
+        x_table.read("data/rd/NC/2020_election_NC.csv")
+        expected = len(x_table._data.columns) + 1
+
+        rel_path: str = "user/alec.py"
+        udf: UDF = UDF(rel_path)
+
+        name: str = "D_pct"
+        expr: str = "vote_share(D_2020_pres, R_2020_pres)"
+        f: DeriveVerb = DeriveVerb(x_table, name, expr, udf)
+        new_table: Table = f.apply()
+        actual = len(new_table._data.columns)
+
+        assert actual == expected
+
 
 class TestTableVerbs:
     def test_sort_verb(self) -> None:
@@ -405,7 +424,7 @@ class TestTableVerbs:
         x_table.test(data)
 
         try:
-            on: list[str] = [["a"], ["d"]]
+            on: Optional[str | list[str] | list[list[str]]] = [["a"], ["d"]]
             f = JoinVerb(y_table, x_table, on=on)
             f.apply()
             assert True
@@ -460,7 +479,7 @@ class TestTableVerbs:
         ## Bad suffixes
         try:
             join_key: str = "ID"
-            suffixes: tuple[str, str] = (None, None)
+            suffixes: tuple[Optional[str], Optional[str]] = (None, None)
             f = JoinVerb(y_table, x_table, on=join_key, suffixes=suffixes)
             f.apply()
             assert False
@@ -470,7 +489,7 @@ class TestTableVerbs:
         ## Bad validate
         try:
             join_key: str = "ID"
-            validate: str = "mumble"
+            validate: ValidationOptions = "mumble"
             f = JoinVerb(y_table, x_table, on=join_key, validate=validate)
             f.apply()
             assert False
@@ -565,6 +584,7 @@ class TestTableVerbs:
         f: UnionVerb = UnionVerb(y_table, x_table)
         f.apply()
 
+        assert f._new_table is not None
         actual: int = f._new_table.n_rows()
         expected: int = 6
         assert actual == expected
