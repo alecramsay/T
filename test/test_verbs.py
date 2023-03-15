@@ -584,6 +584,7 @@ class TestTableVerbs:
         f: UnionVerb = UnionVerb(y_table, x_table)
         f.apply()
 
+        assert f._new_table is not None
         actual: int = f._new_table.n_rows()
         expected: int = 6
         assert actual == expected

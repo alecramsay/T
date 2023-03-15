@@ -533,6 +533,8 @@ class JoinVerb(Verb):
 
         elif is_list_of_str(on):
             # One list of columns
+            # TYPE HINT
+            assert isinstance(on, list) and all(isinstance(elem, str) for elem in on)
             cols_match(y_table, x_table, on, on)
             self._y_cols = on
             self._x_cols = on
