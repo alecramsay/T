@@ -494,8 +494,8 @@ class JoinVerb(Verb):
         x_table: Table,
         *,
         how: MergeHow = "inner",
-        on: Optional[str | list[str]] = None,
-        suffixes=(
+        on: Optional[str | list[str] | list[list[str]]] = None,
+        suffixes: tuple[Optional[str], Optional[str]] = (
             "_y",
             "_x",
         ),  # Note: This is reversed from Pandas, to match T stack semantics.

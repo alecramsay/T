@@ -109,9 +109,10 @@ class TestRowVerbs:
 
         for col in f._new_table._cols:
             name: str = col.name
+            assert f._col_refs is not None
             if name in f._col_refs:
                 i: int = f._col_refs.index(name)
-                expected: str = f._new_col_refs[i].alias
+                expected: str = f._new_col_refs[i]
                 actual: str = col.alias
                 assert actual == expected
 
@@ -127,9 +128,10 @@ class TestRowVerbs:
 
         for col in g._new_table._cols:
             name = col.name
+            assert g._col_refs is not None
             if name in g._col_refs:
                 i = g._col_refs.index(name)
-                expected = g.new_cols[i].alias
+                expected: str = g._new_col_refs[i]
                 actual = col.alias
                 assert actual == expected
 
@@ -422,7 +424,7 @@ class TestTableVerbs:
         x_table.test(data)
 
         try:
-            on: list[str] = [["a"], ["d"]]
+            on: Optional[str | list[str] | list[list[str]]] = [["a"], ["d"]]
             f = JoinVerb(y_table, x_table, on=on)
             f.apply()
             assert True
@@ -477,7 +479,7 @@ class TestTableVerbs:
         ## Bad suffixes
         try:
             join_key: str = "ID"
-            suffixes: tuple[str, str] = (None, None)
+            suffixes: tuple[Optional[str], Optional[str]] = (None, None)
             f = JoinVerb(y_table, x_table, on=join_key, suffixes=suffixes)
             f.apply()
             assert False
@@ -487,7 +489,7 @@ class TestTableVerbs:
         ## Bad validate
         try:
             join_key: str = "ID"
-            validate: str = "mumble"
+            validate: ValidationOptions = "mumble"
             f = JoinVerb(y_table, x_table, on=join_key, validate=validate)
             f.apply()
             assert False
