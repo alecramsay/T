@@ -74,8 +74,8 @@ class Verb:
 
         new_col_refs = new_col_refs if new_col_refs else self._new_col_refs
         table = table if table else self._x_table
+        assert table is not None
 
-        # TYPE HINT
         table.could_be_cols(new_col_refs)
 
     def _unzip_col_specs(
@@ -141,7 +141,7 @@ class KeepVerb(Verb):
         self._validate_col_refs()
 
     def apply(self) -> Table:
-        # TYPE HINT
+        assert self._x_table is not None
         self._new_table: Table = self._x_table.copy()
         self._new_table.do_keep_cols(self._col_refs)
 
@@ -160,10 +160,10 @@ class DropVerb(Verb):
         self._validate_col_refs()
 
     def apply(self) -> Table:
-        # TYPE HINT
+        assert self._x_table is not None
         self._new_table: Table = self._x_table.copy()
 
-        # TYPE HINT
+        assert self._col_refs is not None
         keep_cols: list[str] = [
             name for name in self._x_table.col_names() if name not in self._col_refs
         ]
@@ -186,8 +186,10 @@ class RenameVerb(Verb):
         self._validate_new_col_refs()
 
     def apply(self) -> Table:
+        assert self._x_table is not None
         self._new_table: Table = self._x_table.copy()
 
+        assert self._col_refs is not None
         renames: dict = {
             from_col: to_col
             for from_col, to_col in zip(self._col_refs, self._new_col_refs)
@@ -215,8 +217,10 @@ class AliasVerb(Verb):
         self._validate_new_col_refs()
 
     def apply(self) -> Table:
+        assert self._x_table is not None
         self._new_table: Table = self._x_table.copy()
 
+        assert self._col_refs is not None
         renames: dict = {
             from_col: to_col
             for from_col, to_col in zip(self._col_refs, self._new_col_refs)
@@ -266,6 +270,7 @@ class FirstVerb(Verb):
         self._take: int = n if not pct else max(round(n * (x_table.n_rows() / 100)), 1)
 
     def apply(self) -> Table:
+        assert self._x_table is not None
         self._new_table: Table = self._x_table.copy()
         self._new_table.do_first(self._take)
 
@@ -282,6 +287,7 @@ class LastVerb(Verb):
         self._take: int = n if not pct else max(round(n * (x_table.n_rows() / 100)), 1)
 
     def apply(self) -> Table:
+        assert self._x_table is not None
         self._new_table: Table = self._x_table.copy()
         self._new_table.do_last(self._take)
 
@@ -298,6 +304,7 @@ class SampleVerb(Verb):
         self._take: int = n if not pct else max(round(n * (x_table.n_rows() / 100)), 1)
 
     def apply(self) -> Table:
+        assert self._x_table is not None
         self._new_table: Table = self._x_table.copy()
         self._new_table.do_sample(self._take)
 
@@ -369,8 +376,10 @@ class SortVerb(Verb):
         self._validate_col_refs()
 
     def apply(self) -> Table:
+        assert self._x_table is not None
         self._new_table: Table = self._x_table.copy()
 
+        assert self._col_refs is not None
         self._new_table.do_sort(self._col_refs, self._ascending_list)
 
         return self._new_table
@@ -437,6 +446,7 @@ class GroupByVerb(Verb):
             self._agg_fns = AGG_FNS
 
     def apply(self) -> Table:
+        assert self._x_table is not None
         self._new_table: Table = self._x_table.copy()
 
         self._new_table.do_groupby(self._group_cols, self._agg_cols, self._agg_fns)
@@ -444,8 +454,9 @@ class GroupByVerb(Verb):
         return self._new_table
 
 
-PD_JOIN_TYPES: list[str] = ["left", "right", "outer", "inner", "cross"]
-PD_VALIDATE_TYPES: list[str] = ["1:1", "1:m", "m:1", "m:m"]
+# TODO - DELETE
+# PD_JOIN_TYPES: list[str] = ["left", "right", "outer", "inner", "cross"]
+# PD_VALIDATE_TYPES: list[str] = ["1:1", "1:m", "m:1", "m:m"]
 
 
 class JoinVerb(Verb):
@@ -482,17 +493,13 @@ class JoinVerb(Verb):
         y_table: Table,
         x_table: Table,
         *,
-        how: Literal["left"]
-        | Literal["right"]
-        | Literal["outer"]
-        | Literal["inner"]
-        | Literal["cross"] = "inner",
-        on=None,
+        how: MergeHow = "inner",
+        on: Optional[str | list[str]] = None,
         suffixes=(
             "_y",
             "_x",
         ),  # Note: This is reversed from Pandas, to match T stack semantics.
-        validate: Optional[str] = None,
+        validate: Optional[ValidationOptions] = None,
     ) -> None:
         super().__init__()
 
@@ -500,7 +507,7 @@ class JoinVerb(Verb):
         self._x_table = x_table
 
         # how
-        self._how = how
+        self._how: MergeHow = how
         if how not in PD_JOIN_TYPES:
             raise ValueError(f"Invalid join type '{how}'.")
 
@@ -512,8 +519,8 @@ class JoinVerb(Verb):
             # No columns are specified -- infer them
             shared: list[str] = infer_join_cols(y_table, x_table)
             if len(shared) == 1:
-                self._y_cols = shared[0]
-                self._x_cols = shared[0]
+                self._y_cols = shared
+                self._x_cols = shared
             else:
                 self._y_cols = shared
                 self._x_cols = shared
@@ -521,8 +528,8 @@ class JoinVerb(Verb):
         elif isinstance(on, str):
             # One column is specified -- make sure it exists in both tables with matching types
             cols_match(y_table, x_table, [on], [on])
-            self._y_cols = on
-            self._x_cols = on
+            self._y_cols = [on]
+            self._x_cols = [on]
 
         elif is_list_of_str(on):
             # One list of columns
@@ -537,6 +544,8 @@ class JoinVerb(Verb):
             and is_list_of_str(on[1])
         ):
             # Two lists of columns
+            assert isinstance(on[0], list)
+            assert isinstance(on[1], list)
             cols_match(y_table, x_table, on[0], on[1])
             self._y_cols = on[0]
             self._x_cols = on[1]
@@ -556,10 +565,11 @@ class JoinVerb(Verb):
         if validate:
             if validate not in PD_VALIDATE_TYPES:
                 raise ValueError(f"Invalid validate value '{validate}'.")
-        self._validate = validate
+        self._validate: Optional[ValidationOptions] = validate
 
     def apply(self) -> Table:
-        # TYPE HINT
+        assert self._x_table is not None
+        assert self._y_table is not None
         self._new_table = do_join(
             self._y_table,
             self._x_table,
@@ -632,7 +642,8 @@ class UnionVerb(Verb):
             raise ValueError("Tables must have identical columns")
 
     def apply(self) -> Table:
-        # TYPE HINT
+        assert self._x_table is not None
+        assert self._y_table is not None
         self._new_table = do_union(self._y_table, self._x_table)
 
         return self._new_table

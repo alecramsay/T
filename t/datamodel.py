@@ -392,25 +392,20 @@ def columns_match(table1, table2, match_names=True) -> bool:
     return True
 
 
-# TODO - TYPE HINT: Make this dynamic
 PD_JOIN_TYPES: list[str] = ["left", "right", "outer", "inner", "cross"]
-# PD_VALIDATE_TYPES: list[str] = ["1:1", "1:m", "m:1", "m:m"]
+PD_VALIDATE_TYPES: list[str] = ["1:1", "1:m", "m:1", "m:m"]
 MergeHow = Literal["left", "right", "inner", "outer", "cross"]
+ValidationOptions = Literal["1:1", "1:m", "m:1", "m:m"]
 
 
 def do_join(
     left: Table,
     right: Table,
     how: MergeHow,
-    # how: Literal["left"]
-    # | Literal["right"]
-    # | Literal["outer"]
-    # | Literal["inner"]
-    # | Literal["cross"],
     left_on: list[str],
     right_on: list[str],
     suffixes,
-    validate: Literal["1:1"] | Literal["1:m"] | Literal["m:1"] | Literal["m:m"],
+    validate: Optional[ValidationOptions],
 ) -> Table:
     """Join two tables
 
