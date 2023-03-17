@@ -28,6 +28,7 @@ class TestRowVerbs:
             assert True
 
     def test_keep_verb(self) -> None:
+        # Same column order
         sample: str = "sample-01-comma.csv"
         x_table: Table = Table()
         x_table.read("test/formats/" + sample)
@@ -49,6 +50,7 @@ class TestRowVerbs:
         new_table: Table = f.apply()
 
         assert new_table.col_names() == keep_refs
+        assert new_table.n_cols() == 2
 
     def test_drop_verb(self) -> None:
         sample: str = "sample-01-comma.csv"
@@ -292,7 +294,10 @@ class TestRowVerbs:
             "float64",
         ]
 
-        assert True
+        assert actual == expected
+
+        actual = new_table.col_types()
+        assert actual == expected
 
     def test_derive_verb(self) -> None:
         # Simple expression

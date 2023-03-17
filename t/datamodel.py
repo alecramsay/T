@@ -242,7 +242,7 @@ class Table:
         # https://stackoverflow.com/questions/53141240/pandas-how-to-swap-or-reorder-columns
 
         self._data = self._data[names]
-        self._cols = [self.get_column(name) for name in names]  # TODO - Columns?
+        self._cols = [self.get_column(name) for name in names]
 
     def do_rename_cols(self, renames: dict[str, str]) -> None:
         """Rename columns in the table"""
@@ -297,9 +297,10 @@ class Table:
             cast_types[col] = dtype
 
         self._data = self._data.astype(cast_types, errors="raise")
-
-        self._data = self._data[names]
-        self._cols = [self.get_column(name) for name in names]
+        # Update the new column types in the table's column metadata.
+        for col in self._cols:
+            if col.name in names:
+                col.type = dtype
 
     def do_derive(
         self, name: str, tokens: list[str], udf: Optional[UDF] = None
