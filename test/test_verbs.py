@@ -403,16 +403,29 @@ class TestTableVerbs:
         except:
             assert False
 
+        data: dict[str, list]
+
         # Alias duplicate columns
-        data: list[dict[str, Any]] = [{"ID": "foo", "a": 1, "b": 2}]
+        data = {
+            "ID": ["foo"],
+            "a": [1],
+            "b": [2],
+        }
+        # data: list[dict[str, Any]] = [{"ID": "foo", "a": 1, "b": 2}]
         y_table = Table()
         y_table.test(data)
 
-        data: list[dict[str, Any]] = [{"ID": "foo", "a": 2, "c": 3}]
+        data = {
+            "ID": ["foo"],
+            "a": [2],
+            "c": [3],
+        }
+        # data: list[dict[str, Any]] = [{"ID": "foo", "a": 2, "c": 3}]
         x_table = Table()
         x_table.test(data)
 
-        join_key: str = "ID"
+        join_key: Any
+        join_key = "ID"
         f = JoinVerb(y_table, x_table, on=join_key)
         f.apply()
         assert isinstance(f._new_table, Table)
@@ -422,7 +435,7 @@ class TestTableVerbs:
         assert actual == expected
 
         ## Explicit suffixes
-        join_key: str = "ID"
+        join_key = "ID"
         suffixes = (None, "_mumble")
         f = JoinVerb(y_table, x_table, on=join_key, suffixes=suffixes)
         f.apply()
@@ -433,11 +446,21 @@ class TestTableVerbs:
         assert actual == expected
 
         # No shared columns
-        data: list[dict[str, Any]] = [{"a": 1, "b": 2, "c": 3}]
+        data = {
+            "a": [1],
+            "b": [2],
+            "c": [3],
+        }
+        # data4: list[dict[str, Any]] = [{"a": 1, "b": 2, "c": 3}]
         y_table = Table()
         y_table.test(data)
 
-        data: list[dict[str, Any]] = [{"d": "foo", "e": "bas", "f": "bat"}]
+        data = {
+            "d": ["foo"],
+            "e": ["bas"],
+            "f": ["bat"],
+        }
+        # data4 = [{"d": "foo", "e": "bas", "f": "bat"}]
         x_table = Table()
         x_table.test(data)
 
@@ -449,11 +472,21 @@ class TestTableVerbs:
             assert True
 
         # Matching join keys but no shared columns
-        data: list[dict[str, Any]] = [{"a": 1, "b": 2, "c": 3}]
+        data = {
+            "a": [1],
+            "b": [2],
+            "c": [3],
+        }
+        # data3: list[dict[str, Any]] = [{"a": 1, "b": 2, "c": 3}]
         y_table = Table()
         y_table.test(data)
 
-        data: list[dict[str, Any]] = [{"d": 1, "e": "bas", "f": "bat"}]
+        data = {
+            "d": [1],
+            "e": ["bas"],
+            "f": ["bat"],
+        }
+        # data3 = [{"d": 1, "e": "bas", "f": "bat"}]
         x_table = Table()
         x_table.test(data)
 
@@ -466,11 +499,21 @@ class TestTableVerbs:
             assert False
 
         # Mismatched join keys
-        data: list[dict[str, Any]] = [{"a": 1, "b": 2, "c": 3}]
+        data = {
+            "a": [1],
+            "b": [2],
+            "c": [3],
+        }
+        # data2: list[dict[str, Any]] = [{"a": 1, "b": 2, "c": 3}]
         y_table = Table()
         y_table.test(data)
 
-        data: list[dict[str, Any]] = [{"a": "foo", "e": "bas", "f": "bat"}]
+        data = {
+            "a": ["foo"],
+            "e": ["bas"],
+            "f": ["bat"],
+        }
+        # data2 = [{"a": "foo", "e": "bas", "f": "bat"}]
         x_table = Table()
         x_table.test(data)
 
@@ -483,17 +526,27 @@ class TestTableVerbs:
 
         # Invalid parameters
 
-        data: list[dict[str, Any]] = [{"ID": "foo", "a": 1, "b": 2}]
+        data = {
+            "ID": ["foo"],
+            "a": [1],
+            "b": [2],
+        }
+        # data1: list[dict[str, Any]] = [{"ID": "foo", "a": 1, "b": 2}]
         y_table = Table()
         y_table.test(data)
 
-        data: list[dict[str, Any]] = [{"ID": "foo", "c": 2, "d": 3}]
+        data = {
+            "ID": ["foo"],
+            "c": [2],
+            "d": [3],
+        }
+        # data1 = [{"ID": "foo", "c": 2, "d": 3}]
         x_table = Table()
         x_table.test(data)
 
         ## Bad join key
         try:
-            join_key: str = ["ID", ["ID", "c"]]
+            join_key = ["ID", ["ID", "c"]]
             f = JoinVerb(y_table, x_table, on=join_key)
             f.apply()
             assert False
@@ -502,7 +555,7 @@ class TestTableVerbs:
 
         ## Bad join type
         try:
-            join_key: str = "ID"
+            join_key = "ID"
             join_type: str = "mumble"
             f = JoinVerb(y_table, x_table, on=join_key, how=join_type)
             f.apply()
@@ -512,7 +565,7 @@ class TestTableVerbs:
 
         ## Bad suffixes
         try:
-            join_key: str = "ID"
+            join_key = "ID"
             suffixes: tuple[Optional[str], Optional[str]] = (None, None)
             f = JoinVerb(y_table, x_table, on=join_key, suffixes=suffixes)
             f.apply()
@@ -522,7 +575,7 @@ class TestTableVerbs:
 
         ## Bad validate
         try:
-            join_key: str = "ID"
+            join_key = "ID"
             validate: ValidationOptions = "mumble"
             f = JoinVerb(y_table, x_table, on=join_key, validate=validate)
             f.apply()
