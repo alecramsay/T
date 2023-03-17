@@ -18,7 +18,7 @@ Supported verbs fall into two categories:
 - Last (x_table, n, pct=None)
 - Random (x_table, n, pct=None)
 
-- Cast (x_table, cast_cols, type_fn)
+- Cast (x_table, cast_cols, dtype)
 
 - Derive (x_table, name, expr, **kwargs)
 

@@ -131,7 +131,7 @@ class Table:
 
         return copy.deepcopy(self)
 
-    def test(self, data) -> None:
+    def test(self, data: dict[str, list]) -> None:
         """Create a test table
 
         data is a dict of lists, where each list is a column of data.
@@ -176,7 +176,7 @@ class Table:
     def col_types(self) -> list[str]:
         return [c.type for c in self._cols]
 
-    def has_column(self, name) -> bool:
+    def has_column(self, name: str) -> bool:
         """Does the table have a column called <name>? (soft fail)"""
 
         if name in self.col_names():
@@ -184,7 +184,7 @@ class Table:
         else:
             return False
 
-    def is_column(self, name) -> bool:
+    def is_column(self, name: str) -> bool:
         """Does the table have a column called <name>? (hard fail)"""
 
         if self.has_column(name):
@@ -192,14 +192,14 @@ class Table:
         else:
             raise Exception("Column {0} not in table.".format(name))
 
-    def get_column(self, name) -> Column:
+    def get_column(self, name: str) -> Column:
         for col in self._cols:
             if col.name == name:
                 return col
 
         raise Exception("Column {0} not in table.".format(name))
 
-    def are_cols(self, names) -> bool:
+    def are_cols(self, names: list[str]) -> bool:
         if len(names) < 1:
             raise Exception("No columns referenced.")
 
@@ -209,7 +209,7 @@ class Table:
 
         return True
 
-    def could_be_column(self, name) -> bool:
+    def could_be_column(self, name: str) -> bool:
         """Could <name> be the name of a *new* column?"""
 
         if not name.isidentifier():
@@ -220,7 +220,7 @@ class Table:
 
         return True
 
-    def could_be_cols(self, names) -> bool:
+    def could_be_cols(self, names: list[str]) -> bool:
         if len(names) < 1:
             raise Exception("No columns named.")
 
@@ -236,15 +236,15 @@ class Table:
     ### WRAPPERS ENCAPSULATING PANDAS DATAFRAME METHODS ###
     ### Validate column references before calling them. ###
 
-    def do_keep_cols(self, names) -> None:
+    def do_keep_cols(self, names: list[str]) -> None:
         """Keep only the specified columns *in the specified order*"""
 
         # https://stackoverflow.com/questions/53141240/pandas-how-to-swap-or-reorder-columns
 
         self._data = self._data[names]
-        self._cols = [self.get_column(name) for name in names]
+        self._cols = [self.get_column(name) for name in names]  # TODO - Columns?
 
-    def do_rename_cols(self, renames: dict) -> None:
+    def do_rename_cols(self, renames: dict[str, str]) -> None:
         """Rename columns in the table"""
 
         self._data.rename(columns=renames, inplace=True)
@@ -252,7 +252,7 @@ class Table:
             if col.name in renames:
                 col.set_name(renames[col.name])
 
-    def do_alias_cols(self, aliases: dict) -> None:
+    def do_alias_cols(self, aliases: dict[str, str]) -> None:
         """Alias columns in the table"""
 
         for col in self._cols:
@@ -285,6 +285,21 @@ class Table:
         """Sample n rows of the table"""
 
         self._data = self._data.sample(n)
+
+    def do_cast_cols(self, names: list[str], dtype: str) -> None:
+        """Cast the specified columns to the given data type"""
+
+        col_names: list[str] = self.col_names()
+        col_types: list[str] = self.col_types()
+
+        cast_types: dict[str, str] = dict(zip(col_names, col_types))
+        for col in names:
+            cast_types[col] = dtype
+
+        self._data = self._data.astype(cast_types, errors="raise")
+
+        self._data = self._data[names]
+        self._cols = [self.get_column(name) for name in names]
 
     def do_derive(
         self, name: str, tokens: list[str], udf: Optional[UDF] = None

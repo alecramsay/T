@@ -265,6 +265,35 @@ class TestRowVerbs:
 
         assert actual == expected
 
+    def test_cast_verb(self) -> None:
+        sample: str = "sample-01-comma.csv"
+        x_table: Table = Table()
+        x_table.read("test/formats/" + sample)
+        col_names: list[str] = x_table.col_names()
+
+        cast_cols: list[str] = ["District", "Total", "Total_VAP", "White", "Hispanic"]
+        new_type: str = "int64"
+        f: CastVerb = CastVerb(x_table, cast_cols, new_type)
+        new_table: Table = f.apply()
+
+        actual: list[str] = [new_table._data[col].dtype.name for col in col_names]
+        expected: list[str] = [
+            "string",
+            "int64",
+            "int64",
+            "int64",
+            "int64",
+            "int64",
+            "int64",
+            "int64",
+            "int64",
+            "int64",
+            "float64",
+            "float64",
+        ]
+
+        assert True
+
     def test_derive_verb(self) -> None:
         # Simple expression
         data: dict[str, list] = {

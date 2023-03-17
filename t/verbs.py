@@ -64,6 +64,7 @@ class Verb:
         col_refs = col_refs if col_refs else self._col_refs
         table = table if table else self._x_table
         assert table is not None
+        assert col_refs is not None
 
         table.are_cols(col_refs)
 
@@ -75,6 +76,7 @@ class Verb:
         new_col_refs = new_col_refs if new_col_refs else self._new_col_refs
         table = table if table else self._x_table
         assert table is not None
+        assert new_col_refs is not None
 
         table.could_be_cols(new_col_refs)
 
@@ -142,6 +144,7 @@ class KeepVerb(Verb):
 
     def apply(self) -> Table:
         assert self._x_table is not None
+        assert self._col_refs is not None
         self._new_table: Table = self._x_table.copy()
         self._new_table.do_keep_cols(self._col_refs)
 
@@ -312,13 +315,32 @@ class SampleVerb(Verb):
 
 
 class CastVerb(Verb):
-    """
+    """CAST columns to a new type
+
     https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.astype.html
     https://www.w3schools.com/python/pandas/ref_df_astype.asp
     https://stackoverflow.com/questions/21197774/assign-pandas-dataframe-column-dtypes
     """
 
-    pass  # TODO
+    def __init__(self, x_table, cast_cols, dtype: str) -> None:
+        super().__init__()
+
+        self._x_table = x_table
+        self._col_refs = [x.strip() for x in cast_cols]
+
+        self._validate_col_refs()
+
+        if dtype not in PD_TYPES:
+            raise ValueError(f"Invalid dtype: {dtype}")
+        self._dtype: str = dtype
+
+    def apply(self) -> Table:
+        assert self._x_table is not None
+        assert self._col_refs is not None
+        self._new_table: Table = self._x_table.copy()
+        self._new_table.do_cast_cols(self._col_refs, self._dtype)
+
+        return self._new_table
 
 
 class DeriveVerb(Verb):
