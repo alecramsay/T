@@ -454,11 +454,6 @@ class GroupByVerb(Verb):
         return self._new_table
 
 
-# TODO - DELETE
-# PD_JOIN_TYPES: list[str] = ["left", "right", "outer", "inner", "cross"]
-# PD_VALIDATE_TYPES: list[str] = ["1:1", "1:m", "m:1", "m:m"]
-
-
 class JoinVerb(Verb):
     """JOIN two tables
 

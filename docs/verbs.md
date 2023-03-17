@@ -1,5 +1,10 @@
 # Verbs
 
+Supported verbs fall into two categories:
+
+- Verbs that operate on rows, and
+- Verbs that operate on tables
+
 ## Row Verbs
 
 - Keep (x_table, keep_cols)
@@ -15,11 +20,11 @@
 
 - Cast (x_table, cast_cols, type_fn)
 
-- Derive (x_table, name, type_fn, expr, **kwargs)
+- Derive (x_table, name, expr, **kwargs)
 
 ## Table Verbs
 
 - Sort (x_table, col_specs)
-- GroupBy (x_table, **kwargs)
-- Join (y_table, x_table, y_key_name, x_key_name, prefix=None)
+- GroupBy (x_table, by_cols, only=None, agg=None)
+- Join (y_table, x_table, y_key_name, how="inner", on=None, suffixes("_y","_x",), validate=None)
 - Union (y_table, x_table)
