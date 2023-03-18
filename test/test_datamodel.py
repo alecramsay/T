@@ -5,7 +5,7 @@ TEST DATA MODEL
 """
 
 
-from t.datamodel import *
+from T.datamodel import *
 
 
 class TestDataModel:

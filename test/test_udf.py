@@ -4,7 +4,7 @@
 TEST UDF
 """
 
-from t.udf import *
+from T.udf import *
 
 
 class TestUDF:

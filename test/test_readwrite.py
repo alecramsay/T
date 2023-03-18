@@ -6,7 +6,7 @@
 import ast
 import random
 
-from t.readwrite import *
+from T.readwrite import *
 
 
 class TestIO:

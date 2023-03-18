@@ -4,7 +4,7 @@
 TEST EXPRESSION HANDLING
 """
 
-from t.expressions import *
+from T.expressions import *
 
 
 class TestExpressions:

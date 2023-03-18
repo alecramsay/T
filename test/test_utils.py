@@ -4,7 +4,7 @@
 TEST UTILTIES
 """
 
-from t.utils import *
+from T.utils import *
 
 
 class TestUtils:

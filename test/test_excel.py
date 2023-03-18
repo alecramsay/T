@@ -5,7 +5,7 @@ TEST EXCEL NAMING
 """
 
 
-from t.excel import *
+from T.excel import *
 
 
 class TestExcelColumnNames:

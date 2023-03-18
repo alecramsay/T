@@ -26,7 +26,7 @@ re_expr: str = generate_df_syntax(tokens, self.col_names())
 
 import inspect
 
-from t import *
+from T import *
 
 
 rel_path: str = "user/alec.py"

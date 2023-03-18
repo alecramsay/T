@@ -4,8 +4,8 @@
 TEST VERBS
 """
 
-from t.verbs import *
-from t.constants import *
+from T.verbs import *
+from T.constants import *
 
 
 class TestRowVerbs:
