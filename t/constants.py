@@ -4,6 +4,13 @@
 CONSTANTS
 """
 
+# TYPE HINT
+TOK_DELIM_SPEC: str = "[\s\(\)=]"
+
+# Canonical pair indices
+BEG: int = 0
+END: int = 1
+
 ### FOR TESTING ###
 
 CITIES_DF: dict[str, list] = {
