@@ -507,6 +507,14 @@ class JoinVerb(Verb):
 
     """
 
+    _y_table: Table
+    _x_table: Table
+    _how: MergeHow
+    _y_cols: list[str]
+    _x_cols: list[str]
+    _suffixes: tuple[str, str] | tuple[None, str] | tuple[str, None]
+    _validate: Optional[ValidationOptions]
+
     def __init__(
         self,
         y_table: Table,
@@ -514,7 +522,9 @@ class JoinVerb(Verb):
         *,
         how: MergeHow = "inner",
         on: Optional[str | list[str] | list[list[str]]] = None,
-        suffixes: tuple[Optional[str], Optional[str]] = (
+        suffixes: tuple[str, str]
+        | tuple[None, str]
+        | tuple[str, None] = (
             "_y",
             "_x",
         ),  # Note: This is reversed from Pandas, to match T stack semantics.
@@ -575,7 +585,7 @@ class JoinVerb(Verb):
             raise ValueError(f"on is not a specification of JOIN columns: {on}")
 
         # suffixes
-        self._suffixes: tuple = suffixes
+        self._suffixes = suffixes
         if suffixes:
             if not isinstance(suffixes, tuple) or len(suffixes) != 2:
                 raise ValueError("Suffix must be a tuple of length 2.")
@@ -586,7 +596,7 @@ class JoinVerb(Verb):
         if validate:
             if validate not in PD_VALIDATE_TYPES:
                 raise ValueError(f"Invalid validate value '{validate}'.")
-        self._validate: Optional[ValidationOptions] = validate
+        self._validate = validate
 
     def apply(self) -> Table:
         assert self._x_table is not None

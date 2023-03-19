@@ -1,15 +1,15 @@
+# datamodel.py
 #!/usr/bin/env python3
 
 """
-The T data model for 2D tables with rows & columns
+The T data model for 2D tables with rows & columns, implemented over Pandas.
 """
 
 import pandas as pd
-from typing import Any, Type, Literal
+from typing import Any, Literal
 from collections import namedtuple
 import re
 import copy
-import pprint
 from csv import DictWriter
 import json
 
@@ -39,35 +39,41 @@ PD_GROUP_ABLE_TYPES: list[str] = ["int64", "float64", "datetime64", "timedelta64
 class Column:
     """Column definitions are meta data for managing aliases & data types"""
 
+    name: str
+    alias: str
+    type: str
+    default: Optional[Any]
+    format: str
+
     def __init__(self, name: str, dtype: str) -> None:
+        """Create a new column definition
+
+        - User-visible column names contain spaces & lowercase letters.
+        - Internal column names must be a valid identifiers.
         """
-        User-visible column names contain spaces & lowercase letters.
-        Internal column names must be a valid identifiers.
-        """
+
         self.name = Column.canonicalize_name(name)
         self.alias = name if (name != self.name) else ""  # Automatic aliasing
-        self.type: str = dtype
+        self.type = dtype
         self.default = None
-        self.format: str = ""
+        self.format = ""
 
     def copy(self) -> "Column":
         """Return a copy of the column"""
 
         return copy.deepcopy(self)
 
-    def set_default(self, default) -> None:
-        self.default: Any = default
+    def set_default(self, default: Any) -> None:
+        self.default = default
 
-    def set_format(self, format) -> None:
+    def set_format(self, format: str) -> None:
         self.format = format
 
-    def set_name(self, new_name) -> None:
+    def set_name(self, new_name: str) -> None:
         self.name: str = Column.canonicalize_name(new_name)
 
-    def set_alias(self, new_name) -> None:
+    def set_alias(self, new_name: str) -> None:
         # NOTE - This allows aliased columns to be re-aliased.
-        # if self.alias:
-        #     raise Exception("Column already has an alias.")
         self.alias: str = Column.canonicalize_name(new_name)
 
     @classmethod
@@ -108,21 +114,26 @@ class Table:
       across modifications (verbs).
     """
 
+    _cols: list[Column]
+    _data: pd.DataFrame
+    stats: Optional[dict]
+
     ### CONSTRUCTORS ###
 
     def __init__(self) -> None:
         """Create an empty table to populate by hand or by reading a file"""
-        self._cols: list[Column] = []
-        self._data: pd.DataFrame = pd.DataFrame({})
 
-        self.stats: Optional[dict] = None
+        self._cols = []
+        self._data = pd.DataFrame({})
+
+        self.stats = None
 
     def read(
         self,
         rel_path: str,
         *,
-        delimiter="comma",
-        header=True,
+        delimiter: str = "comma",
+        header: bool = True,
     ) -> None:
         """Read a table from a delimited file (e.g., CSV."""
 
@@ -292,17 +303,17 @@ class Table:
 
         self._data = self._data.query(expr)
 
-    def do_first(self, n=5) -> None:
+    def do_first(self, n: int = 5) -> None:
         """Select the first n rows of the table"""
 
         self._data = self._data.head(n)
 
-    def do_last(self, n=5) -> None:
+    def do_last(self, n: int = 5) -> None:
         """Select the last n rows of the table"""
 
         self._data = self._data.tail(n)
 
-    def do_sample(self, n=5) -> None:
+    def do_sample(self, n: int = 5) -> None:
         """Sample n rows of the table"""
 
         self._data = self._data.sample(n)
@@ -414,7 +425,7 @@ def do_union(y_table: Table, x_table: Table) -> Table:
     return union_table
 
 
-def columns_match(table1, table2, match_names=True) -> bool:
+def columns_match(table1: Table, table2: Table, match_names: bool = True) -> bool:
     if table1.n_cols() != table2.n_cols():
         return False
 
@@ -441,7 +452,9 @@ def do_join(
     how: MergeHow,
     left_on: list[str],
     right_on: list[str],
-    suffixes,
+    # TODO - Reverse the suffixes for Pandas
+    # Note: These suffixes are reversed from Pandas, to match T stack semantics.
+    suffixes: tuple[str, str] | tuple[None, str] | tuple[str, None],
     validate: Optional[ValidationOptions],
 ) -> Table:
     """Join two tables
@@ -486,7 +499,7 @@ def joined_columns(
     right: Table,
     left_on: list[str],
     right_on: list[str],
-    suffixes: tuple[str, str],
+    suffixes: tuple[str, str] | tuple[None, str] | tuple[str, None],
 ) -> list[Column]:
     """Return the column (objects, not names) resulting from a join:
 
