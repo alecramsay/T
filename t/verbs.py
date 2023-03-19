@@ -350,7 +350,9 @@ class DeriveVerb(Verb):
     df['new_col'] = df['col1'] + df['col2']
     """
 
-    def __init__(self, x_table, name, expr, udf: Optional[UDF] = None) -> None:
+    def __init__(
+        self, x_table: Table, name: str, expr: str, udf: Optional[UDF] = None
+    ) -> None:
         super().__init__()
 
         self._name: str = name

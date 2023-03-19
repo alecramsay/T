@@ -57,7 +57,7 @@ def map_keys(d: dict, mapping: dict) -> dict:
 
 
 def get_builtin_fn(name) -> Any:
-    """
+    """Get a builtin function by name.
     This works at top level but not w/in the module:
 
     return getattr(globals()["__builtins__"], name)
@@ -71,6 +71,17 @@ def get_builtin_fn(name) -> Any:
 #     fns_dict = {k: v for k, v in pairs}
 
 #     return fns_dict
+
+### MISSING ###
+
+
+def is_missing(v) -> bool:
+    """Return True if v is missing, else False.
+
+    TODO - Handle missing?
+    """
+
+    return True if (v is None) else False
 
 
 ### END ###

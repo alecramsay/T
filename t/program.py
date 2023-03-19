@@ -75,6 +75,7 @@ class Program:
         self.repl: bool = repl
         self.silent: bool = silent
 
+        # TODO - Re-work UDFs
         self.user_functions: dict = dict()
         # self.user_functions = HELPER_FNS
         self.table_stack: Stack = Stack()
@@ -120,11 +121,13 @@ class Program:
             return
 
     @do_pre_op()
-    def write(self, rel_path=None, format=None) -> None:
+    def write(
+        self, rel_path: Optional[str] = None, format: Optional[str] = None
+    ) -> None:
         """WRITE the top table on the stack to disk as a CSV."""
 
         try:
-            top = self.table_stack.first()
+            top: Table = self.table_stack.first()
 
             if (format is None) or (format == "CSV"):
                 table_to_csv(top, rel_path)
@@ -306,18 +309,28 @@ class Program:
 
     @do_pre_op(required=2)
     @do_post_op(pop=2)
-    def join(self, y_col=None, x_col=None, **kwargs):
+    def join(
+        self, on: Optional[str | list[str] | list[list[str]]], **kwargs
+    ) -> Table | None:
+        """JOIN the top two tables on the stack, pop them, and push the result.
+
+        TODO - Extend the interface for new join functionality.
         """
-        JOIN the top two tables on the stack, pop them, and push the result.
-        """
+
         try:
-            prefix = kwargs.get("prefix", None)
+            suffixes: tuple[Optional[str], Optional[str]] = kwargs.get(
+                "suffixes",
+                (
+                    "_y",
+                    "_x",
+                ),
+            )
 
-            x_table = self.table_stack.first()
-            y_table = self.table_stack.second()
+            x_table: Table = self.table_stack.first()
+            y_table: Table = self.table_stack.second()
 
-            v = JoinVerb(y_table, x_table, y_col, x_col, prefix)
-            new_table = v.apply()
+            v: JoinVerb = JoinVerb(y_table, x_table, on=on, suffixes=suffixes)
+            new_table: Table = v.apply()
 
             return new_table
 
@@ -327,20 +340,24 @@ class Program:
 
     @do_pre_op()
     @do_post_op()
-    def pivot(self, **kwargs):
-        """
-        PIVOT (aka 'aggregate')
+    def groupby(
+        self,
+        by: list[str],
+        *,
+        only: Optional[list[str]] = None,
+        agg: Optional[list[str]] = None,
+    ) -> Table | None:
+        """GROUP BY (aka 'aggregate')
+
         * All -or- specified numeric columns
         * For the whole table -or- by a specified column
         * Push the new table on the stack; don't pop the old table
         """
         try:
-            by = kwargs.get("by", None)
-            only = kwargs.get("only", None)
-            top = self.table_stack.first()
+            top: Table = self.table_stack.first()
 
-            v = GroupByVerb(top, by=by, only=only)
-            new_table = v.apply()
+            v: GroupByVerb = GroupByVerb(top, by=by, only=only, agg=agg)
+            new_table: Table = v.apply()
 
             return new_table
 
@@ -461,15 +478,16 @@ class Program:
 
     @do_pre_op()
     @do_post_op()
-    def derive(self, name, expr, data_type=None):
-        """
-        DERIVE (aka 'let' or 'calc')
-        """
-        try:
-            top = self.table_stack.first()
+    def derive(self, name: str, expr: str) -> Table | None:
+        """DERIVE (aka 'let' or 'calc')"""
 
-            v = DeriveVerb(top, name, data_type, expr, user=self.user_functions)
-            new_table = v.apply()
+        try:
+            top: Table = self.table_stack.first()
+
+            v: DeriveVerb = DeriveVerb(
+                top, name, expr
+            )  # TODO, udf=self.user_functions)
+            new_table: Table = v.apply()
 
             return new_table
 
@@ -515,14 +533,13 @@ class Program:
 
     @do_pre_op()
     @do_post_op()
-    def random(self, n, pct=None):
-        """
-        RANDOM
-        """
-        try:
-            top = self.table_stack.first()
+    def sample(self, n: int, pct=None) -> Table | None:
+        """SAMPLE"""
 
-            v = RandomVerb(top, n, pct)
+        try:
+            top: Table = self.table_stack.first()
+
+            v: SampleVerb = SampleVerb(top, n, pct)
             new_table = v.apply()
 
             return new_table
@@ -625,9 +642,10 @@ class Program:
 
         self.table_stack.push(new_table)
 
-        # REVIEW - Why did I have this condition?
+        # TODO - Why did I have this condition?
         # if pop > 0:
-        self._calc_column_stats()
+        # TODO - Re-work this over Pandas
+        # self._calc_column_stats()
         self._update_table_shortcuts()
 
     def _update_table_shortcuts(self):
@@ -643,14 +661,14 @@ class Program:
 
         self.stats = top.stats
 
-    def _calc_column_stats(self):
-        """
-        Automatically calc column statistics for a table
-        """
-        top = self.table_stack.first()
-        agg_cols = [col for col in top.cols if col.type in [int, float]]
+    # TODO - Re-work this over Pandas
+    # def _calc_column_stats(self):
+    #     """Automatically calc column statistics for a table"""
 
-        top.stats = aggregate_cols(None, top, agg_cols)
+    #     top = self.table_stack.first()
+    #     agg_cols = [col for col in top.cols if col.type in [int, float]]
+
+    #     top.stats = aggregate_cols(None, top, agg_cols)
 
     def _display_table(self):
         if (len(self.call_stack._queue_) == 1) and self.repl and not self.silent:

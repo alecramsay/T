@@ -526,7 +526,7 @@ def joined_columns(
 ### WRITE HELPERS ###
 
 
-def table_to_csv(table: Table, rel_path) -> None:
+def table_to_csv(table: Table, rel_path: Optional[str]) -> None:
     """Write a table to a CSV file
 
     TODO - Re-work this over Pandas
@@ -557,7 +557,7 @@ def table_to_csv(table: Table, rel_path) -> None:
         raise Exception("Exception writing CSV.")
 
 
-def table_to_json(table: Table, rel_path: str) -> None:
+def table_to_json(table: Table, rel_path: Optional[str]) -> None:
     """Write a table to a JSON file
 
     TODO - Re-work this over Pandas
