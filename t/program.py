@@ -63,49 +63,52 @@ def do_post_op(pop=1):
 
 
 class Program:
-    """
-    FIXME - What's a better name for this? 'Program' is pretty generic.
-    """
+    def __init__(
+        self,
+        user: Optional[str] = None,
+        src: Optional[str] = None,
+        data: Optional[str] = None,
+        repl=True,
+        silent=False,
+    ) -> None:
+        self.debug: bool = False
+        self.repl: bool = repl
+        self.silent: bool = silent
 
-    def __init__(self, user=None, src=None, data=None, repl=True, silent=False):
-        self.debug = False
-        self.repl = repl
-        self.silent = silent
-
-        self.user_functions = dict()
+        self.user_functions: dict = dict()
         # self.user_functions = HELPER_FNS
-        self.table_stack = Stack()
-        self.call_stack = Stack()
+        self.table_stack: Stack = Stack()
+        self.call_stack: Stack = Stack()
         self.call_stack.push(Namespace({}))
 
-        self.user = user if user else None
+        self.user: Optional[str] = user if user else None
         if self.user:
             self.use(user)
-        self.src = os.path.join(src, "") if src else None
-        self.data = os.path.join(data, "") if data else None
+        self.src: Optional[str] = os.path.join(src, "") if src else None
+        self.data: Optional[str] = os.path.join(data, "") if data else None
 
-        self.cache = {}
+        self.cache: dict = dict()
         self._reset_cached_props()
 
     ### TABLE OPERATIONS ###
 
     @do_post_op(pop=0)
-    def read(self, rel_path, field_types=None) -> Table | None:
-        """
-        READ a CSV table from disk and push it onto the stack.
-        """
+    def read(self, rel_path: str, field_types=None) -> Table | None:
+        """READ a CSV table from disk and push it onto the stack."""
+
         try:
             if self.data:
-                rel_path: str = self.data + rel_path
+                rel_path = self.data + rel_path
 
-            reader: TableReader
-            new_table: Table
-            if field_types is None:
-                reader = TableReader(rel_path)
-                new_table = reader.read()
-            else:
-                reader = TableReader(rel_path, col_types=field_types)
-                new_table = reader.read()
+            new_table: Table = Table()
+            new_table.read(rel_path)
+            # reader: TableReader
+            # if field_types is None:
+            #     reader = TableReader(rel_path)
+            #     new_table = reader.read()
+            # else:
+            #     reader = TableReader(rel_path, col_types=field_types)
+            #     new_table = reader.read()
 
             if new_table.n_rows() == 0:
                 return  # Exception occurred while reading ...
@@ -117,17 +120,16 @@ class Program:
             return
 
     @do_pre_op()
-    def write(self, rel_path=None, format=None):
-        """
-        WRITE the top table on the stack to disk as a CSV.
-        """
+    def write(self, rel_path=None, format=None) -> None:
+        """WRITE the top table on the stack to disk as a CSV."""
+
         try:
             top = self.table_stack.first()
 
             if (format is None) or (format == "CSV"):
-                write_csv(top, rel_path)
+                table_to_csv(top, rel_path)
             elif format == "JSON":
-                write_json(top, rel_path)
+                table_to_json(top, rel_path)
             else:
                 raise Exception("Unrecognized format.")
 

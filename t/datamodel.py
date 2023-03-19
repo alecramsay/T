@@ -10,10 +10,13 @@ from collections import namedtuple
 import re
 import copy
 import pprint
+from csv import DictWriter
+import json
 
 from .constants import *
-from .readwrite import DelimitedFileReader
+from .readwrite import DelimitedFileReader, FileSpec, smart_open
 from .expressions import *
+from .utils import *
 from .udf import UDF
 
 ### PANDAS DATA TYPES ###
@@ -518,6 +521,72 @@ def joined_columns(
             raise ValueError(f"Joined column {col_ref} not found!")
 
     return ordered_columns
+
+
+### WRITE HELPERS ###
+
+
+def table_to_csv(table: Table, rel_path) -> None:
+    """Write a table to a CSV file
+
+    TODO - Re-work this over Pandas
+    """
+
+    try:
+        cf: Optional[str] = (
+            FileSpec(rel_path).abs_path if (rel_path is not None) else None
+        )
+
+        cols: list[str] = table.col_names()
+        header: str = ",".join(table.col_aliases_or_names()) + "\n"
+
+        with smart_open(cf) as handle:
+            writer: DictWriter[str] = DictWriter(handle, fieldnames=cols)
+
+            # Write the header row with aliases (faking out 'writer')
+            handle.write(header)
+
+            col_names: list[str] = table.col_names()
+            for row in table._data.iterrows():
+                mod: dict = dict(zip(col_names, row))
+                # TODO - Handle missing values?
+                # mod = {k: missing_to_str(v) for (k, v) in row.dict().items()}
+                writer.writerow(mod)
+
+    except:
+        raise Exception("Exception writing CSV.")
+
+
+def table_to_json(table: Table, rel_path: str) -> None:
+    """Write a table to a JSON file
+
+    TODO - Re-work this over Pandas
+
+    https://stackoverflow.com/questions/21525328/python-converting-a-list-of-dictionaries-to-json#21525380
+    https://stackoverflow.com/questions/12309269/how-do-i-write-json-data-to-a-file#12309296
+    """
+    try:
+        cf: Optional[str] = (
+            FileSpec(rel_path).abs_path if (rel_path is not None) else None
+        )
+
+        rows: list[dict] = list()
+        col_names: list[str] = table.col_names()
+        mapping: Optional[dict[str, str]] = (
+            table.map_names_to_aliases() if table.has_aliases() else None
+        )
+
+        for row in table._data.iterrows():
+            d1: dict = dict(zip(col_names, row))
+            if mapping:
+                d1 = map_keys(d1, mapping)
+            rows.append(d1)
+
+        with smart_open(cf) as handle:
+            json.dump(rows, handle)
+
+    except:
+        raise Exception("Exception writing JSON.")
 
 
 ### END ###

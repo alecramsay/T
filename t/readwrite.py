@@ -5,15 +5,16 @@ READ/WRITE
 """
 
 import os
+import sys
 import ast
-import datetime
 import dateutil.parser
 import pandas as pd
 from importlib.machinery import SourceFileLoader
 import inspect
+import contextlib
 
 from types import ModuleType
-from typing import Any, Type, Optional
+from typing import Any, Type, Optional, Generator, TextIO
 
 from .constants import *
 from .excel import *
@@ -274,6 +275,28 @@ def is_date_time(s: str) -> bool:
         return True
     except:
         return False
+
+
+### SMART OPEN ###
+
+
+@contextlib.contextmanager
+def smart_open(filename=None) -> Generator[TextIO | TextIO, None, None]:
+    """Write to a file or stdout.
+
+    Patterned after: https://stackoverflow.com/questions/17602878/how-to-handle-both-with-open-and-sys-stdout-nicely
+    """
+
+    if filename and filename != "-":
+        fh: TextIO = open(filename, "w")
+    else:
+        fh = sys.stdout
+
+    try:
+        yield fh
+    finally:
+        if fh is not sys.stdout:
+            fh.close()
 
 
 ### IMPORTING FUNCTIONS ###

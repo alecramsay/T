@@ -5,7 +5,9 @@ UTILITIES
 """
 
 import builtins
-import inspect
+from typing import Any
+
+# import inspect
 
 
 def parse_spec(spec) -> tuple:
@@ -32,7 +34,7 @@ def is_list_of_str(obj) -> bool:
     return isinstance(obj, list) and all(isinstance(elem, str) for elem in obj)
 
 
-def value_width(v, pad=2):
+def value_width(v, pad=2) -> int:
     if v is None:
         return 10
 
@@ -48,7 +50,13 @@ def value_width(v, pad=2):
     return 10
 
 
-def get_builtin_fn(name):
+def map_keys(d: dict, mapping: dict) -> dict:
+    """mapping is a dict of {old_key: new_key}"""
+
+    return {mapping[k]: v for k, v in d.items()}
+
+
+def get_builtin_fn(name) -> Any:
     """
     This works at top level but not w/in the module:
 
