@@ -115,6 +115,8 @@ class Table:
         self._cols: list[Column] = []
         self._data: pd.DataFrame = pd.DataFrame({})
 
+        self.stats: Optional[dict] = None
+
     def read(
         self,
         rel_path: str,
@@ -159,6 +161,9 @@ class Table:
 
     def n_rows(self) -> int:
         return self._data.shape[0]
+
+    def cols(self) -> list[Column]:
+        return self._cols
 
     def nth_row(self, n: int) -> list:
         """Return the nth row as a list of values"""

@@ -134,7 +134,7 @@ class Verb:
 class KeepVerb(Verb):
     """KEEP columns"""
 
-    def __init__(self, x_table, keep_cols) -> None:
+    def __init__(self, x_table: Table, keep_cols: list[str]) -> None:
         super().__init__()
 
         self._x_table = x_table
@@ -154,7 +154,7 @@ class KeepVerb(Verb):
 class DropVerb(Verb):
     """DROP columns"""
 
-    def __init__(self, x_table, drop_cols) -> None:
+    def __init__(self, x_table: Table, drop_cols: list[str]) -> None:
         super().__init__()
 
         self._x_table = x_table
@@ -178,7 +178,7 @@ class DropVerb(Verb):
 class RenameVerb(Verb):
     """RENAME specific columns"""
 
-    def __init__(self, x_table, col_specs) -> None:
+    def __init__(self, x_table: Table, col_specs: list) -> None:
         super().__init__()
 
         self._x_table = x_table
@@ -266,7 +266,7 @@ class SelectVerb(Verb):
 class FirstVerb(Verb):
     """FIRST n rows"""
 
-    def __init__(self, x_table, n, pct=None) -> None:
+    def __init__(self, x_table: Table, n: int, pct: Optional[Any] = None) -> None:
         super().__init__()
 
         self._x_table = x_table
@@ -283,7 +283,7 @@ class FirstVerb(Verb):
 class LastVerb(Verb):
     """LAST n rows"""
 
-    def __init__(self, x_table, n, pct=None) -> None:
+    def __init__(self, x_table: Table, n: int, pct: Optional[Any] = None) -> None:
         super().__init__()
 
         self._x_table = x_table
@@ -300,7 +300,7 @@ class LastVerb(Verb):
 class SampleVerb(Verb):
     """SAMPLE n rows"""
 
-    def __init__(self, x_table, n, pct=None) -> None:
+    def __init__(self, x_table: Table, n: int, pct: Optional[Any] = None) -> None:
         super().__init__()
 
         self._x_table = x_table
@@ -322,7 +322,7 @@ class CastVerb(Verb):
     https://stackoverflow.com/questions/21197774/assign-pandas-dataframe-column-dtypes
     """
 
-    def __init__(self, x_table, cast_cols, dtype: str) -> None:
+    def __init__(self, x_table: Table, cast_cols: list[str], dtype: str) -> None:
         super().__init__()
 
         self._x_table = x_table
@@ -389,7 +389,7 @@ class DeriveVerb(Verb):
 class SortVerb(Verb):
     """SORT rows'"""
 
-    def __init__(self, x_table, col_specs) -> None:
+    def __init__(self, x_table: Table, col_specs: list) -> None:
         super().__init__()
 
         self._x_table = x_table
@@ -423,7 +423,7 @@ class GroupByVerb(Verb):
 
     def __init__(
         self,
-        x_table,
+        x_table: Table,
         by: list[str],
         *,
         only: Optional[list[str]] = None,
@@ -653,7 +653,7 @@ def cols_match(
 class UnionVerb(Verb):
     """UNION"""
 
-    def __init__(self, y_table, x_table) -> None:
+    def __init__(self, y_table: Table, x_table: Table) -> None:
         super().__init__()
 
         self._y_table = y_table

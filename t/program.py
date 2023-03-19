@@ -21,7 +21,7 @@ from .verbs import *
 # HELPER_FNS = mod_fns(helpers)
 
 
-def do_pre_op(required=1) -> Callable[..., Callable[..., Any]]:
+def do_pre_op(required: int = 1) -> Callable[..., Callable[..., Any]]:
     """A decorator to take care of housekeeping tasks *before* each operation."""
 
     def decorate(func) -> Callable[..., Any]:
@@ -42,7 +42,7 @@ def do_pre_op(required=1) -> Callable[..., Callable[..., Any]]:
     return decorate
 
 
-def do_post_op(pop=1) -> Callable[..., Callable[..., Any]]:
+def do_post_op(pop: int = 1) -> Callable[..., Callable[..., Any]]:
     """A decorator to take care of housekeeping tasks *after* each operation."""
 
     def decorate(func) -> Callable[..., Any]:
@@ -60,6 +60,17 @@ def do_post_op(pop=1) -> Callable[..., Callable[..., Any]]:
 
 
 class Program:
+    debug: bool
+    repl: bool
+    silent: bool
+    user_functions: dict
+    table_stack: Stack
+    call_stack: Stack
+    user: Optional[str]
+    src: Optional[str]
+    data: Optional[str]
+    cache: dict
+
     def __init__(
         self,
         user: Optional[str] = None,
@@ -68,24 +79,25 @@ class Program:
         repl=True,
         silent=False,
     ) -> None:
-        self.debug: bool = False
-        self.repl: bool = repl
-        self.silent: bool = silent
+        self.debug = False
+        self.repl = repl
+        self.silent = silent
 
         # TODO - Re-work UDFs
-        self.user_functions: dict = dict()
+        self.user_functions = dict()
         # self.user_functions = HELPER_FNS
-        self.table_stack: Stack = Stack()
-        self.call_stack: Stack = Stack()
+        self.table_stack = Stack()
+        self.call_stack = Stack()
         self.call_stack.push(Namespace({}))
 
-        self.user: Optional[str] = user if user else None
+        self.user = user if user else None
         if self.user:
+            assert user is not None
             self.use(user)
-        self.src: Optional[str] = os.path.join(src, "") if src else None
-        self.data: Optional[str] = os.path.join(data, "") if data else None
+        self.src = os.path.join(src, "") if src else None
+        self.data = os.path.join(data, "") if data else None
 
-        self.cache: dict = dict()
+        self.cache = dict()
         self._reset_cached_props()
 
     ### TABLE OPERATIONS ###
@@ -196,20 +208,20 @@ class Program:
             return
 
     @do_pre_op()
-    def inspect(self, match=None):
+    def inspect(self, match: Optional[str] = None) -> None:
         try:
-            top = self.table_stack.first()
+            top: Table = self.table_stack.first()
 
-            cols = (
-                [x for x in top.cols if match in x.name]
+            cols: list[Column] = (
+                [x for x in top.cols() if match in x.name]
                 if match
-                else copy.deepcopy(top.cols)
+                else copy.deepcopy(top.cols())
             )
-            filtered = True if len(cols) < len(top.cols) else False
+            filtered: bool = True if len(cols) < len(top.cols()) else False
 
             cols = sorted(cols, key=lambda x: x.name)
 
-            name_width = max([len(x.name) for x in cols])
+            name_width: int = max([len(x.name) for x in cols])
 
             print()
             print("TOP TABLE")
@@ -228,46 +240,48 @@ class Program:
                 print("All columns")
             print()
 
-            stats_width = 15
-            stats_headers = [x.upper() for x in AGG_FNS]
+            stats_width: int = 15
+            stats_headers: list[str] = [x.upper() for x in AGG_FNS]
             stats_headers = [x.center(stats_width) for x in stats_headers]
-            stats_header = " ".join(stats_headers)
-            underlines = "-" * stats_width
-            stats_underline = " ".join([underlines] * 5)
+            stats_header: str = " ".join(stats_headers)
+            underlines: str = "-" * stats_width
+            stats_underline: str = " ".join([underlines] * 5)
 
-            template = (
+            template: str = (
                 "{0:<" + str(name_width) + "} {1:<" + str(name_width) + "} {2:<5} {3:<}"
             )
             print(template.format("NAME", "ALIAS", "TYPE", stats_header))
             print(template.format("----", "----", "----", stats_underline))
 
             for col in cols:
-                alias = col.alias if col.alias else "N/A"
+                alias: str = col.alias if col.alias else "N/A"
 
                 # stats
-                if col.type in [int, float]:
-                    values = []
-                    for fn in AGG_FNS:
-                        v = top.stats[col.name][fn]
-                        if not is_missing(v):
-                            if (col.type == float and fn != "count") or fn == "avg":
-                                out = "{:,.3f}".format(v)
-                            else:
-                                out = "{:,d}".format(v)
-                        else:
-                            out = "-"
-                        pad = " " * (stats_width - len(out))
-                        values.append(pad + out)
+                # TODO - Re-work stats over Pandas
+                # if col.type in [int, float]:
+                #     values = []
+                #     for fn in AGG_FNS:
+                #         v = top.stats[col.name][fn]
+                #         if not is_missing(v):
+                #             if (col.type == float and fn != "count") or fn == "avg":
+                #                 out = "{:,.3f}".format(v)
+                #             else:
+                #                 out = "{:,d}".format(v)
+                #         else:
+                #             out = "-"
+                #         pad = " " * (stats_width - len(out))
+                #         values.append(pad + out)
 
-                    stats_display = " ".join(values)
-                else:
-                    stats_display = "Examples: " + ", ".join(
-                        [str(x) for x in top.sample_values(col)]
-                    )
+                #     stats_display = " ".join(values)
+                # else:
+                #     stats_display = "Examples: " + ", ".join(
+                #         [str(x) for x in top.sample_values(col)]
+                #     )
 
-                print(
-                    template.format(col.name, alias, col.type.__name__, stats_display)
-                )
+                # TODO - Re-work stats over Pandas data types: col.type is a string
+                # print(
+                #     template.format(col.name, alias, col.type.__name__, stats_display)
+                # )
 
             print()
         except Exception as e:
@@ -276,13 +290,12 @@ class Program:
 
     @do_pre_op()
     @do_post_op(pop=0)
-    def duplicate(self):
-        """
-        DUPLICATE the table on the top of the stack and push it onto the stack.
-        """
+    def duplicate(self) -> Table | None:
+        """DUPLICATE the table on the top of the stack and push it onto the stack."""
+
         try:
-            top = self.table_stack.first()
-            new_table = copy.deepcopy(top)
+            top: Table = self.table_stack.first()
+            new_table: Table = copy.deepcopy(top)
 
             return new_table
 
@@ -292,15 +305,14 @@ class Program:
 
     @do_pre_op()
     @do_post_op()
-    def sort(self, col_specs):
-        """
-        SORT the table on the top of the stack.
-        """
-        try:
-            top = self.table_stack.first()
+    def sort(self, col_specs: Optional[list]) -> Table | None:
+        """SORT the table on the top of the stack."""
 
-            v = SortVerb(top, col_specs)
-            new_table = v.apply()
+        try:
+            top: Table = self.table_stack.first()
+
+            v: SortVerb = SortVerb(top, col_specs)
+            new_table: Table = v.apply()
 
             return new_table
 
@@ -311,23 +323,25 @@ class Program:
     @do_pre_op(required=2)
     @do_post_op(pop=2)
     def join(
-        self, on: Optional[str | list[str] | list[list[str]]], **kwargs
+        self,
+        *,
+        how: MergeHow = "inner",
+        on: Optional[str | list[str] | list[list[str]]] = None,
+        suffixes: tuple[Optional[str], Optional[str]] = (
+            "_y",
+            "_x",
+        ),  # Note: This is reversed from Pandas, to match T stack semantics.
+        validate: Optional[ValidationOptions] = None,
     ) -> Table | None:
         """JOIN the top two tables on the stack, pop them, and push the result."""
 
         try:
-            suffixes: tuple[Optional[str], Optional[str]] = kwargs.get(
-                "suffixes",
-                (
-                    "_y",
-                    "_x",
-                ),
-            )
-
             x_table: Table = self.table_stack.first()
             y_table: Table = self.table_stack.second()
 
-            v: JoinVerb = JoinVerb(y_table, x_table, on=on, suffixes=suffixes)
+            v: JoinVerb = JoinVerb(
+                y_table, x_table, how=how, on=on, suffixes=suffixes, validate=validate
+            )
             new_table: Table = v.apply()
 
             return new_table
@@ -365,16 +379,15 @@ class Program:
 
     @do_pre_op(required=2)
     @do_post_op(pop=2)
-    def union(self):
-        """
-        UNION the top two tables on the stack, pop them, and push the result.
-        """
-        try:
-            x_table = self.table_stack.first()
-            y_table = self.table_stack.second()
+    def union(self) -> Table | None:
+        """UNION the top two tables on the stack, pop them, and push the result."""
 
-            v = UnionVerb(y_table, x_table)
-            new_table = v.apply()
+        try:
+            x_table: Table = self.table_stack.first()
+            y_table: Table = self.table_stack.second()
+
+            v: UnionVerb = UnionVerb(y_table, x_table)
+            new_table: Table = v.apply()
 
             return new_table
 
@@ -386,15 +399,14 @@ class Program:
 
     @do_pre_op()
     @do_post_op()
-    def keep(self, cols):
-        """
-        KEEP (aka 'select')
-        """
-        try:
-            top = self.table_stack.first()
+    def keep(self, cols: list[str]) -> Table | None:
+        """KEEP (aka 'select')"""
 
-            v = KeepVerb(top, cols)
-            new_table = v.apply()
+        try:
+            top: Table = self.table_stack.first()
+
+            v: KeepVerb = KeepVerb(top, cols)
+            new_table: Table = v.apply()
 
             return new_table
 
@@ -404,15 +416,14 @@ class Program:
 
     @do_pre_op()
     @do_post_op()
-    def drop(self, cols):
-        """
-        DROP (i.e., explicit not-selected/kept)
-        """
-        try:
-            top = self.table_stack.first()
+    def drop(self, cols: list[str]) -> Table | None:
+        """DROP (i.e., explicit not-selected/kept)"""
 
-            v = DropVerb(top, cols)
-            new_table = v.apply()
+        try:
+            top: Table = self.table_stack.first()
+
+            v: DropVerb = DropVerb(top, cols)
+            new_table: Table = v.apply()
 
             return new_table
 
@@ -422,15 +433,14 @@ class Program:
 
     @do_pre_op()
     @do_post_op()
-    def rename(self, col_specs):
-        """
-        RENAME specified columns; keep everything else -- pulled out of SELECT
-        """
-        try:
-            top = self.table_stack.first()
+    def rename(self, col_specs: list) -> Table | None:
+        """RENAME specified columns; keep everything else -- pulled out of SELECT"""
 
-            v = RenameVerb(top, col_specs)
-            new_table = v.apply()
+        try:
+            top: Table = self.table_stack.first()
+
+            v: RenameVerb = RenameVerb(top, col_specs)
+            new_table: Table = v.apply()
 
             return new_table
 
@@ -440,15 +450,14 @@ class Program:
 
     @do_pre_op()
     @do_post_op()
-    def alias(self, col_specs):
-        """
-        ALIAS specified columns. Use original names on write.
-        """
-        try:
-            top = self.table_stack.first()
+    def alias(self, col_specs: list) -> Table | None:
+        """ALIAS specified columns. Use original names on write."""
 
-            v = AliasVerb(top, col_specs)
-            new_table = v.apply()
+        try:
+            top: Table = self.table_stack.first()
+
+            v: AliasVerb = AliasVerb(top, col_specs)
+            new_table: Table = v.apply()
 
             return new_table
 
@@ -458,15 +467,14 @@ class Program:
 
     @do_pre_op()
     @do_post_op()
-    def select(self, expr):
-        """
-        SELECT (aka 'where' or 'filter')
-        """
-        try:
-            top = self.table_stack.first()
+    def select(self, expr: str) -> Table | None:
+        """SELECT (aka 'where' or 'filter')"""
 
-            v = SelectVerb(top, expr)
-            new_table = v.apply()
+        try:
+            top: Table = self.table_stack.first()
+
+            v: SelectVerb = SelectVerb(top, expr)
+            new_table: Table = v.apply()
 
             return new_table
 
@@ -495,15 +503,14 @@ class Program:
 
     @do_pre_op()
     @do_post_op()
-    def first(self, n, pct=None):
-        """
-        FIRST (aka 'take' or 'top')
-        """
-        try:
-            top = self.table_stack.first()
+    def first(self, n: int, pct: Optional[Any] = None) -> Table | None:
+        """FIRST (aka 'take' or 'top')"""
 
-            v = FirstVerb(top, n, pct)
-            new_table = v.apply()
+        try:
+            top: Table = self.table_stack.first()
+
+            v: FirstVerb = FirstVerb(top, n, pct)
+            new_table: Table = v.apply()
 
             return new_table
 
@@ -513,15 +520,14 @@ class Program:
 
     @do_pre_op()
     @do_post_op()
-    def last(self, n, pct=None):
-        """
-        LAST
-        """
-        try:
-            top = self.table_stack.first()
+    def last(self, n: int, pct: Optional[Any] = None) -> Table | None:
+        """LAST"""
 
-            v = LastVerb(top, n, pct)
-            new_table = v.apply()
+        try:
+            top: Table = self.table_stack.first()
+
+            v: LastVerb = LastVerb(top, n, pct)
+            new_table: Table = v.apply()
 
             return new_table
 
@@ -538,7 +544,7 @@ class Program:
             top: Table = self.table_stack.first()
 
             v: SampleVerb = SampleVerb(top, n, pct)
-            new_table = v.apply()
+            new_table: Table = v.apply()
 
             return new_table
 
@@ -548,15 +554,14 @@ class Program:
 
     @do_pre_op()
     @do_post_op()
-    def cast(self, cast_col, type_fn):
-        """
-        CAST
-        """
-        try:
-            top = self.table_stack.first()
+    def cast(self, cast_cols: list[str], type_fn: str) -> Table | None:
+        """CAST"""
 
-            v = CastVerb(top, cast_col, type_fn)
-            new_table = v.apply()
+        try:
+            top: Table = self.table_stack.first()
+
+            v: CastVerb = CastVerb(top, cast_cols, type_fn)
+            new_table: Table = v.apply()
 
             return new_table
 
@@ -566,11 +571,11 @@ class Program:
 
     ### STACK OPERATIONS ###
 
-    def clear(self):
+    def clear(self) -> None:
         self.table_stack.clear()
         self._reset_cached_props()
 
-    def pop(self):
+    def pop(self) -> None:
         if not self.table_stack.isempty():
             self.table_stack.pop()
 
@@ -580,26 +585,25 @@ class Program:
                 self._update_table_shortcuts()
 
     @do_pre_op()
-    def swap(self):
+    def swap(self) -> None:
         self.table_stack.swap()
         self._update_table_shortcuts()
 
     @do_pre_op()
-    def reverse(self):
+    def reverse(self) -> None:
         self.table_stack.reverse()
         self._update_table_shortcuts()
 
     @do_pre_op()
-    def rotate(self):
+    def rotate(self) -> None:
         self.table_stack.rotate
         self._update_table_shortcuts()
 
     ### MISCELLANEOUS ###
 
-    def use(self, rel_path):
-        """
-        USE - Make user-defined functions available.
-        """
+    def use(self, rel_path: str) -> None:
+        """USE - Make user-defined functions available."""
+
         try:
             self.user_functions.update(fns_from_path(rel_path))
 
@@ -621,7 +625,7 @@ class Program:
 
     ### HOUSEKEEPING ROUTINES ###
 
-    def _reset_cached_props(self):
+    def _reset_cached_props(self) -> None:
         """
         Reset cached first (top) table properties for an empty stack
         """
@@ -674,30 +678,34 @@ class Program:
 
 
 class Namespace:
-    def __init__(self, args_dict):
-        self._args_ = args_dict
+    _args: dict[str, str]
 
-    def bind(self, name, default=None):
-        if name in self._args_:
-            return self._args_[name]
+    def __init__(self, args_dict: dict) -> None:
+        self._args = args_dict
+
+    def bind(self, name: str, default: Optional[str] = None) -> str | None:
+        if name in self._args:
+            return self._args[name]
         else:
             return default if default else None
 
 
 @contextmanager
-def Tables(**kwargs):
-    user = kwargs.get("user", None)
-    src = kwargs.get("src", None)
-    data = kwargs.get("data", None)
-    repl = kwargs.get("repl", False)
-
-    T = Program(user=user, src=src, data=data, repl=repl)
+def Tables(
+    *,
+    user: Optional[str] = None,
+    src: Optional[str] = None,
+    data: Optional[str] = None,
+    repl=False,
+    silent=False,
+) -> Generator[Program, None, None]:
+    T: Program = Program(user=user, src=src, data=data, repl=repl, silent=silent)
 
     yield T
     del T
 
 
-def print_execution_exception(verb, e):
+def print_execution_exception(verb, e) -> None:
     print("Exception executing '{0}' command: ".format(verb, e))
 
 

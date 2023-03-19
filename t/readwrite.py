@@ -26,7 +26,7 @@ PREREAD_LINES: int = 1000
 
 
 class FileSpec:
-    def __init__(self, path: str, name=None) -> None:
+    def __init__(self, path: str, name: Optional[str] = None) -> None:
         file_name: str
         file_extension: str
         file_name, file_extension = os.path.splitext(path)
