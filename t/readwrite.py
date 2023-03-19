@@ -1,3 +1,4 @@
+# readwrite.py:
 #!/usr/bin/env python3
 
 """
@@ -26,15 +27,20 @@ PREREAD_LINES: int = 1000
 
 
 class FileSpec:
+    rel_path: str
+    abs_path: str
+    name: str
+    extension: str
+
     def __init__(self, path: str, name: Optional[str] = None) -> None:
         file_name: str
         file_extension: str
         file_name, file_extension = os.path.splitext(path)
 
-        self.rel_path: str = path
-        self.abs_path: str = os.path.abspath(path)
-        self.name: str = name.lower() if (name) else os.path.basename(file_name).lower()
-        self.extension: str = file_extension
+        self.rel_path = path
+        self.abs_path = os.path.abspath(path)
+        self.name = name.lower() if (name) else os.path.basename(file_name).lower()
+        self.extension = file_extension
 
 
 StandardDelimiters: dict[str, str] = {
@@ -62,6 +68,10 @@ class DelimitedFileReader:
         col_types (list, optional): List of column types. Defaults to None.
     """
 
+    file: str
+    delimiter: str
+    header: int | None
+
     def __init__(
         self,
         rel_path: str,
@@ -69,10 +79,10 @@ class DelimitedFileReader:
         delimiter="comma",
         header=True,
     ) -> None:
-        self.file: str = FileSpec(rel_path).abs_path
-        self.delimiter: str = StandardDelimiters[delimiter]
+        self.file = FileSpec(rel_path).abs_path
+        self.delimiter = StandardDelimiters[delimiter]
         # Translate to Pandas' header parameter
-        self.header: int | None = 0 if header else None
+        self.header = 0 if header else None
 
     def read(self) -> pd.DataFrame:
         return read_delimited_file(
@@ -163,10 +173,14 @@ class TypeInferencer:
     - The Pandas datetime types
     """
 
+    n: int
+    lengths: set[int]
+    types: set
+
     def __init__(self) -> None:
-        self.n: int = 0
-        self.lengths: set[int] = set()
-        self.types: set = set()
+        self.n = 0
+        self.lengths = set()
+        self.types = set()
 
     def add(self, example: str) -> None:
         self.n += 1
@@ -281,7 +295,9 @@ def is_date_time(s: str) -> bool:
 
 
 @contextlib.contextmanager
-def smart_open(filename=None) -> Generator[TextIO | TextIO, None, None]:
+def smart_open(
+    filename: Optional[str] = None,
+) -> Generator[TextIO | TextIO, None, None]:
     """Write to a file or stdout.
 
     Patterned after: https://stackoverflow.com/questions/17602878/how-to-handle-both-with-open-and-sys-stdout-nicely
@@ -302,7 +318,7 @@ def smart_open(filename=None) -> Generator[TextIO | TextIO, None, None]:
 ### IMPORTING FUNCTIONS ###
 
 
-def fns_from_path(rel_path) -> dict[str, ModuleType]:
+def fns_from_path(rel_path: str) -> dict[str, ModuleType]:
     abs_path: str = FileSpec(rel_path).abs_path
 
     mod: ModuleType = SourceFileLoader("module.name", abs_path).load_module()
