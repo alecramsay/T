@@ -1,3 +1,4 @@
+# utils.py
 #!/usr/bin/env python3
 
 """
@@ -10,7 +11,7 @@ from typing import Any
 # import inspect
 
 
-def parse_spec(spec) -> tuple:
+def parse_spec(spec: str | list[str] | tuple[str]) -> tuple:
     """Parse a spec singleton -or- pair.
 
     Examples:
@@ -30,11 +31,11 @@ def parse_spec(spec) -> tuple:
     return first, second
 
 
-def is_list_of_str(obj) -> bool:
+def is_list_of_str(obj: Any) -> bool:
     return isinstance(obj, list) and all(isinstance(elem, str) for elem in obj)
 
 
-def value_width(v, pad=2) -> int:
+def value_width(v: Any, pad: int = 2) -> int:
     if v is None:
         return 10
 
@@ -56,12 +57,8 @@ def map_keys(d: dict, mapping: dict) -> dict:
     return {mapping[k]: v for k, v in d.items()}
 
 
-def get_builtin_fn(name) -> Any:
-    """Get a builtin function by name.
-    This works at top level but not w/in the module:
-
-    return getattr(globals()["__builtins__"], name)
-    """
+def get_builtin_fn(name: str) -> Any:
+    """Get a builtin function by name."""
 
     return getattr(builtins, name)
 
@@ -75,7 +72,7 @@ def get_builtin_fn(name) -> Any:
 ### MISSING ###
 
 
-def is_missing(v) -> bool:
+def is_missing(v: Any) -> bool:
     """Return True if v is missing, else False.
 
     TODO - Handle missing?
