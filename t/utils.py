@@ -11,7 +11,7 @@ from typing import Any
 # import inspect
 
 
-def parse_spec(spec: str | list[str] | tuple[str]) -> tuple:
+def parse_spec(spec: str | list[str] | tuple) -> tuple:
     """Parse a spec singleton -or- pair.
 
     Examples:
@@ -25,8 +25,16 @@ def parse_spec(spec: str | list[str] | tuple[str]) -> tuple:
     parse_spec(spec)
     """
 
-    first: str = spec[0] if (type(spec) in [list, tuple]) else spec
-    second: str = spec[1] if (type(spec) in [list, tuple]) else spec
+    first: str
+    second: str
+
+    if isinstance(spec, list) or isinstance(spec, tuple):
+        assert isinstance(spec, list) or isinstance(spec, tuple)
+        first = spec[0]
+        second = spec[1]
+    else:
+        first = spec
+        second = spec
 
     return first, second
 
