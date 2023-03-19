@@ -160,6 +160,19 @@ class Table:
     def n_rows(self) -> int:
         return self._data.shape[0]
 
+    def nth_row(self, n: int) -> list:
+        """Return the nth row as a list of values"""
+
+        return self._data.loc[n, :].values.flatten().tolist()
+
+    def first_n_rows(self, n: int) -> list:
+        """Return the first n rows as a list of lists of values
+
+        TODO - Verify
+        """
+
+        return self._data.head(n).values.tolist()
+
     def col_names(self) -> list[str]:
         return [c.name for c in self._cols]
 

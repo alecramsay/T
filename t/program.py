@@ -100,6 +100,7 @@ class Program:
 
             new_table: Table = Table()
             new_table.read(rel_path)
+            # TODO - DELETE
             # reader: TableReader
             # if field_types is None:
             #     reader = TableReader(rel_path)
@@ -138,29 +139,33 @@ class Program:
             return
 
     @do_pre_op()
-    def show(self, nrows=None):
-        """
-        SHOW the top N rows to STDOUT with a header
-        """
+    def show(self, nrows: Optional[int] = None) -> None:
+        """SHOW the top N rows to STDOUT with a header"""
+
         try:
-            top = self.table_stack.first()
+            top: Table = self.table_stack.first()
 
             if top.n_rows() > 0:
-                header = top.col_names()
-                sample = top.rows[0].values()
+                header: list[str] = top.col_names()
+                sample: list = top.nth_row(0)
                 # sample = top.rows[0].values()
-                n = nrows if (nrows is not None) else top.n_rows()
+                n: int = nrows if (nrows is not None) else top.n_rows()
 
-                margin = 5
-                pad = 5
-                header_width = sum([len(x) + pad for x in header]) + margin
-                row_width = sum([value_width(x, pad) + pad for x in sample]) + margin
-                width = max(header_width, row_width)
+                margin: int = 5
+                pad: int = 5
+                header_width: int = sum([len(x) + pad for x in header]) + margin
+                row_width: int = (
+                    sum([value_width(x, pad) + pad for x in sample]) + margin
+                )
+                width: int = max(header_width, row_width)
 
-                pp = pprint.PrettyPrinter(width=width, compact=False)
+                pp: pprint.PrettyPrinter = pprint.PrettyPrinter(
+                    width=width, compact=False
+                )
 
-                rows = [list(row.values()) for row in top.rows[0:n]]
-                out = [header] + rows
+                rows: list[list[str]] = top.first_n_rows(n)
+                # rows: list[list[str]] = [list(row.values()) for row in top.rows[0:n]]
+                out: list[list[str]] = [header] + rows
 
                 pp.pprint(out)
 
@@ -171,15 +176,14 @@ class Program:
             print_execution_exception("show", e)
             return
 
-    def history(self, ncommands=None):
-        """
-        Echo the last N commands entered in the REPL to STDOUT.
-        """
+    def history(self, ncommands: Optional[int] = None) -> None:
+        """Echo the last N commands entered in the REPL to STDOUT."""
+
         try:
             with open("logs/history.log", "r") as fh:
-                lines = fh.readlines()
-                nlines = len(lines)
-                count = 0
+                lines: list[str] = fh.readlines()
+                nlines: int = len(lines)
+                count: int = 0
 
                 for line in lines:
                     count += 1
