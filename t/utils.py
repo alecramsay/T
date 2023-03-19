@@ -4,6 +4,9 @@
 UTILITIES
 """
 
+import builtins
+import inspect
+
 
 def parse_spec(spec) -> tuple:
     """Parse a spec singleton -or- pair.
@@ -27,6 +30,39 @@ def parse_spec(spec) -> tuple:
 
 def is_list_of_str(obj) -> bool:
     return isinstance(obj, list) and all(isinstance(elem, str) for elem in obj)
+
+
+def value_width(v, pad=2):
+    if v is None:
+        return 10
+
+    if type(v) is str:
+        return len(v)
+
+    if type(v) in [int, float]:
+        return len(str(v))
+
+    if type(v) is list:
+        return sum([value_width(x) + pad for x in v])
+
+    return 10
+
+
+def get_builtin_fn(name):
+    """
+    This works at top level but not w/in the module:
+
+    return getattr(globals()["__builtins__"], name)
+    """
+
+    return getattr(builtins, name)
+
+
+# def mod_fns(mod):
+#     pairs = inspect.getmembers(mod, inspect.isfunction)
+#     fns_dict = {k: v for k, v in pairs}
+
+#     return fns_dict
 
 
 ### END ###
