@@ -1,3 +1,4 @@
+# udf.py
 #!/usr/bin/env python3
 
 """
@@ -12,9 +13,12 @@ from .readwrite import fns_from_path
 
 
 class UDF:
+    user_fns: dict[str, Any]
+    ref_counts: dict[str, int]
+
     def __init__(self, rel_path: str) -> None:
-        self.user_fns: dict[str, Any] = fns_from_path(rel_path)
-        self.ref_counts: dict[str, int] = defaultdict(int)
+        self.user_fns = fns_from_path(rel_path)
+        self.ref_counts = defaultdict(int)
 
     def names(self) -> list[str]:
         """Return a list of user-defined function names."""
