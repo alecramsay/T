@@ -1,3 +1,4 @@
+# stack.py
 #!/usr/bin/env python3
 
 """
@@ -9,8 +10,10 @@ from typing import Any
 
 
 class Stack:
+    _queue_: deque[Any]
+
     def __init__(self) -> None:
-        self._queue_: deque[Any] = deque([])
+        self._queue_ = deque([])
 
     def push(self, item) -> None:
         self._queue_.appendleft(item)
