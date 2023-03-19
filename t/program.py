@@ -8,6 +8,7 @@ import copy
 import pprint
 from functools import wraps
 from contextlib import contextmanager
+from typing import Any, Callable, Optional
 
 from .constants import *
 from .utils import *
@@ -20,21 +21,19 @@ from .verbs import *
 # HELPER_FNS = mod_fns(helpers)
 
 
-def do_pre_op(required=1):
-    """
-    A decorator to take care of housekeeping tasks *before* each operation.
-    """
+def do_pre_op(required=1) -> Callable[..., Callable[..., Any]]:
+    """A decorator to take care of housekeeping tasks *before* each operation."""
 
-    def decorate(func):
+    def decorate(func) -> Callable[..., Any]:
         @wraps(func)
-        def wrapper(self, *args, **kwargs):
+        def wrapper(self, *args, **kwargs) -> Any:
             if required == 1 and self.table_stack.len() < required:
                 raise Exception("No tables on the stack.")
 
             if required > 1 and self.table_stack.len() < required:
                 raise Exception("Not enough tables on the stack.")
 
-            new_table = func(self, *args, **kwargs)
+            new_table: Table = func(self, *args, **kwargs)
 
             return new_table
 
@@ -43,15 +42,13 @@ def do_pre_op(required=1):
     return decorate
 
 
-def do_post_op(pop=1):
-    """
-    A decorator to take care of housekeeping tasks *after* each operation.
-    """
+def do_post_op(pop=1) -> Callable[..., Callable[..., Any]]:
+    """A decorator to take care of housekeeping tasks *after* each operation."""
 
-    def decorate(func):
+    def decorate(func) -> Callable[..., Any]:
         @wraps(func)
-        def wrapper(self, *args, **kwargs):
-            new_table = func(self, *args, **kwargs)
+        def wrapper(self, *args, **kwargs) -> Any:
+            new_table: Table = func(self, *args, **kwargs)
             self._update_stack(new_table, pop)
             self._display_table()
 
@@ -312,10 +309,7 @@ class Program:
     def join(
         self, on: Optional[str | list[str] | list[list[str]]], **kwargs
     ) -> Table | None:
-        """JOIN the top two tables on the stack, pop them, and push the result.
-
-        TODO - Extend the interface for new join functionality.
-        """
+        """JOIN the top two tables on the stack, pop them, and push the result."""
 
         try:
             suffixes: tuple[Optional[str], Optional[str]] = kwargs.get(

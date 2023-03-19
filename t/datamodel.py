@@ -527,10 +527,7 @@ def joined_columns(
 
 
 def table_to_csv(table: Table, rel_path: Optional[str]) -> None:
-    """Write a table to a CSV file
-
-    TODO - Re-work this over Pandas
-    """
+    """Write a table to a CSV file"""
 
     try:
         cf: Optional[str] = (
@@ -559,8 +556,6 @@ def table_to_csv(table: Table, rel_path: Optional[str]) -> None:
 
 def table_to_json(table: Table, rel_path: Optional[str]) -> None:
     """Write a table to a JSON file
-
-    TODO - Re-work this over Pandas
 
     https://stackoverflow.com/questions/21525328/python-converting-a-list-of-dictionaries-to-json#21525380
     https://stackoverflow.com/questions/12309269/how-do-i-write-json-data-to-a-file#12309296
