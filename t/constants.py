@@ -1,11 +1,11 @@
+# constants.py
 #!/usr/bin/env python3
 
 """
 CONSTANTS
 """
 
-# TYPE HINT
-TOK_DELIM_SPEC: str = "[\s\(\)=]"
+TOK_DELIM_SPEC: str = "[\\s\\(\\)=]"
 
 # Canonical pair indices
 BEG: int = 0
