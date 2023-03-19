@@ -1,3 +1,4 @@
+# excel.py
 #!/usr/bin/env python3
 
 """
@@ -8,8 +9,7 @@ from typing import Generator
 
 
 def excel_column_names() -> Generator[str, None, None]:
-    """
-    Generate first 702 (= 26 * 27) Excel column names:
+    """Generate first 702 (= 26 * 27) Excel column names:
     A-Z, AA-AZ, BA-BZ, ..., XA-XZ, YA-YZ, ZA-ZZ
     """
 
@@ -20,9 +20,8 @@ def excel_column_names() -> Generator[str, None, None]:
 
 
 def first_n_excel_column_names(n: int) -> list[str]:
-    """
-    Return the first n Excel column names
-    """
+    """Return the first n Excel column names"""
+
     default_names: list[str] = list()
 
     i: int = 1
@@ -36,9 +35,8 @@ def first_n_excel_column_names(n: int) -> list[str]:
 
 
 def excel_column_to_index(name: str) -> int:
-    """
-    An Excel column name to a one-based index
-    """
+    """An Excel column name to a one-based index"""
+
     if len(name) == 1:
         return ord(name) - ord("A") + 1
 
@@ -49,8 +47,7 @@ def excel_column_to_index(name: str) -> int:
 
 
 def index_to_excel_column_name(n: int) -> str:
-    """
-    A one-based indexed to the Excel column name
+    """A one-based indexed to the Excel column name
 
     for i in range(1, 26 * 27 + 1):
         print(f"{i:3d} {index_to_excel_column_name(i):2s}")
