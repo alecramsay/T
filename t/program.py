@@ -121,7 +121,7 @@ class Program:
             #     reader = TableReader(rel_path, col_types=field_types)
             #     new_table = reader.read()
 
-            if new_table.n_rows() == 0:
+            if new_table.n_rows == 0:
                 return  # Exception occurred while reading ...
 
             return new_table
@@ -157,11 +157,11 @@ class Program:
         try:
             top: Table = self.table_stack.first()
 
-            if top.n_rows() > 0:
+            if top.n_rows > 0:
                 header: list[str] = top.col_names()
                 sample: list = top.nth_row(0)
                 # sample = top.rows[0].values()
-                n: int = nrows if (nrows is not None) else top.n_rows()
+                n: int = nrows if (nrows is not None) else top.n_rows
 
                 margin: int = 5
                 pad: int = 5
@@ -226,14 +226,14 @@ class Program:
             print()
             print("TOP TABLE")
             print("---------")
-            print("# rows:", top.n_rows())
-            print("# cols:", top.n_cols())
+            print("# rows:", top.n_rows)
+            print("# cols:", top.n_cols)
             print()
 
             if filtered:
                 print(
                     "{0} of {1} columns matching '{2}'".format(
-                        len(cols), top.n_cols(), match
+                        len(cols), top.n_cols, match
                     )
                 )
             else:
@@ -658,8 +658,8 @@ class Program:
 
         # self.rows = top.rows
         self.cols = top.col_names()
-        self.ncols = top.n_cols()
-        self.nrows = top.n_rows()
+        self.ncols = top.n_cols
+        self.nrows = top.n_rows
 
         self.stats = top.stats
 

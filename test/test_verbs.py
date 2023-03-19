@@ -37,8 +37,8 @@ class TestRowVerbs:
         f: KeepVerb = KeepVerb(x_table, keep_refs)
         new_table: Table = f.apply()
 
-        assert x_table.n_cols() == 12
-        assert new_table.n_cols() == 2
+        assert x_table.n_cols == 12
+        assert new_table.n_cols == 2
 
         # Change column order
         sample: str = "sample-01-comma.csv"
@@ -50,7 +50,7 @@ class TestRowVerbs:
         new_table: Table = f.apply()
 
         assert new_table.col_names() == keep_refs
-        assert new_table.n_cols() == 2
+        assert new_table.n_cols == 2
 
     def test_drop_verb(self) -> None:
         sample: str = "sample-01-comma.csv"
@@ -71,8 +71,8 @@ class TestRowVerbs:
         f: DropVerb = DropVerb(x_table, drop_refs)
         new_table: Table = f.apply()
 
-        assert x_table.n_cols() == 12
-        assert new_table.n_cols() == 3
+        assert x_table.n_cols == 12
+        assert new_table.n_cols == 3
 
     def test_rename_verb(self) -> None:
         sample: str = "2020_census_AZ(PARTIAL).csv"
@@ -152,7 +152,7 @@ class TestRowVerbs:
         f: SelectVerb = SelectVerb(x_table, expr)
         f.apply()
 
-        actual: int = f._new_table.n_rows()
+        actual: int = f._new_table.n_rows
         expected: int = 0
 
         assert actual == expected
@@ -169,7 +169,7 @@ class TestRowVerbs:
         f = SelectVerb(x_table, expr)
         f.apply()
 
-        actual = f._new_table.n_rows()
+        actual = f._new_table.n_rows
         expected = 1
 
         assert actual == expected
@@ -207,7 +207,7 @@ class TestRowVerbs:
         f: FirstVerb = FirstVerb(x_table, 10)
         f.apply()
 
-        actual: int = f._new_table.n_rows()
+        actual: int = f._new_table.n_rows
         expected: int = 10
 
         assert actual == expected
@@ -216,7 +216,7 @@ class TestRowVerbs:
         f = FirstVerb(x_table, 20, "%")
         f.apply()
 
-        actual = f._new_table.n_rows()
+        actual = f._new_table.n_rows
         expected = 20
 
         assert actual == expected
@@ -230,7 +230,7 @@ class TestRowVerbs:
         f: LastVerb = LastVerb(x_table, 10)
         f.apply()
 
-        actual: int = f._new_table.n_rows()
+        actual: int = f._new_table.n_rows
         expected: int = 10
 
         assert actual == expected
@@ -239,7 +239,7 @@ class TestRowVerbs:
         f = LastVerb(x_table, 20, "%")
         f.apply()
 
-        actual = f._new_table.n_rows()
+        actual = f._new_table.n_rows
         expected = 20
 
         assert actual == expected
@@ -253,7 +253,7 @@ class TestRowVerbs:
         f: SampleVerb = SampleVerb(x_table, 10)
         f.apply()
 
-        actual: int = f._new_table.n_rows()
+        actual: int = f._new_table.n_rows
         expected: int = 10
 
         assert actual == expected
@@ -262,7 +262,7 @@ class TestRowVerbs:
         f = SampleVerb(x_table, 20, "%")
         f.apply()
 
-        actual = f._new_table.n_rows()
+        actual = f._new_table.n_rows
         expected = 20
 
         assert actual == expected
@@ -314,7 +314,7 @@ class TestRowVerbs:
         f: DeriveVerb = DeriveVerb(x_table, name, expr)
         new_table: Table = f.apply()
 
-        actual: int = new_table.n_cols()
+        actual: int = new_table.n_cols
         expected: int = 4
 
         assert actual == expected
@@ -333,7 +333,7 @@ class TestRowVerbs:
         f: DeriveVerb = DeriveVerb(x_table, name, expr)
         new_table: Table = f.apply()
 
-        actual: int = new_table.n_cols()
+        actual: int = new_table.n_cols
         expected: int = 4
 
         assert actual == expected
@@ -385,7 +385,7 @@ class TestTableVerbs:
         f.apply()
 
         assert isinstance(f._new_table, Table)
-        assert f._new_table.n_cols() == (x_table.n_cols() + y_table.n_cols() - 1)
+        assert f._new_table.n_cols == (x_table.n_cols + y_table.n_cols - 1)
 
         ## Explicit join type
         join_type: str = "inner"
@@ -594,8 +594,8 @@ class TestTableVerbs:
 
         assert True
 
-        assert f._new_table.n_rows() == 13
-        assert f._new_table.n_cols() == 2
+        assert f._new_table.n_rows == 13
+        assert f._new_table.n_cols == 2
         assert f._new_table._data.iloc[0]["Total_sum"] == 1115482
 
         # Two by columns
@@ -606,8 +606,8 @@ class TestTableVerbs:
 
         assert True
 
-        assert f._new_table.n_rows() == 101
-        assert f._new_table.n_cols() == 3
+        assert f._new_table.n_rows == 101
+        assert f._new_table.n_cols == 3
         assert f._new_table._data.iloc[0]["Total_sum"] == 1115482
 
         # Bad by column
@@ -672,7 +672,7 @@ class TestTableVerbs:
         f.apply()
 
         assert f._new_table is not None
-        actual: int = f._new_table.n_rows()
+        actual: int = f._new_table.n_rows
         expected: int = 6
         assert actual == expected
 

@@ -166,10 +166,12 @@ class Table:
 
     ### PUBLIC METHODS ###
 
+    @property
     def n_cols(self) -> int:
         assert len(self._cols) == self._data.shape[1]
         return len(self._cols)
 
+    @property
     def n_rows(self) -> int:
         return self._data.shape[0]
 
@@ -371,7 +373,7 @@ class Table:
         self._cols.append(new_col)
 
         # Cross-check the # columns matches the # in the dataframe
-        self.n_cols()
+        self.n_cols
 
     def do_sort(self, by_list: list[str], ascending_list: list[bool]) -> None:
         """Sort the table by the specified columns in the specified order"""
@@ -426,7 +428,7 @@ def do_union(y_table: Table, x_table: Table) -> Table:
 
 
 def columns_match(table1: Table, table2: Table, match_names: bool = True) -> bool:
-    if table1.n_cols() != table2.n_cols():
+    if table1.n_cols != table2.n_cols:
         return False
 
     if match_names and not all(

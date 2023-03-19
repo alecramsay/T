@@ -270,7 +270,7 @@ class FirstVerb(Verb):
         super().__init__()
 
         self._x_table = x_table
-        self._take: int = n if not pct else max(round(n * (x_table.n_rows() / 100)), 1)
+        self._take: int = n if not pct else max(round(n * (x_table.n_rows / 100)), 1)
 
     def apply(self) -> Table:
         assert self._x_table is not None
@@ -287,7 +287,7 @@ class LastVerb(Verb):
         super().__init__()
 
         self._x_table = x_table
-        self._take: int = n if not pct else max(round(n * (x_table.n_rows() / 100)), 1)
+        self._take: int = n if not pct else max(round(n * (x_table.n_rows / 100)), 1)
 
     def apply(self) -> Table:
         assert self._x_table is not None
@@ -304,7 +304,7 @@ class SampleVerb(Verb):
         super().__init__()
 
         self._x_table = x_table
-        self._take: int = n if not pct else max(round(n * (x_table.n_rows() / 100)), 1)
+        self._take: int = n if not pct else max(round(n * (x_table.n_rows / 100)), 1)
 
     def apply(self) -> Table:
         assert self._x_table is not None
