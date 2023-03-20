@@ -1,3 +1,4 @@
+# program.py
 #!/usr/bin/env python3
 
 """
@@ -60,6 +61,8 @@ def do_post_op(pop: int = 1) -> Callable[..., Callable[..., Any]]:
 
 
 class Program:
+    """An environment for running a T program."""
+
     debug: bool
     repl: bool
     silent: bool
@@ -70,6 +73,11 @@ class Program:
     src: Optional[str]
     data: Optional[str]
     cache: dict
+
+    stats: Optional[dict]
+    cols: Optional[list[str]]
+    ncols: Optional[int]
+    nrows: Optional[int]
 
     def __init__(
         self,
@@ -112,17 +120,9 @@ class Program:
 
             new_table: Table = Table()
             new_table.read(rel_path)
-            # TODO - DELETE
-            # reader: TableReader
-            # if field_types is None:
-            #     reader = TableReader(rel_path)
-            #     new_table = reader.read()
-            # else:
-            #     reader = TableReader(rel_path, col_types=field_types)
-            #     new_table = reader.read()
 
             if new_table.n_rows == 0:
-                return  # Exception occurred while reading ...
+                raise Exception("No rows in table.")
 
             return new_table
 
@@ -160,7 +160,6 @@ class Program:
             if top.n_rows > 0:
                 header: list[str] = top.col_names()
                 sample: list = top.nth_row(0)
-                # sample = top.rows[0].values()
                 n: int = nrows if (nrows is not None) else top.n_rows
 
                 margin: int = 5
@@ -176,7 +175,6 @@ class Program:
                 )
 
                 rows: list[list[str]] = top.first_n_rows(n)
-                # rows: list[list[str]] = [list(row.values()) for row in top.rows[0:n]]
                 out: list[list[str]] = [header] + rows
 
                 pp.pprint(out)
@@ -305,13 +303,12 @@ class Program:
 
     @do_pre_op()
     @do_post_op()
-    def sort(self, col_specs: Optional[list]) -> Table | None:
+    def sort(self, col_specs: list) -> Table | None:
         """SORT the table on the top of the stack."""
 
         try:
             top: Table = self.table_stack.first()
 
-            # TYPE HINT
             v: SortVerb = SortVerb(top, col_specs)
             new_table: Table = v.apply()
 
@@ -340,6 +337,7 @@ class Program:
             x_table: Table = self.table_stack.first()
             y_table: Table = self.table_stack.second()
 
+            # TYPE HINT
             v: JoinVerb = JoinVerb(
                 y_table, x_table, how=how, on=on, suffixes=suffixes, validate=validate
             )
@@ -366,6 +364,7 @@ class Program:
         * For the whole table -or- by a specified column
         * Push the new table on the stack; don't pop the old table
         """
+
         try:
             top: Table = self.table_stack.first()
 
@@ -612,68 +611,50 @@ class Program:
             print("Exception loading user-defined functions: ", e)
             return
 
-    """
-    LEGACY
-    def echo(self, var):
-        try:
-            result = getattr(self, var)
-            print(result)
-
-        except Exception as e:
-            print_execution_exception("echo", e)
-            return
-    """
-
     ### HOUSEKEEPING ROUTINES ###
 
     def _reset_cached_props(self) -> None:
-        """
-        Reset cached first (top) table properties for an empty stack
-        """
+        """Reset cached first (top) table properties for an empty stack"""
+
         self.stats = None
-        # self.rows = None
         self.cols = None
         self.ncols = None
         self.nrows = None
 
-    def _update_stack(self, new_table, pop=1):
-        """
-        Implement stack semantics.
-        """
+    def _update_stack(self, new_table, pop=1) -> None:
+        """Implement stack semantics."""
+
         for _ in range(pop):
             self.table_stack.pop()
 
         self.table_stack.push(new_table)
 
-        # TODO - Why did I have this condition?
-        # if pop > 0:
-        # TODO - Re-work this over Pandas
-        # self._calc_column_stats()
+        self._calc_column_stats()
         self._update_table_shortcuts()
 
-    def _update_table_shortcuts(self):
-        """
-        Cache table stats on the program object, so they can be referenced w/o stack ops.
-        """
-        top = self.table_stack.first()
+    def _update_table_shortcuts(self) -> None:
+        """Cache table stats on the program object, so they can be referenced w/o stack ops."""
 
-        # self.rows = top.rows
+        top: Table = self.table_stack.first()
+
         self.cols = top.col_names()
         self.ncols = top.n_cols
         self.nrows = top.n_rows
 
         self.stats = top.stats
 
-    # TODO - Re-work this over Pandas
-    # def _calc_column_stats(self):
-    #     """Automatically calc column statistics for a table"""
+    def _calc_column_stats(self) -> None:
+        """Automatically calc column statistics for a table"""
 
-    #     top = self.table_stack.first()
-    #     agg_cols = [col for col in top.cols if col.type in [int, float]]
+        top: Table = self.table_stack.first()
+        agg_cols: list[Column] = [col for col in top.cols() if col.type in [int, float]]
 
-    #     top.stats = aggregate_cols(None, top, agg_cols)
+        # TODO - Re-work this over Pandas
+        # top.stats = aggregate_cols(None, top, agg_cols)
 
-    def _display_table(self):
+        pass
+
+    def _display_table(self) -> None:
         if (len(self.call_stack._queue_) == 1) and self.repl and not self.silent:
             self.show(5)
 
