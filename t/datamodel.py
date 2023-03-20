@@ -464,6 +464,13 @@ def do_join(
     - Verify the parameters before calling this
     """
 
+    # TYPE HINT - WTF ... why does this work?
+    # assert suffixes[0] is not None or suffixes[1] is not None
+    # swapped: tuple[str, str] | tuple[None, str] | tuple[str, None] = (
+    #     suffixes[1],
+    #     suffixes[0],
+    # )
+
     join_table: Table = Table()
     if validate:
         join_table._data = pd.merge(
