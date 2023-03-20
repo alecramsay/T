@@ -11,6 +11,8 @@ TOK_DELIM_SPEC: str = "[\\s\\(\\)=]"
 BEG: int = 0
 END: int = 1
 
+ERROR: str = "_error_"
+
 ### FOR TESTING ###
 
 CITIES_DF: dict[str, list] = {
