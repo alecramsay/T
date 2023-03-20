@@ -8,15 +8,17 @@ from T.lang import *
 
 
 class TestLangHelpers:
-    def test_iskeywordarg(self) -> None:
-        assert iskeywordarg("a=b")
-        assert not iskeywordarg("a=")
-        assert not iskeywordarg("=b")
-        assert not iskeywordarg("a")
+    # TODO - New
+    def test_foo(self) -> None:
+        assert True
 
-    def test_extract_args(self) -> None:
-        pass  # TODO
+    # def test_iskeywordarg(self) -> None:
+    #     assert iskeywordarg("a=b")
+    #     assert not iskeywordarg("a=")
+    #     assert not iskeywordarg("=b")
+    #     assert not iskeywordarg("a")
 
+    # TODO - Legacy
     # def test_parse_args(self) -> None:
     #     # Positional, no keywords
     #     command: str = "foo(bar, bas, bat)"

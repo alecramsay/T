@@ -598,16 +598,24 @@ class DebugMode:
 
 # TODO - Re-work these over PyParsing
 
-args_def: ParserElement = Suppress(Word(identchars, identbodychars)) + nested_expr()
+# args_def: ParserElement = Suppress(Word(identchars, identbodychars)) + nested_expr()
 
 
-def extract_args(command: str) -> list[str]:
-    """Extract arguments from a command string.
+# def extract_args(command: str) -> list[str]:
+#     """Extract arguments from a command string.
 
-    https://stackoverflow.com/questions/44170597/pyparsing-nestedexpr-and-nested-parentheses
-    """
+#     https://stackoverflow.com/questions/44170597/pyparsing-nestedexpr-and-nested-parentheses
+#     """
 
-    return list(args_def.parseString(command))[0]
+#     return list(args_def.parseString(command))[0]
+
+# def iskeywordarg(arg: str) -> bool:
+#     """Return True if the argument is a keyword argument."""
+
+#     i: int = arg.find("=")
+#     contains_equals: bool = True if (i > -1) and (i > 0 and i < len(arg) - 1) else False
+
+#     return contains_equals
 
 
 def parse_args(args) -> tuple[list[str], dict[str, Any]]:
@@ -642,17 +650,8 @@ def isNargsOK(verb, n, least, most=None):
     return True
 
 
-def iskeywordarg(arg: str) -> bool:
-    """Return True if the argument is a keyword argument."""
-
-    i: int = arg.find("=")
-    contains_equals: bool = True if (i > -1) and (i > 0 and i < len(arg) - 1) else False
-
-    return contains_equals
-
-
-# def iskeywordarg(arg):
-#     return True if arg.keyword else False
+def iskeywordarg(arg):
+    return True if arg.keyword else False
 
 
 def parse_keyword_arg(arg):
