@@ -1,5 +1,5 @@
-#!/usr/bin/env python3
 # reader.py
+#!/usr/bin/env python3
 
 """
 REPL INPUT WITH AUTOCOMPLETE
@@ -22,6 +22,8 @@ readline.parse_and_bind("tab: complete")
 
 
 def make_input_fn(is_session_rooted, cols: list[str]) -> Callable[..., str]:
+    """Autocomplete function for the REPL."""
+
     def complete(text: str, state: int) -> str | None:
         try:
             tokens: list[str] = re.split(TOK_DELIM_SPEC, readline.get_line_buffer())
@@ -50,34 +52,8 @@ def make_input_fn(is_session_rooted, cols: list[str]) -> Callable[..., str]:
 
 ### CATEGORIES OF VERBS
 
-"""
-TODO - Verify this list
-"alias"
-"cast"
-"clear"
-"derive"
-"drop"
-"duplicate"
-"first"
-"from"
-"history"
-"inspect"
-"join"
-"keep"
-"last"
-"pivot"
-"pop"
-"random"
-"rename"
-"reverse"
-"rotate"
-"select"
-"show"
-"sort"
-"swap"
-"union"
-"write"
-"""
+
+# NOTE - See docs/verbs.md for a description of each verb
 
 FILE_IN_VERBS: list[str] = ["from"]
 FILE_OUT_VERBS: list[str] = ["write"]
@@ -86,20 +62,21 @@ STACK_VERBS: list[str] = ["clear", "pop", "swap", "reverse", "rotate"]
 COLUMN_REFERENCING_VERBS: list[str] = [
     "sort",
     "join",
-    "pivot",
+    "groupby",
     "keep",
     "drop",
     "rename",
     "alias",
     "select",
     "cast",
+    "derive",
 ]
 OTHER_VERBS: list[str] = [
     "duplicate",
     "union",
     "first",
     "last",
-    "random",
+    "sample",
     "history",
 ]
 
@@ -418,13 +395,19 @@ class ReadState(Enum):
 class Reader:
     """Convert input lines into T commands"""
 
-    def __init__(self) -> None:
-        self.continued: bool = False
-        self.continuation_char: Optional[str] = None
-        self.in_block: bool = False
-        self.multi_line: list[str] = list()
+    continued: bool
+    continuation_char: Optional[str]
+    in_block: bool
+    multi_line: list[str]
+    commands: list[str]
 
-        self.commands: list[str] = list()
+    def __init__(self) -> None:
+        self.continued = False
+        self.continuation_char = None
+        self.in_block = False
+        self.multi_line = list()
+
+        self.commands = list()
 
     def next(
         self, line: str

@@ -5,26 +5,54 @@ Supported verbs fall into two categories:
 - Verbs that operate on rows, and
 - Verbs that operate on tables
 
+TODO - Document each verb
+
+## File-in Verbs
+
+- from()
+
 ## Row Verbs
 
-- Keep (x_table, keep_cols)
-- Drop (x_table, drop_cols)
-- Rename (x_table, col_specs)
-- Alias (x_table, col_specs)
+- keep(x_table, keep_cols)
+- drop(x_table, drop_cols)
+- rename(x_table, col_specs)
+- alias(x_table, col_specs)
 
-- Select (x_table, expr)
+- select(x_table, expr)
+- derive(x_table, name, expr, **kwargs) <<< rename 'let'?
 
-- First (x_table, n, pct=None)
-- Last (x_table, n, pct=None)
-- Random (x_table, n, pct=None)
+- first(x_table, n, pct=None)
+- last(x_table, n, pct=None)
+- sample(x_table, n, pct=None) <<< renamed
 
-- Cast (x_table, cast_cols, dtype)
-
-- Derive (x_table, name, expr, **kwargs)
+- cast(x_table, cast_cols, dtype)
 
 ## Table Verbs
 
-- Sort (x_table, col_specs)
-- GroupBy (x_table, by_cols, only=None, agg=None)
-- Join (y_table, x_table, y_key_name, how="inner", on=None, suffixes("_y","_x",), validate=None)
-- Union (y_table, x_table)
+- sort(x_table, col_specs)
+- groupby(x_table, by_cols, only=None, agg=None) <<< renamed
+- join(y_table, x_table, y_key_name, how="inner", on=None, suffixes("_y","_x",), validate=None)
+- union(y_table, x_table)
+
+## File-out Verbs
+
+- write()
+
+## Display Verbs
+
+- write()
+- show()
+- inspect()
+
+## Stack Verbs
+
+- clear()
+- pop()
+- swap()
+- reverse()
+- rotate()
+
+## Miscellaneous Verbs
+
+- duplicate() <<< rename 'copy'?
+- history()
