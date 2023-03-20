@@ -1,9 +1,10 @@
+# verbs.py
 #!/usr/bin/env python3
 
 """
 VERBS - GIVEN ONE OR MORE INPUT TABLES, CREATE A NEW TABLE
 
-NOTE - These verbs don't know anything about the program stack.
+NOTE - Verbs don't know anything about the program stack.
 """
 
 from typing import NoReturn
@@ -145,7 +146,7 @@ class KeepVerb(Verb):
     def apply(self) -> Table:
         assert self._x_table is not None
         assert self._col_refs is not None
-        self._new_table: Table = self._x_table.copy()
+        self._new_table = self._x_table.copy()
         self._new_table.do_keep_cols(self._col_refs)
 
         return self._new_table
@@ -164,7 +165,7 @@ class DropVerb(Verb):
 
     def apply(self) -> Table:
         assert self._x_table is not None
-        self._new_table: Table = self._x_table.copy()
+        self._new_table = self._x_table.copy()
 
         assert self._col_refs is not None
         keep_cols: list[str] = [
@@ -190,7 +191,7 @@ class RenameVerb(Verb):
 
     def apply(self) -> Table:
         assert self._x_table is not None
-        self._new_table: Table = self._x_table.copy()
+        self._new_table = self._x_table.copy()
 
         assert self._col_refs is not None
         renames: dict = {
@@ -221,7 +222,7 @@ class AliasVerb(Verb):
 
     def apply(self) -> Table:
         assert self._x_table is not None
-        self._new_table: Table = self._x_table.copy()
+        self._new_table = self._x_table.copy()
 
         assert self._col_refs is not None
         renames: dict = {
@@ -242,11 +243,13 @@ class AliasVerb(Verb):
 class SelectVerb(Verb):
     """SELECT rows"""
 
+    _expr: str
+
     def __init__(self, x_table: Table, expr: str) -> None:
         super().__init__()
 
-        self._x_table: Table = x_table
-        self._expr: str = expr
+        self._x_table = x_table
+        self._expr = expr
 
         # Check that the expression has valid *syntax* before calling this.
         # Here check that all column references are valid (*semantics*).
@@ -257,7 +260,8 @@ class SelectVerb(Verb):
         has_valid_col_refs(tokens, col_names)
 
     def apply(self) -> Table:
-        self._new_table: Table = self._x_table.copy()
+        assert self._x_table is not None
+        self._new_table = self._x_table.copy()
         self._new_table.do_select(self._expr)
 
         return self._new_table
@@ -266,15 +270,17 @@ class SelectVerb(Verb):
 class FirstVerb(Verb):
     """FIRST n rows"""
 
+    _take: int
+
     def __init__(self, x_table: Table, n: int, pct: Optional[Any] = None) -> None:
         super().__init__()
 
         self._x_table = x_table
-        self._take: int = n if not pct else max(round(n * (x_table.n_rows / 100)), 1)
+        self._take = n if not pct else max(round(n * (x_table.n_rows / 100)), 1)
 
     def apply(self) -> Table:
         assert self._x_table is not None
-        self._new_table: Table = self._x_table.copy()
+        self._new_table = self._x_table.copy()
         self._new_table.do_first(self._take)
 
         return self._new_table
@@ -283,15 +289,17 @@ class FirstVerb(Verb):
 class LastVerb(Verb):
     """LAST n rows"""
 
+    _take: int
+
     def __init__(self, x_table: Table, n: int, pct: Optional[Any] = None) -> None:
         super().__init__()
 
         self._x_table = x_table
-        self._take: int = n if not pct else max(round(n * (x_table.n_rows / 100)), 1)
+        self._take = n if not pct else max(round(n * (x_table.n_rows / 100)), 1)
 
     def apply(self) -> Table:
         assert self._x_table is not None
-        self._new_table: Table = self._x_table.copy()
+        self._new_table = self._x_table.copy()
         self._new_table.do_last(self._take)
 
         return self._new_table
@@ -300,15 +308,17 @@ class LastVerb(Verb):
 class SampleVerb(Verb):
     """SAMPLE n rows"""
 
+    _take: int
+
     def __init__(self, x_table: Table, n: int, pct: Optional[Any] = None) -> None:
         super().__init__()
 
         self._x_table = x_table
-        self._take: int = n if not pct else max(round(n * (x_table.n_rows / 100)), 1)
+        self._take = n if not pct else max(round(n * (x_table.n_rows / 100)), 1)
 
     def apply(self) -> Table:
         assert self._x_table is not None
-        self._new_table: Table = self._x_table.copy()
+        self._new_table = self._x_table.copy()
         self._new_table.do_sample(self._take)
 
         return self._new_table
@@ -322,6 +332,8 @@ class CastVerb(Verb):
     https://stackoverflow.com/questions/21197774/assign-pandas-dataframe-column-dtypes
     """
 
+    _dtype: str
+
     def __init__(self, x_table: Table, cast_cols: list[str], dtype: str) -> None:
         super().__init__()
 
@@ -332,12 +344,12 @@ class CastVerb(Verb):
 
         if dtype not in PD_TYPES:
             raise ValueError(f"Invalid dtype: {dtype}")
-        self._dtype: str = dtype
+        self._dtype = dtype
 
     def apply(self) -> Table:
         assert self._x_table is not None
         assert self._col_refs is not None
-        self._new_table: Table = self._x_table.copy()
+        self._new_table = self._x_table.copy()
         self._new_table.do_cast_cols(self._col_refs, self._dtype)
 
         return self._new_table
@@ -350,18 +362,22 @@ class DeriveVerb(Verb):
     df['new_col'] = df['col1'] + df['col2']
     """
 
+    _name: str
+    _expr: str
+    _udf: Optional[UDF]
+
     def __init__(
         self, x_table: Table, name: str, expr: str, udf: Optional[UDF] = None
     ) -> None:
         super().__init__()
 
-        self._name: str = name
-        self._x_table: Table = x_table
-        self._expr: str = expr
-        self._udf: Optional[UDF] = udf
+        self._name = name
+        self._x_table = x_table
+        self._expr = expr
+        self._udf = udf
 
         # Validate new column name
-        self._new_col_refs: list[str] = [name.strip()]
+        self._new_col_refs = [name.strip()]
         self._validate_new_col_refs()
 
         # Before calling this, check that the forumla has the right left-hand side,
@@ -377,7 +393,8 @@ class DeriveVerb(Verb):
         self._tokens: list[str] = tokenize(expr)
 
     def apply(self) -> Table:
-        self._new_table: Table = self._x_table.copy()
+        assert self._x_table is not None
+        self._new_table = self._x_table.copy()
         self._new_table.do_derive(self._name, self._tokens, self._udf)
 
         return self._new_table
@@ -389,19 +406,21 @@ class DeriveVerb(Verb):
 class SortVerb(Verb):
     """SORT rows'"""
 
+    _ascending_list: list[bool]
+
     def __init__(self, x_table: Table, col_specs: list) -> None:
         super().__init__()
 
         self._x_table = x_table
         self._col_specs = col_specs
-        self._ascending_list: list[bool]
+
         self._col_refs, self._ascending_list = self._unzip_sort_specs()
 
         self._validate_col_refs()
 
     def apply(self) -> Table:
         assert self._x_table is not None
-        self._new_table: Table = self._x_table.copy()
+        self._new_table = self._x_table.copy()
 
         assert self._col_refs is not None
         self._new_table.do_sort(self._col_refs, self._ascending_list)
@@ -421,6 +440,9 @@ class GroupByVerb(Verb):
     * TODO - They can also be referenced as min(X), max(X), sum(X), count(X), and avg(X). <<< Is this true?
     """
 
+    _group_cols: list
+    _agg_fns: list[str]
+
     def __init__(
         self,
         x_table: Table,
@@ -434,7 +456,7 @@ class GroupByVerb(Verb):
         self._x_table = x_table
 
         # Group by columns
-        self._group_cols: list = [x.strip() for x in by]
+        self._group_cols = [x.strip() for x in by]
         self._validate_col_refs(self._group_cols, self._x_table)
 
         # Columns to aggregate
@@ -461,7 +483,6 @@ class GroupByVerb(Verb):
                     self._agg_cols.remove(name)
 
         # Aggregation functions
-        self._agg_fns: list[str]
         if agg:
             self._agg_fns = [x.strip() for x in agg]
             for fn in self._agg_fns:
@@ -471,7 +492,7 @@ class GroupByVerb(Verb):
 
     def apply(self) -> Table:
         assert self._x_table is not None
-        self._new_table: Table = self._x_table.copy()
+        self._new_table = self._x_table.copy()
 
         self._new_table.do_groupby(self._group_cols, self._agg_cols, self._agg_fns)
 
@@ -507,8 +528,6 @@ class JoinVerb(Verb):
 
     """
 
-    _y_table: Table
-    _x_table: Table
     _how: MergeHow
     _y_cols: list[str]
     _x_cols: list[str]
@@ -541,8 +560,6 @@ class JoinVerb(Verb):
             raise ValueError(f"Invalid join type '{how}'.")
 
         # on (columns)
-        self._y_cols: list[str]
-        self._x_cols: list[str]
 
         if on is None:
             # No columns are specified -- infer them
@@ -614,7 +631,7 @@ class JoinVerb(Verb):
         return self._new_table
 
 
-### JOIN HELPERS ###
+# Join helpers
 
 
 def infer_join_cols(y_table: Table, x_table: Table) -> list[str]:

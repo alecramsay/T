@@ -311,6 +311,7 @@ class Program:
         try:
             top: Table = self.table_stack.first()
 
+            # TYPE HINT
             v: SortVerb = SortVerb(top, col_specs)
             new_table: Table = v.apply()
 
