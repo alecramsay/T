@@ -325,7 +325,9 @@ class Program:
         *,
         how: MergeHow = "inner",
         on: Optional[str | list[str] | list[list[str]]] = None,
-        suffixes: tuple[Optional[str], Optional[str]] = (
+        suffixes: tuple[str, str]
+        | tuple[None, str]
+        | tuple[str, None] = (
             "_y",
             "_x",
         ),  # Note: This is reversed from Pandas, to match T stack semantics.
@@ -337,7 +339,6 @@ class Program:
             x_table: Table = self.table_stack.first()
             y_table: Table = self.table_stack.second()
 
-            # TYPE HINT
             v: JoinVerb = JoinVerb(
                 y_table, x_table, how=how, on=on, suffixes=suffixes, validate=validate
             )

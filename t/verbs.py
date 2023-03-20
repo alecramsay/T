@@ -560,7 +560,6 @@ class JoinVerb(Verb):
             raise ValueError(f"Invalid join type '{how}'.")
 
         # on (columns)
-
         if on is None:
             # No columns are specified -- infer them
             shared: list[str] = infer_join_cols(y_table, x_table)
