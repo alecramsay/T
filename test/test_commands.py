@@ -156,73 +156,89 @@ class TestCommands:
         expected = "read('2022_precinct_assignments_AZ.csv',mumble)"
         assert actual == expected
 
-        # # Arg in read
-        # scriptargs = {"census": "'2020_census_AZ.csv'"}
-        # command = "read(args.census or '2020_census_NC.csv')"
-        # actual = bind_command_args(command, Namespace(scriptargs))
-        # expected = "read('2020_census_AZ.csv')"
-        # assert actual == expected
+        # Arg in read
+        scriptargs = {"census": "'2020_census_AZ.csv'"}
+        command = "read(args.census or '2020_census_NC.csv')"
+        cmd: Command = Command(command, Namespace(scriptargs))
+        actual = cmd.bind()
+        expected = "read('2020_census_AZ.csv')"
+        assert actual == expected
 
-        # # Arg in filter
-        # scriptargs = {"county_fips": "'191'"}
-        # command = "select(county_fips == args.county_fips)"
-        # actual = bind_command_args(command, Namespace(scriptargs))
-        # expected = "select(county_fips=='191')"
-        # assert actual == expected
+        # Arg in filter
+        scriptargs = {"county_fips": "'191'"}
+        command = "select(county_fips == args.county_fips)"
+        cmd: Command = Command(command, Namespace(scriptargs))
+        actual = cmd.bind()
+        expected = "select(county_fips=='191')"
+        assert actual == expected
 
-        # # Arg in from (was run)
-        # scriptargs = {"census": "'2020_census_AZ.csv'"}
-        # command = "from('census.t', census=args.census or '2020_census_NC.csv')"
-        # actual = bind_command_args(command, Namespace(scriptargs))
-        # expected = "from('census.t',census='2020_census_AZ.csv')"
-        # assert actual == expected
+        # Arg in from (was run)
+        scriptargs = {"census": "'2020_census_AZ.csv'"}
+        command = "from('census.t', census=args.census or '2020_census_NC.csv')"
+        cmd: Command = Command(command, Namespace(scriptargs))
+        actual = cmd.bind()
+        expected = "from('census.t',census='2020_census_AZ.csv')"
+        assert actual == expected
 
-        # # Arg in sort
-        # scriptargs = {"sorton": "Total"}
-        # command = "sort((args.sorton, DESC))"
-        # actual = bind_command_args(command, Namespace(scriptargs))
-        # expected = "sort((Total,DESC))"
-        # assert actual == expected
+        # Arg in sort
+        scriptargs = {"sorton": "Total"}
+        command = "sort((args.sorton, DESC))"
+        cmd: Command = Command(command, Namespace(scriptargs))
+        actual = cmd.bind()
+        expected = "sort((Total,DESC))"
+        assert actual == expected
 
+        # TODO
         # # Arg for verb
         # scriptargs = {"verb": "foo"}
         # command = "args.verb(bar)"
-        # actual = bind_command_args(command, Namespace(scriptargs))
+        # cmd: Command = Command(command, Namespace(scriptargs))
+        # actual = cmd.bind()
         # expected = "foo(bar)"
         # assert actual == expected
 
+        # TODO
         # # Arg for verb wrapped in parens
         # scriptargs = {"verb": "foo"}
         # command = "(args.verb)(bar)"
-        # actual = bind_command_args(command, Namespace(scriptargs))
+        # cmd: Command = Command(command, Namespace(scriptargs))
+        # actual = cmd.bind()
         # expected = "foo(bar)"
         # assert actual == expected
 
+        # TODO
         # # Arg on the right side of a derived column
         # scriptargs = {"vap_total": "cvap_total"}
         # command = "demo_pct = demo_total / args.vap_total"
-        # actual = bind_command_args(command, Namespace(scriptargs))
+        # cmd: Command = Command(command, Namespace(scriptargs))
+        # actual = cmd.bind()
         # expected = "demo_pct=demo_total/cvap_total"
         # assert actual == expected
 
+        # TODO
         # # Arg on the right side of a derived column - NOTE the trick here to replace *part* of a column name!
         # scriptargs = {"demo": "Black"}
         # command = "args.demo _pct = sum_ args.demo / sum_Total_VAP"
-        # actual = bind_command_args(command, Namespace(scriptargs))
+        # cmd: Command = Command(command, Namespace(scriptargs))
+        # actual = cmd.bind()
         # expected = "Black_pct=sum_Black/sum_Total_VAP"
         # assert actual == expected
 
+        # TODO
         # # Arg on the left side of a derived column (not that it's any different than the right side)
         # scriptargs = {"new_col": "foo"}
         # command = "args.new_col = existing * 0.8"
-        # actual = bind_command_args(command, Namespace(scriptargs))
+        # cmd: Command = Command(command, Namespace(scriptargs))
+        # actual = cmd.bind()
         # expected = "foo=existing*0.8"
         # assert actual == expected
 
+        # TODO
         # # Arg *wrapped* on the lhs of a derived column (not that it's any different than the right side)
         # scriptargs = {"new_col": "foo"}
         # command = "(args.new_col) = existing * 0.8"
-        # actual = bind_command_args(command, Namespace(scriptargs))
+        # cmd: Command = Command(command, Namespace(scriptargs))
+        # actual = cmd.bind()
         # expected = "foo=existing*0.8"
         # assert actual == expected
 
