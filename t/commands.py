@@ -8,6 +8,7 @@ COMMANDS
 from typing import Optional
 
 from .expressions import tokenize
+from .program import Namespace
 
 
 class Command:
@@ -120,6 +121,53 @@ def unwrap_args(tokens) -> list[str]:
         out_tokens += pending
 
     return out_tokens
+
+
+def bind_args(tokens, scriptargs) -> str:
+    """Bind a tokenized set if args with args.<arg> or <default>-style syntax."""
+
+    bound: str = ""
+
+    in_decl: bool = False
+    has_default: bool = False
+    name: str = ""
+    has_bound: bool = False
+
+    for token in tokens:
+        if token.startswith("args."):
+            in_decl = True
+            name = token[5:]
+            continue
+
+        if in_decl and (token == "or"):
+            has_default = True
+            continue
+
+        if in_decl and has_default:
+            # Bind the default.
+            bound += scriptargs.bind(name, token)
+            has_bound = True
+
+        if in_decl and (not has_default):
+            # Bind the arg w/o default
+            bound += scriptargs.bind(name)
+            bound += token
+            has_bound = True
+
+        if has_bound:
+            in_decl = False
+            has_default = False
+            name = ""
+            has_bound = False
+            continue
+
+        bound += token
+
+    # Handle a trailing arg
+    if in_decl:
+        bound += scriptargs.bind(name)
+
+    return bound
 
 
 ### END ###
