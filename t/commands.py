@@ -11,16 +11,16 @@ from .expressions import tokenize
 
 
 class Command:
-    """A class for parsing commands"""
+    """A class for parsing command syntax"""
 
-    _command: str
+    _input: str
     _verb: Optional[str]
     _args: Optional[list[str]]
 
     def __init__(self, command: str) -> None:
         """Initialize a command."""
 
-        self._command = command
+        self._input = command
         self._verb = None
         self._args = None
 
@@ -33,27 +33,22 @@ class Command:
         - Zero or more comma-separated arguments
         """
 
-        tokens: list[str] = tokenize(self._command)
-        rtokens: list[str] = tokens[::-1]
+        # Args are between mandatory outside delimiting parens
+        left: int = self._input.find("(")
+        right: int = self._input.rfind(")")
 
-        open_paren: int = tokens[1:].index("(") + 1 if ("(" in tokens[1:]) else -1
-        close_paren: int = (
-            abs((rtokens.index(")") - (len(tokens) - 1))) if (")" in tokens) else -1
-        )
-        if (
-            (open_paren != -1)  # Open paren exists
-            and (open_paren == 1)  # Open paren is second token
-            and (close_paren != -1)  # Close paren exists
-            and (close_paren + 1 == len(tokens))  # Close paren is last token
-        ):
-            self._verb = tokens[0]
-            # TODO - Recombine tokens into arguments
-            self._args = tokens[2:-1]
+        if (left == -1 or right == -1) or (left > right):
+            raise Exception("Verbs must have matching parentheses.")
 
-            return True
+        if left < 1:
+            raise Exception(
+                "No verb found. Commands must have a verb and zero or more arguments."
+            )
 
-        else:
-            return False  # Not a valid command
+        self._verb = self._input[:left].strip()
+        self._args = [x.strip() for x in self._input[left + 1 : right].split(",")]
+
+        return True
 
     @property
     def verb(self) -> str:
@@ -77,13 +72,54 @@ class Command:
 ### HELPERS ###
 
 
-# def iskeywordarg(arg: str) -> bool:
-#     """Return True if the argument is a keyword argument."""
+def unwrap_args(tokens) -> list[str]:
+    """Remove extraneous parentheses that simply surround arguments or argument with 'or' defaults."""
 
-#     i: int = arg.find("=")
-#     contains_equals: bool = True if (i > -1) and (i > 0 and i < len(arg) - 1) else False
+    out_tokens: list[str] = list()
+    pending: list[str] = list()
 
-#     return contains_equals
+    in_parens: bool = False
+
+    for token in tokens:
+        if in_parens and token == "(":
+            out_tokens += pending
+            pending = [token]
+            continue
+
+        if in_parens and token == ")":
+            pending += [token]
+            wrapped_decl: bool = False
+            if len(pending) == 3 and pending[1].startswith("args."):
+                wrapped_decl = True
+            elif (
+                len(pending) == 5
+                and pending[1].startswith("args.")
+                and pending[2] == "or"
+            ):
+                wrapped_decl = True
+            if wrapped_decl:
+                out_tokens += pending[1 : len(pending) - 1]
+            else:
+                out_tokens += pending
+            pending = list()
+            in_parens = False
+            continue
+
+        if in_parens:
+            pending += [token]
+            continue
+
+        if token == "(":
+            in_parens = True
+            pending += [token]
+            continue
+
+        out_tokens += [token]
+
+    if len(pending) > 0:
+        out_tokens += pending
+
+    return out_tokens
 
 
 ### END ###
