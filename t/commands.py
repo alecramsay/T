@@ -14,40 +14,63 @@ from .program import Namespace
 class Command:
     """A class for parsing command syntax"""
 
-    _input: str
-    _verb: Optional[str]
-    _args: Optional[list[str]]
+    _string: str
+    _scriptargs: dict[str, str]
 
-    def __init__(self, command: str) -> None:
+    _verb: Optional[str]
+    _args_str: Optional[str]
+    _args_list: Optional[list[str]]
+
+    def __init__(self, command: str, scriptargs: dict[str, str]) -> None:
         """Initialize a command."""
 
-        self._input = command
+        self._string = command
+        self._scriptargs = scriptargs
+
         self._verb = None
-        self._args = None
+        self._args_str = None
+        self._args_list = None
+
+    def bind(self) -> str:
+        """Bind "args.<arg> or <default>" and "args.<arg>" (both no quotes)."""
+
+        args: list[str] = unwrap_args(self._args_list)
+        bound_args_list: str = bind_args(args, self._scriptargs)
+
+        assert self._verb is not None
+        self._string = self._verb + "(" + bound_args_list + ")"
+
+        return self._string
 
     def parse(self) -> bool:
         """Parse the command. Return True if successful, False otherwise.
 
-        Valid commands:
-        - Have a verb
-        - Matching parentheses
+        Valid commands have:
+        - A verb
+        - Matching parentheses, and
         - Zero or more comma-separated arguments
+
+        Validate the verb, arguments, and semantics *in the caller*.
         """
 
-        # Args are between mandatory outside delimiting parens
-        left: int = self._input.find("(")
-        right: int = self._input.rfind(")")
+        self._split_verb_and_args()
+        # # Args are between mandatory outside delimiting parens
+        # left: int = self._string.find("(")
+        # right: int = self._string.rfind(")")
 
-        if (left == -1 or right == -1) or (left > right):
-            raise Exception("Verbs must have matching parentheses.")
+        # if (left == -1 or right == -1) or (left > right):
+        #     raise Exception("Verbs must have matching parentheses.")
 
-        if left < 1:
-            raise Exception(
-                "No verb found. Commands must have a verb and zero or more arguments."
-            )
+        # if left < 1:
+        #     raise Exception(
+        #         "No verb found. Commands must have a verb and zero or more arguments."
+        #     )
 
-        self._verb = self._input[:left].strip()
-        self._args = [x.strip() for x in self._input[left + 1 : right].split(",")]
+        # self._verb = self._string[:left].strip()
+        # self._args_list = [x.strip() for x in self._string[left + 1 : right].split(",")]
+
+        assert self._args_str is not None
+        self._args_list = [x.strip() for x in self._args_str.split(",")]
 
         return True
 
@@ -63,11 +86,29 @@ class Command:
     def args(self) -> list[str]:
         """Return the args of a successfully parsed command."""
 
-        assert self._args is not None
+        assert self._args_list is not None
 
-        return self._args
+        return self._args_list
 
     ### PRIVATE HELPERS ###
+
+    def _split_verb_and_args(self) -> None:
+        """Return the verb & args (as a string) of a command."""
+
+        # Args are between mandatory outside delimiting parens
+        left: int = self._string.find("(")
+        right: int = self._string.rfind(")")
+
+        if (left == -1 or right == -1) or (left > right):
+            raise Exception("Verbs must have matching parentheses.")
+
+        if left < 1:
+            raise Exception(
+                "No verb found. Commands must have a verb and zero or more arguments."
+            )
+
+        self._verb = self._string[:left].strip()
+        self._args_str = self._string[left + 1 : right].strip()
 
 
 ### HELPERS ###
@@ -123,7 +164,7 @@ def unwrap_args(tokens) -> list[str]:
     return out_tokens
 
 
-def bind_args(tokens, scriptargs) -> str:
+def bind_args(tokens: list[str], scriptargs) -> str:
     """Bind a tokenized set if args with args.<arg> or <default>-style syntax."""
 
     bound: str = ""
