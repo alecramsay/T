@@ -5,6 +5,7 @@
 COMMANDS
 """
 
+import keyword
 from typing import Optional
 
 from .expressions import tokenize
@@ -60,6 +61,7 @@ class Command:
         Validate the verb, arguments, and semantics *in the caller*.
         """
 
+        # TODO - Validate verb
         # TODO - Validate positional vs. keyword args
 
         assert self._args_str is not None
@@ -211,6 +213,35 @@ def bind_args(tokens: list[str], scriptargs) -> str:
         bound += scriptargs.bind(name)
 
     return bound
+
+
+def isidentifier(ident: str) -> bool:
+    """Determines if string is valid Python identifier.
+
+    From: https://stackoverflow.com/questions/12700893/how-to-check-if-a-string-is-a-valid-python-identifier-including-keyword-check#29586366
+    """
+
+    if not isinstance(ident, str):
+        raise TypeError("expected str, but got {!r}".format(type(ident)))
+
+    if not ident.isidentifier():
+        return False
+
+    if keyword.iskeyword(ident):
+        return False
+
+    return True
+
+
+def is_valid_name(verb, arg, pos):
+    """Language parser helper to validate a name argument & report errors."""
+
+    if not isidentifier(arg):
+        raise Exception(
+            f"The '{verb}' command requires a valid name for argument {pos}."
+        )
+
+    return True
 
 
 ### END ###

@@ -188,8 +188,8 @@ class TestCommands:
         expected = "sort((Total,DESC))"
         assert actual == expected
 
-        # TODO
-        # # Arg for verb
+        # NOTE - These tests would be binding the *verb* as an arg
+        # Arg for verb
         # scriptargs = {"verb": "foo"}
         # command = "args.verb(bar)"
         # cmd: Command = Command(command, Namespace(scriptargs))
@@ -197,8 +197,7 @@ class TestCommands:
         # expected = "foo(bar)"
         # assert actual == expected
 
-        # TODO
-        # # Arg for verb wrapped in parens
+        # Arg for verb wrapped in parens
         # scriptargs = {"verb": "foo"}
         # command = "(args.verb)(bar)"
         # cmd: Command = Command(command, Namespace(scriptargs))
@@ -206,8 +205,8 @@ class TestCommands:
         # expected = "foo(bar)"
         # assert actual == expected
 
-        # TODO
-        # # Arg on the right side of a derived column
+        # NOTE - These are the legacy derived column syntax
+        # Arg on the right side of a derived column
         # scriptargs = {"vap_total": "cvap_total"}
         # command = "demo_pct = demo_total / args.vap_total"
         # cmd: Command = Command(command, Namespace(scriptargs))
@@ -215,8 +214,7 @@ class TestCommands:
         # expected = "demo_pct=demo_total/cvap_total"
         # assert actual == expected
 
-        # TODO
-        # # Arg on the right side of a derived column - NOTE the trick here to replace *part* of a column name!
+        # Arg on the right side of a derived column - NOTE the trick here to replace *part* of a column name!
         # scriptargs = {"demo": "Black"}
         # command = "args.demo _pct = sum_ args.demo / sum_Total_VAP"
         # cmd: Command = Command(command, Namespace(scriptargs))
@@ -224,8 +222,7 @@ class TestCommands:
         # expected = "Black_pct=sum_Black/sum_Total_VAP"
         # assert actual == expected
 
-        # TODO
-        # # Arg on the left side of a derived column (not that it's any different than the right side)
+        # Arg on the left side of a derived column (not that it's any different than the right side)
         # scriptargs = {"new_col": "foo"}
         # command = "args.new_col = existing * 0.8"
         # cmd: Command = Command(command, Namespace(scriptargs))
@@ -233,14 +230,50 @@ class TestCommands:
         # expected = "foo=existing*0.8"
         # assert actual == expected
 
-        # TODO
-        # # Arg *wrapped* on the lhs of a derived column (not that it's any different than the right side)
+        # Arg *wrapped* on the lhs of a derived column (not that it's any different than the right side)
         # scriptargs = {"new_col": "foo"}
         # command = "(args.new_col) = existing * 0.8"
         # cmd: Command = Command(command, Namespace(scriptargs))
         # actual = cmd.bind()
         # expected = "foo=existing*0.8"
         # assert actual == expected
+
+    def test_isidentifier(self):
+        name: str
+
+        # Valid name
+        name = "bar"
+        assert isidentifier(name)
+
+        # Illegal names
+        name = "3"
+        assert not isidentifier(name)
+
+        name = "1bar"
+        assert not isidentifier(name)
+
+    def test_is_valid_name(self):
+        arg: str
+        command: str
+        verb: str = "test"
+
+        # Valid name
+        arg = "bar"
+
+        try:
+            is_valid_name(verb, arg, 1)
+            assert True
+        except:
+            assert False
+
+        # Illegal name
+        arg = "3"
+
+        try:
+            is_valid_name(verb, arg, 1)
+            assert False
+        except:
+            assert True
 
 
 ### END ###
