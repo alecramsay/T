@@ -26,6 +26,14 @@ class TestLangHelpers:
         assert len(positional) == 0
         assert len(keywords) == 2
 
+        # One of each
+        command = "foo(bar, bat=mumble)"
+        tree = cst.parse_expression(command)
+
+        positional, keywords = parse_args(tree.args)
+        assert len(positional) == 1
+        assert len(keywords) == 1
+
         # No args
         command = "foo()"
         tree = cst.parse_expression(command)
@@ -33,6 +41,14 @@ class TestLangHelpers:
         positional, keywords = parse_args(tree.args)
         assert len(positional) == 0
         assert len(keywords) == 0
+
+        # Misordered
+        try:
+            command = "foo(bar=bas, bat)"
+            tree = cst.parse_expression(command)
+            assert False
+        except:
+            assert True
 
     def test_parse_statement(self):
         try:
