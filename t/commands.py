@@ -12,29 +12,36 @@ from .program import Namespace
 
 
 class Command:
-    """A class for parsing command syntax"""
+    """A class for parsing command syntax
+
+    1. Instantiate a Command object
+    2. Bind args to scriptargs
+    3. Parse the command
+    """
 
     _string: str
-    _scriptargs: dict[str, str]
+    _scriptargs: Namespace
 
     _verb: Optional[str]
     _args_str: Optional[str]
     _args_list: Optional[list[str]]
 
-    def __init__(self, command: str, scriptargs: dict[str, str]) -> None:
+    def __init__(self, command: str, scriptargs: Namespace) -> None:
         """Initialize a command."""
 
         self._string = command
         self._scriptargs = scriptargs
 
-        self._verb = None
-        self._args_str = None
+        self._split_verb_and_args()
         self._args_list = None
 
     def bind(self) -> str:
         """Bind "args.<arg> or <default>" and "args.<arg>" (both no quotes)."""
 
-        args: list[str] = unwrap_args(self._args_list)
+        assert self._args_str is not None
+        tokens: list[str] = tokenize(self._args_str)
+
+        args: list[str] = unwrap_args(tokens)
         bound_args_list: str = bind_args(args, self._scriptargs)
 
         assert self._verb is not None
@@ -53,21 +60,7 @@ class Command:
         Validate the verb, arguments, and semantics *in the caller*.
         """
 
-        self._split_verb_and_args()
-        # # Args are between mandatory outside delimiting parens
-        # left: int = self._string.find("(")
-        # right: int = self._string.rfind(")")
-
-        # if (left == -1 or right == -1) or (left > right):
-        #     raise Exception("Verbs must have matching parentheses.")
-
-        # if left < 1:
-        #     raise Exception(
-        #         "No verb found. Commands must have a verb and zero or more arguments."
-        #     )
-
-        # self._verb = self._string[:left].strip()
-        # self._args_list = [x.strip() for x in self._string[left + 1 : right].split(",")]
+        # TODO - Validate positional vs. keyword args
 
         assert self._args_str is not None
         self._args_list = [x.strip() for x in self._args_str.split(",")]
@@ -109,6 +102,15 @@ class Command:
 
         self._verb = self._string[:left].strip()
         self._args_str = self._string[left + 1 : right].strip()
+
+    def _split_args_string(self) -> None:
+        """Split the args string into a list of args."""
+
+        assert self._args_str is not None
+        # TODO - Generalize this for commas w/in second-level parens
+        self._args_list = [x.strip() for x in self._args_str.split(",")]
+
+        pass
 
 
 ### HELPERS ###

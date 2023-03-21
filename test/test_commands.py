@@ -143,20 +143,18 @@ class TestCommands:
         # No args in the command
         scriptargs = {"bar": "'2022_precinct_assignments_AZ.csv'", "bas": "mumble"}
         command = "read('2020_precinct_assignments_NC.csv')"
-        cmd: Command = Command(command, scriptargs)
-        cmd.parse()
+        cmd: Command = Command(command, Namespace(scriptargs))
         actual = cmd.bind()
         expected = command
         assert actual == expected
 
-        # # Args in the command
-        # scriptargs = {"bar": "'2022_precinct_assignments_AZ.csv'", "bas": "mumble"}
-        # command = "read(args.bar or '2020_precinct_assignments_NC.csv', args.bas)"
-        # cmd: Command = Command(command, scriptargs)
-        # cmd.parse()
-        # actual = cmd.bind()
-        # expected = "read('2022_precinct_assignments_AZ.csv',mumble)"
-        # assert actual == expected
+        # Args in the command
+        scriptargs = {"bar": "'2022_precinct_assignments_AZ.csv'", "bas": "mumble"}
+        command = "read(args.bar or '2020_precinct_assignments_NC.csv', args.bas)"
+        cmd: Command = Command(command, Namespace(scriptargs))
+        actual = cmd.bind()
+        expected = "read('2022_precinct_assignments_AZ.csv',mumble)"
+        assert actual == expected
 
         # # Arg in read
         # scriptargs = {"census": "'2020_census_AZ.csv'"}
