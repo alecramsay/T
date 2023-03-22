@@ -275,5 +275,32 @@ class TestCommands:
         except:
             assert True
 
+    def test_parse_command(self) -> None:
+        """
+        commands: list[str] = [
+            "sort((args.sorton, DESC))",
+            "from_(args.census or '2020_census_NC.csv')",
+            "from_('precincts.t', paf='2020_precinct_assignments_NC.csv', census='2020_census_NC.csv', elections='2020_election_NC.csv')",
+            "foo(bar, bas, bat)",
+            "foo(bar=bas, bat=mumble)",
+            "foo()",
+            "keep(GEOID20, Tot_2020_tot, Tot_2020_vap)",
+            "rename((Tot_2020_tot, Total), (Tot_2020_vap, Total_VAP))",
+            "alias((GEOID20, GEOID), (Tot_2020_tot, Total))",
+            "derive(D_pct, vote_share(sum_D_votes, sum_R_votes))",
+            "select(county_fips == '191')",
+            "first(10%)",
+            "join()",
+            "groupby(by=District)",
+            "sort(District)",
+            "union()",
+            "show(5)",
+            "inspect()",
+            "write()",
+        ]
+        """
+
+        pass
+
 
 ### END ###

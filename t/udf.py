@@ -70,7 +70,7 @@ class UDF:
 def parse_args(def_or_call: str) -> list[str]:
     """Find the arguments in a function definition or call.
 
-    TODO - This is a duplicate of the same function in lang.py.
+    TODO - This is a duplicate of the same *named* function in lang.py.
 
     Examples:
 

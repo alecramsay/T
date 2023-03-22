@@ -5,6 +5,7 @@
 COMMANDS
 """
 
+import re
 import keyword
 from typing import Optional
 
@@ -48,9 +49,11 @@ class Command:
         assert self._verb is not None
         self._string = self._verb + "(" + bound_args_list + ")"
 
+        self._split_verb_and_args()  # again
+
         return self._string
 
-    def parse(self) -> bool:
+    def parse(self) -> tuple:
         """Parse the command. Return True if successful, False otherwise.
 
         Valid commands have:
@@ -61,13 +64,15 @@ class Command:
         Validate the verb, arguments, and semantics *in the caller*.
         """
 
-        # TODO - Validate verb
+        assert self._verb is not None
+        if not isidentifier(self._verb):
+            raise Exception(f"Invalid verb: {self._verb}")
+
         # TODO - Validate positional vs. keyword args
 
-        assert self._args_str is not None
-        self._args_list = [x.strip() for x in self._args_str.split(",")]
+        self._split_args_string()
 
-        return True
+        return self._verb, self._args_list
 
     @property
     def verb(self) -> str:
@@ -109,13 +114,24 @@ class Command:
         """Split the args string into a list of args."""
 
         assert self._args_str is not None
-        # TODO - Generalize this for commas w/in second-level parens
-        self._args_list = [x.strip() for x in self._args_str.split(",")]
+        self._args_list = split_args(self._args_str)
+        # self._args_list = [x.strip() for x in self._args_str.split(",")]
 
         pass
 
 
 ### HELPERS ###
+
+
+def split_args(s: str) -> list[str]:
+    """Split a string into a list of arguments.
+
+    Ignore commas within parentheses.
+    """
+
+    args: list[str] = re.split(r",\s*(?![^()]*\))", s)  # negative lookahead
+
+    return args
 
 
 def unwrap_args(tokens) -> list[str]:
@@ -233,15 +249,13 @@ def isidentifier(ident: str) -> bool:
     return True
 
 
-def is_valid_name(verb, arg, pos):
+def is_valid_name(verb, arg, pos) -> None:
     """Language parser helper to validate a name argument & report errors."""
 
     if not isidentifier(arg):
         raise Exception(
             f"The '{verb}' command requires a valid name for argument {pos}."
         )
-
-    return True
 
 
 ### END ###
