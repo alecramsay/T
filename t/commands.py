@@ -105,12 +105,28 @@ class Command:
         return len(self._positional_args)
 
     @property
+    def positional_args(self) -> list[str]:
+        """Return the positional args."""
+
+        assert self._positional_args is not None
+
+        return self._positional_args
+
+    @property
     def n_kw(self) -> int:
         """Return the number of keyword args."""
 
         assert self._keyword_args is not None
 
         return len(self._keyword_args)
+
+    @property
+    def keyword_args(self) -> dict[str, str]:
+        """Return the keyword args."""
+
+        assert self._keyword_args is not None
+
+        return self._keyword_args
 
     ### PRIVATE HELPERS ###
 
@@ -134,20 +150,23 @@ class Command:
     def _classify_args(self) -> None:
         """Classify the args as positional or keyword."""
 
-        # TODO - Raise exception for misorderered args
+        assert self._args_list is not None
 
         positional: list[str] = list()
         keywords: dict[str, str] = dict()
+        kw_mode: bool = False
 
-        assert self._args_list is not None
         for arg in self._args_list:
             if iskeywordarg(arg):
                 k: str
                 v: str
                 k, v = split_keyword_arg(arg)
                 keywords[k] = v
+                kw_mode = True
 
             else:
+                if kw_mode:
+                    raise Exception(f"Positional args must precede keyword args.")
                 positional.append(arg)
 
         self._positional_args = positional

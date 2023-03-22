@@ -384,5 +384,17 @@ class TestCommands:
             except:
                 assert False
 
+        # Misordered args
+
+        try:
+            command: str = "foo(bar=mumble, bas)"
+            scriptargs: dict[str, str] = dict()
+            cmd: Command = Command(command, Namespace(scriptargs))
+            cmd.bind()
+            cmd.parse()
+            assert False
+        except:
+            assert True
+
 
 ### END ###
