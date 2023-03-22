@@ -136,6 +136,7 @@ def get_builtin_fn(name: str) -> Any:
     return getattr(builtins, name)
 
 
+# TODO - mod_fns?
 # def mod_fns(mod):
 #     pairs = inspect.getmembers(mod, inspect.isfunction)
 #     fns_dict = {k: v for k, v in pairs}
@@ -145,13 +146,11 @@ def get_builtin_fn(name: str) -> Any:
 ### MISSING ###
 
 
-def is_missing(v: Any) -> bool:
-    """Return True if v is missing, else False.
+#  TODO - Handle missing?
+# def is_missing(v: Any) -> bool:
+#     """Return True if v is missing, else False."""
 
-    TODO - Handle missing?
-    """
-
-    return True if (v is None) else False
+#     return True if (v is None) else False
 
 
 ### END ###
