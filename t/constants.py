@@ -9,9 +9,6 @@ CONSTANTS
 BEG: int = 0
 END: int = 1
 
-# TODO - Move to lang.py
-ERROR: str = "_error_"
-
 ### FOR TESTING ###
 
 CITIES_DF: dict[str, list] = {

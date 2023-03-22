@@ -19,10 +19,13 @@ from pyparsing import (
     nested_expr,
 )
 
+# TODO - Limit these imports to what's needed
 from .program import *
 from .reader import *
 from .expressions import *
 from .readwrite import *
+
+ERROR: str = "_error_"
 
 
 def interpret(command, env) -> str:
