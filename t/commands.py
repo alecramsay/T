@@ -9,9 +9,8 @@ import re
 import keyword
 from typing import Optional, Iterator, Match
 
-# from .expressions import tokenize
-from .utils import *
-from .program import Namespace
+from .utils import tokenize, find_args_string, split_args_string
+from .program import Namespace  # TODO - Move this here
 
 
 class Command:

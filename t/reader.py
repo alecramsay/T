@@ -12,10 +12,9 @@ import readline
 import re
 import string  # for string.whitespace
 from enum import Enum
-from typing import Callable, Literal
+from typing import Callable, Literal, Optional
 
 from .constants import BEG, END
-from .readwrite import *
 
 TOK_DELIM_SPEC: str = "[\\s\\(\\)=]"
 

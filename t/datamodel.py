@@ -6,7 +6,7 @@ The T data model for 2D tables with rows & columns, implemented over Pandas.
 """
 
 import pandas as pd
-from typing import Any, Literal
+from typing import Any, Literal, Optional
 from collections import namedtuple
 import re
 import copy
@@ -14,8 +14,9 @@ from csv import DictWriter
 import json
 
 from .readwrite import DelimitedFileReader, FileSpec, smart_open
-from .expressions import *
-from .utils import *
+
+from .expressions import rewrite_expr
+from .utils import map_keys
 from .udf import UDF
 
 ### PANDAS DATA TYPES ###
