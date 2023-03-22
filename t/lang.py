@@ -606,7 +606,7 @@ def parse_args(args) -> tuple[list[str], dict[str, Any]]:
             raise Exception("Unknown argument type")
 
         v = arg.value.value
-        if iskeywordarg(arg):
+        if iskeywordarg_cst(arg):
             k = arg.keyword.value
             keywords[k] = v
 
@@ -629,7 +629,7 @@ def isNargsOK(verb, n, least, most=None):
     return True
 
 
-def iskeywordarg(arg):
+def iskeywordarg_cst(arg):
     return True if arg.keyword else False
 
 
