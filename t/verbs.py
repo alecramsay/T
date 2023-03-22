@@ -7,12 +7,23 @@ VERBS - GIVEN ONE OR MORE INPUT TABLES, CREATE A NEW TABLE
 NOTE - Verbs don't know anything about the program stack.
 """
 
-from typing import NoReturn
+from typing import NoReturn, Optional, Any
 
-from .utils import *
-from .expressions import *
-from .datamodel import *
-from .udf import *
+from .utils import parse_spec, tokenize, is_list_of_str
+
+from .expressions import has_valid_col_refs, has_valid_refs
+from .datamodel import (
+    Table,
+    PD_TYPES,
+    PD_JOIN_TYPES,
+    PD_VALIDATE_TYPES,
+    MergeHow,
+    ValidationOptions,
+    do_join,
+    do_union,
+    columns_match,
+)
+from .udf import UDF
 
 
 AGG_FNS: list[str] = ["count", "min", "max", "std", "sum", "mean", "median"]
