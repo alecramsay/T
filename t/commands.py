@@ -10,7 +10,21 @@ import keyword
 from typing import Optional, Iterator, Match
 
 from .utils import tokenize, find_args_string, split_args_string
-from .program import Namespace  # TODO - Move this here
+
+# from .program import Namespace  # TODO - Move this here
+
+
+class Namespace:
+    _args: dict[str, str]
+
+    def __init__(self, args_dict: dict[str, str]) -> None:
+        self._args = args_dict
+
+    def bind(self, name: str, default: Optional[str] = None) -> str | None:
+        if name in self._args:
+            return self._args[name]
+        else:
+            return default if default else None
 
 
 class Command:

@@ -24,6 +24,7 @@ from .datamodel import (
     ValidationOptions,
 )
 from .stack import Stack
+from .commands import Namespace
 from .verbs import (
     KeepVerb,
     DropVerb,
@@ -682,19 +683,6 @@ class Program:
     def _display_table(self) -> None:
         if (len(self.call_stack._queue_) == 1) and self.repl and not self.silent:
             self.show(5)
-
-
-class Namespace:
-    _args: dict[str, str]
-
-    def __init__(self, args_dict: dict[str, str]) -> None:
-        self._args = args_dict
-
-    def bind(self, name: str, default: Optional[str] = None) -> str | None:
-        if name in self._args:
-            return self._args[name]
-        else:
-            return default if default else None
 
 
 @contextmanager

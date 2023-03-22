@@ -24,6 +24,7 @@ from .program import *
 from .reader import *
 from .expressions import *
 from .readwrite import *
+from .commands import Namespace, Command
 
 ERROR: str = "_error_"
 
