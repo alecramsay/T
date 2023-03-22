@@ -17,7 +17,7 @@ import contextlib
 from types import ModuleType
 from typing import Any, Type, Optional, Generator, TextIO
 
-from .excel import *
+from .excel import first_n_excel_column_names
 
 PREREAD_LINES: int = 1000
 
