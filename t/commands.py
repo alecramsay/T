@@ -5,8 +5,9 @@
 COMMANDS
 """
 
+import re
 import keyword
-from typing import Optional
+from typing import Optional, Iterator, Match
 
 # from .expressions import tokenize
 from .utils import *
@@ -238,6 +239,17 @@ def is_valid_name(verb, arg, pos) -> None:
         raise Exception(
             f"The '{verb}' command requires a valid name for argument {pos}."
         )
+
+
+def iskeywordarg(arg: str) -> bool:
+    """Return True if arg a keyword argument; otherwise False."""
+
+    matches: Iterator[Match[str]] = re.finditer("=", arg)
+    one_equals: bool = True if len(list(matches)) == 1 else False
+    pos: int = arg.find("=")
+    word_before: bool = True if (pos > 0 and pos < len(arg) - 1) else False
+
+    return one_equals and word_before
 
 
 ### END ###

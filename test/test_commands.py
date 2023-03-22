@@ -349,5 +349,11 @@ class TestCommands:
                 assert False
                 # print(f"Invalid command: {command}")
 
+    def test_iskeywordarg(self) -> None:
+        assert not iskeywordarg("foo")
+        assert iskeywordarg("foo=bar")
+        assert not iskeywordarg("=bar")
+        assert not iskeywordarg("bar=")
+
 
 ### END ###
