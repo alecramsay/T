@@ -83,11 +83,6 @@ def extract_args_list(def_or_call: str) -> list[str]:
 
     args: list[str] = split_args_string(def_or_call[left + 1 : right])
 
-    # TODO - DELETE
-    # open_i: int = def_or_call.find("(")
-    # close_i: int = def_or_call.find(")")
-    # args: list[str] = [x.strip() for x in def_or_call[open_i + 1 : close_i].split(",")]
-
     return args
 
 

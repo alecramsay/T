@@ -36,10 +36,47 @@ class TestUtils:
         assert not is_list_of_str(["foo", ["bar"]])
 
     def test_find_args_string(self) -> None:
-        pass  # TODO - Add tests
+        examples: list[str] = [
+            "def composite(ag, gov, sen1, sen2, pres1, pres2) -> float:",
+            "composite(D_2020_ag, D_2020_gov, D_2016_sen, D_2020_sen, D_2016_pres, D_2020_pres)",
+        ]
+        expected: list[str] = [
+            "ag, gov, sen1, sen2, pres1, pres2",
+            "D_2020_ag, D_2020_gov, D_2016_sen, D_2020_sen, D_2016_pres, D_2020_pres",
+        ]
+        for i, example in enumerate(examples):
+            left: int
+            right: int
+            left, right = find_args_string(example)
+            args_string: str = example[left + 1 : right]
+
+            assert args_string == expected[i]
 
     def test_split_args_string(self) -> None:
-        pass  # TODO - Add tests
+        examples: list[str] = [
+            "def composite(ag, gov, sen1, sen2, pres1, pres2) -> float:",
+            "composite(D_2020_ag, D_2020_gov, D_2016_sen, D_2020_sen, D_2016_pres, D_2020_pres)",
+        ]
+        expected: list[list[str]] = [
+            ["ag", "gov", "sen1", "sen2", "pres1", "pres2"],
+            [
+                "D_2020_ag",
+                "D_2020_gov",
+                "D_2016_sen",
+                "D_2020_sen",
+                "D_2016_pres",
+                "D_2020_pres",
+            ],
+        ]
+        for i, example in enumerate(examples):
+            left: int
+            right: int
+            left, right = find_args_string(example)
+            args_list: list[str] = split_args_string(example[left + 1 : right])
+
+            assert args_list == expected[i]
+
+        pass  # TODO - More ...
 
 
 ### END ###
