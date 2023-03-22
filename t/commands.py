@@ -28,7 +28,10 @@ class Command:
 
     _verb: Optional[str]
     _args_str: Optional[str]
+
     _args_list: Optional[list[str]]
+    _positional_args: Optional[list[str]]
+    _keyword_args: Optional[dict[str, str]]
 
     def __init__(self, command: str, scriptargs: Namespace) -> None:
         """Initialize a command."""
@@ -38,6 +41,8 @@ class Command:
 
         self._split_verb_and_args()
         self._args_list = None
+        self._positional_args = None
+        self._keyword_args = None
 
     def bind(self) -> str:
         """Bind "args.<arg> or <default>" and "args.<arg>" (both no quotes)."""
@@ -70,9 +75,8 @@ class Command:
         if not isidentifier(self._verb):
             raise Exception(f"Invalid verb: {self._verb}")
 
-        # TODO - Validate positional vs. keyword args
-
         self._split_args_string()
+        self._classify_args()
 
         return self._verb, self._args_list
 
@@ -91,6 +95,22 @@ class Command:
         assert self._args_list is not None
 
         return self._args_list
+
+    @property
+    def n_pos(self) -> int:
+        """Return the number of positional args."""
+
+        assert self._positional_args is not None
+
+        return len(self._positional_args)
+
+    @property
+    def n_kw(self) -> int:
+        """Return the number of keyword args."""
+
+        assert self._keyword_args is not None
+
+        return len(self._keyword_args)
 
     ### PRIVATE HELPERS ###
 
@@ -111,7 +131,27 @@ class Command:
         self._args_list = split_args_string(self._args_str)
         # self._args_list = [x.strip() for x in self._args_str.split(",")]
 
-        pass
+    def _classify_args(self) -> None:
+        """Classify the args as positional or keyword."""
+
+        # TODO - Raise exception for misorderered args
+
+        positional: list[str] = list()
+        keywords: dict[str, str] = dict()
+
+        assert self._args_list is not None
+        for arg in self._args_list:
+            if iskeywordarg(arg):
+                k: str
+                v: str
+                k, v = split_keyword_arg(arg)
+                keywords[k] = v
+
+            else:
+                positional.append(arg)
+
+        self._positional_args = positional
+        self._keyword_args = keywords
 
 
 ### HELPERS ###
@@ -250,6 +290,16 @@ def iskeywordarg(arg: str) -> bool:
     word_before: bool = True if (pos > 0 and pos < len(arg) - 1) else False
 
     return one_equals and word_before
+
+
+def split_keyword_arg(arg: str) -> tuple[str, str]:
+    """Split a keyword argument into keyword and value."""
+
+    pos: int = arg.find("=")
+    keyword: str = arg[:pos]
+    value: str = arg[pos + 1 :]
+
+    return keyword, value
 
 
 ### END ###

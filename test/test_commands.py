@@ -355,5 +355,34 @@ class TestCommands:
         assert not iskeywordarg("=bar")
         assert not iskeywordarg("bar=")
 
+    def test_parse_classify_args(self) -> None:
+        commands: list[str] = [
+            "foo(bar, bas, bat)",
+            "foo(bar=bas, bat=mumble)",
+            "foo(bar, bat=mumble)",
+            "foo()",
+        ]
+
+        expected: list[tuple[int, int]] = [
+            (3, 0),
+            (0, 2),
+            (1, 1),
+            (0, 0),
+        ]
+
+        for i, command in enumerate(commands):
+            try:
+                verb: str
+                args: list[str]
+                scriptargs: dict[str, str] = dict()
+                cmd: Command = Command(command, Namespace(scriptargs))
+                cmd.bind()
+                cmd.parse()
+
+                assert cmd.n_pos == expected[i][0] and cmd.n_kw == expected[i][1]
+
+            except:
+                assert False
+
 
 ### END ###
