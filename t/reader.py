@@ -161,13 +161,13 @@ def closes_block_comment(line: str) -> tuple[Optional[str], str]:
     return comment_char, new_line
 
 
-def is_blank(line: str) -> bool:
+def isblank(line: str) -> bool:
     """After trimming whitespace, is a line blank?"""
 
     return True if line == "" else False
 
 
-def is_compound(line: str) -> bool:
+def iscompound(line: str) -> bool:
     """Is a line a compound command?"""
 
     return True if line.find(";") >= 0 else False
@@ -416,7 +416,7 @@ class Reader:
             self.commands = list()
 
         line = rewrite_input_line(line)
-        if is_blank(line):
+        if isblank(line):
             return ReadState.BLANK
 
         # Analyze potentially m:n relationship between lines & commands
@@ -431,7 +431,7 @@ class Reader:
         end_block: Optional[str]
         end_line: str
 
-        compound: bool = is_compound(line)
+        compound: bool = iscompound(line)
         open_char, open_line = opens_continuation(line)
         close_char, close_line = (
             closes_continuation(line, self.continuation_char)
@@ -546,7 +546,7 @@ def rewrite_input_line(line: str) -> str:
     line = remove_inline_block_comments(line)
     line = trim_whitespace(line)
 
-    if is_blank(line):
+    if isblank(line):
         return line
 
     # HACK - 'from' is a Python keyword

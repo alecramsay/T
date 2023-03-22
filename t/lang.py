@@ -9,15 +9,16 @@ import libcst as cst
 import logging
 from logging.handlers import RotatingFileHandler
 
-from pyparsing import (
-    ParserElement,
-    ParseResults,
-    Suppress,
-    Word,
-    identchars,
-    identbodychars,
-    nested_expr,
-)
+# TODO - Delete this & uninstall PyParsing
+# from pyparsing import (
+#     ParserElement,
+#     ParseResults,
+#     Suppress,
+#     Word,
+#     identchars,
+#     identbodychars,
+#     nested_expr,
+# )
 
 # TODO - Limit these imports to what's needed
 from .program import *
@@ -324,8 +325,8 @@ def interpret(command, env) -> str:
                 if verb == "cast":
                     try:
                         isNargsOK(verb, nargs, 2, 2)
-                        is_valid_name(verb, tree.args[0], 1)
-                        is_valid_name(verb, tree.args[1], 2)
+                        isvalidname(verb, tree.args[0], 1)
+                        isvalidname(verb, tree.args[1], 2)
 
                         col = tree.args[0].value.value
                         type_str = tree.args[1].value.value
@@ -802,7 +803,7 @@ def are_valid_keywords(valid, keywords):
     return True
 
 
-def is_valid_name(verb, arg, pos):
+def isvalidname(verb, arg, pos):
     """
     For 'cast'
     """

@@ -252,7 +252,7 @@ class TestCommands:
         name = "1bar"
         assert not isidentifier(name)
 
-    def test_is_valid_name(self):
+    def test_isvalidname(self):
         arg: str
         command: str
         verb: str = "test"
@@ -261,7 +261,7 @@ class TestCommands:
         arg = "bar"
 
         try:
-            is_valid_name(verb, arg, 1)
+            isvalidname(verb, arg, 1)
             assert True
         except:
             assert False
@@ -270,7 +270,7 @@ class TestCommands:
         arg = "3"
 
         try:
-            is_valid_name(verb, arg, 1)
+            isvalidname(verb, arg, 1)
             assert False
         except:
             assert True

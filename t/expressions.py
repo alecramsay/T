@@ -39,7 +39,7 @@ def rewrite_agg_refs(command: str, names: list[str]):
     return command
 
 
-def is_literal(tok: str) -> bool:
+def isliteral(tok: str) -> bool:
     """Return True if tok is a Python literal, else False.
 
     NOTE - Not all literals are supported.
@@ -63,7 +63,7 @@ def has_valid_col_refs(tokens: list[str], names: list[str]) -> bool:
             if tok == "=":
                 raise Exception("Use '==' for equality comparison.")
             continue
-        if is_literal(tok):
+        if isliteral(tok):
             continue
         if tok not in names:
             raise Exception(f"Invalid column reference: {tok}")
@@ -85,7 +85,7 @@ def has_valid_refs(
             if tok == "=":
                 raise Exception("Use '==' for equality comparison.")
             continue
-        if is_literal(tok):
+        if isliteral(tok):
             continue
         if tok in col_names:
             continue
@@ -112,11 +112,11 @@ def generate_df_syntax(
             expr = expr + tok
         elif tok in col_names:
             expr = expr + col_rewrite_rule(tok)
-        elif is_slice(tok):
+        elif isslice(tok):
             expr = expr + slice_rewrite_rule(tok)
-        elif is_udf_call(tok, udf):
+        elif isudfcall(tok, udf):
             expr = expr + udf_rewrite_rule(tok, udf)
-        elif is_literal(tok):
+        elif isliteral(tok):
             expr = expr + tok
         else:
             raise Exception(f"Invalid column reference: {tok}")
@@ -180,7 +180,7 @@ def get_slice_tokens(tokens: list[str]) -> tuple[str, int]:
             continue
 
         if state == "open":
-            if is_int(tok):
+            if isint(tok):
                 state = "start"
                 expr = expr + str(tok)
                 skip = skip + 1
@@ -204,7 +204,7 @@ def get_slice_tokens(tokens: list[str]) -> tuple[str, int]:
             return "", 0
 
         if state == "colon":
-            if is_int(tok):
+            if isint(tok):
                 state = "stop"
                 expr = expr + str(tok)
                 skip = skip + 1
@@ -237,7 +237,7 @@ def get_slice_tokens(tokens: list[str]) -> tuple[str, int]:
     return "", 0
 
 
-def is_int(tok: str) -> bool:
+def isint(tok: str) -> bool:
     """Return True if tok is an integer, else False."""
 
     try:
@@ -247,7 +247,7 @@ def is_int(tok: str) -> bool:
         return False
 
 
-def is_slice(tok: str) -> bool:
+def isslice(tok: str) -> bool:
     """Return True if tok is a slice expression, else False."""
 
     return tok.startswith("slice")
@@ -278,11 +278,11 @@ def mark_udf_calls(
     udf_call: str = ""
 
     for i, tok in enumerate(tokens):
-        if not in_udf and not udf.is_udf(tok):
+        if not in_udf and not udf.isudf(tok):
             new_tokens.append(tok)
             continue
 
-        if not in_udf and udf.is_udf(tok):
+        if not in_udf and udf.isudf(tok):
             in_udf = True
             udf_call = tok
             udf_name = tok
@@ -311,7 +311,7 @@ def mark_udf_calls(
     return new_tokens, wrappers
 
 
-def is_udf_call(tok: str, udf: Optional[UDF]) -> bool:
+def isudfcall(tok: str, udf: Optional[UDF]) -> bool:
     """Return True if tok is a UDF call, else False."""
 
     if not udf:
@@ -320,7 +320,7 @@ def is_udf_call(tok: str, udf: Optional[UDF]) -> bool:
     tokens: list[str] = tokenize(tok)
 
     return all(
-        [len(tokens) == 4, tokens[1] == "(", tokens[3] == ")", udf.is_udf(tokens[0])]
+        [len(tokens) == 4, tokens[1] == "(", tokens[3] == ")", udf.isudf(tokens[0])]
     )
 
 

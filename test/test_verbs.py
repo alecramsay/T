@@ -86,8 +86,8 @@ class TestRowVerbs:
         f: RenameVerb = RenameVerb(x_table, col_specs)
         new_table: Table = f.apply()
 
-        assert new_table.is_column("GEOID")
-        assert new_table.is_column("Total")
+        assert new_table.iscolumn("GEOID")
+        assert new_table.iscolumn("Total")
 
     def test_alias_verb(self) -> None:
         sample: str = "2020_census_AZ(PARTIAL).csv"

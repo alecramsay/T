@@ -191,7 +191,7 @@ class TypeInferencer:
             return
 
         # Allow upper/lower case "true" and "false"
-        if is_bool(example):
+        if isbool(example):
             self.types.add(bool)
             return
 
@@ -207,7 +207,7 @@ class TypeInferencer:
             # It's a Python literal not (yet) supported by ast.literal_eval(), in which case treat it as a string; or
             # It's a datetime, in which case *don't* treat it as a string, so Pandas can parse it
 
-            if is_date_time(example):
+            if isdate_time(example):
                 self.types.add("pd.datetime")
             else:
                 self.types.add(str)
@@ -269,13 +269,13 @@ def leading_zeroes(s: str) -> bool:
         return False
 
 
-def is_bool(s: str) -> bool:
+def isbool(s: str) -> bool:
     """Is the string a boolean?"""
 
     return s.lower() in ["true", "false"]
 
 
-def is_date_time(s: str) -> bool:
+def isdate_time(s: str) -> bool:
     """Is the string a date or time?
 
     https://strftime.org/

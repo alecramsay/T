@@ -9,7 +9,7 @@ NOTE - Verbs don't know anything about the program stack.
 
 from typing import NoReturn, Optional, Any
 
-from .utils import parse_spec, tokenize, is_list_of_str
+from .utils import parse_spec, tokenize, islistofstr
 
 from .expressions import has_valid_col_refs, has_valid_refs
 from .datamodel import (
@@ -29,7 +29,7 @@ from .udf import UDF
 AGG_FNS: list[str] = ["count", "min", "max", "std", "sum", "mean", "median"]
 
 
-def is_agg_fn(fn: str) -> bool:
+def isaggfn(fn: str) -> bool:
     if fn in AGG_FNS:
         return True
 
@@ -496,7 +496,7 @@ class GroupByVerb(Verb):
         if agg:
             self._agg_fns = [x.strip() for x in agg]
             for fn in self._agg_fns:
-                is_agg_fn(fn)
+                isaggfn(fn)
         else:
             self._agg_fns = AGG_FNS
 
@@ -586,7 +586,7 @@ class JoinVerb(Verb):
             self._y_cols = [on]
             self._x_cols = [on]
 
-        elif is_list_of_str(on):
+        elif islistofstr(on):
             # One list of columns
             # TYPE HINT
             assert isinstance(on, list) and all(isinstance(elem, str) for elem in on)
@@ -597,8 +597,8 @@ class JoinVerb(Verb):
         elif (
             isinstance(on, list)
             and len(on) == 2
-            and is_list_of_str(on[0])
-            and is_list_of_str(on[1])
+            and islistofstr(on[0])
+            and islistofstr(on[1])
         ):
             # Two lists of columns
             assert isinstance(on[0], list)
@@ -674,9 +674,9 @@ def cols_match(
     """Check that the columns in two tables match."""
 
     for col in y_cols:
-        y_table.is_column(col)
+        y_table.iscolumn(col)
     for col in x_cols:
-        x_table.is_column(col)
+        x_table.iscolumn(col)
     for y_col, x_col in zip(y_cols, x_cols):
         if y_table.get_column(y_col).type != x_table.get_column(x_col).type:
             raise ValueError(

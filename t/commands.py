@@ -304,7 +304,7 @@ def isidentifier(ident: str) -> bool:
     return True
 
 
-def is_valid_name(verb, arg, pos) -> None:
+def isvalidname(verb, arg, pos) -> None:
     """Language parser helper to validate a name argument & report errors."""
 
     if not isidentifier(arg):

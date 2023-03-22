@@ -285,7 +285,7 @@ class Program:
                 #     values = []
                 #     for fn in AGG_FNS:
                 #         v = top.stats[col.name][fn]
-                #         if not is_missing(v):
+                #         if not ismissing(v):
                 #             if (col.type == float and fn != "count") or fn == "avg":
                 #                 out = "{:,.3f}".format(v)
                 #             else:

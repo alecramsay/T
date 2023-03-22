@@ -43,11 +43,11 @@ class TestIO:
 
         # Boolean
         for x in ["True", "False", "true", "false", "TRUE", "FALSE"]:
-            assert is_bool(x)
+            assert isbool(x)
 
         # Date/Time
-        assert is_date_time("10/24/59")
-        assert not is_date_time("Not a date!")
+        assert isdate_time("10/24/59")
+        assert not isdate_time("Not a date!")
 
         # Integer
         dtype: Type

@@ -218,7 +218,7 @@ class Table:
         else:
             return False
 
-    def is_column(self, name: str) -> bool:
+    def iscolumn(self, name: str) -> bool:
         """Does the table have a column called <name>? (hard fail)"""
 
         if self.has_column(name):
@@ -238,7 +238,7 @@ class Table:
             raise Exception("No columns referenced.")
 
         for i, x in enumerate(names):
-            if self.is_column(x):
+            if self.iscolumn(x):
                 continue
 
         return True

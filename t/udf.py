@@ -61,7 +61,7 @@ class UDF:
 
         return wrapper
 
-    def is_udf(self, fn_name: str) -> bool:
+    def isudf(self, fn_name: str) -> bool:
         return fn_name in self.user_fns
 
 

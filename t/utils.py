@@ -104,7 +104,7 @@ def parse_spec(spec: str | list[str] | tuple) -> tuple:
     return first, second
 
 
-def is_list_of_str(obj: Any) -> bool:
+def islistofstr(obj: Any) -> bool:
     return isinstance(obj, list) and all(isinstance(elem, str) for elem in obj)
 
 
@@ -147,7 +147,7 @@ def get_builtin_fn(name: str) -> Any:
 
 
 #  TODO - Handle missing?
-# def is_missing(v: Any) -> bool:
+# def ismissing(v: Any) -> bool:
 #     """Return True if v is missing, else False."""
 
 #     return True if (v is None) else False

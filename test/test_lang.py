@@ -555,7 +555,7 @@ class TestLangHelpers:
         except:
             assert True
 
-    def test_is_valid_name(self):
+    def test_isvalidname(self):
         verb = "test"
 
         # Valid name
@@ -563,7 +563,7 @@ class TestLangHelpers:
         tree = cst.parse_expression(command)
 
         try:
-            is_valid_name(verb, tree.args[0], 1)
+            isvalidname(verb, tree.args[0], 1)
             assert True
         except:
             assert False
@@ -573,7 +573,7 @@ class TestLangHelpers:
         tree = cst.parse_expression(command)
 
         try:
-            is_valid_name(verb, tree.args[0], 1)
+            isvalidname(verb, tree.args[0], 1)
             assert False
         except:
             assert True

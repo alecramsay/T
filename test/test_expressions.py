@@ -21,7 +21,7 @@ class TestExpressions:
         actual: str = generate_df_syntax(tokens, names)
         expected: str = "df['GEOID20'].str[2:5]"
 
-    def test_is_slice(self) -> None:
+    def test_isslice(self) -> None:
         tok: str
         skip: int
 
