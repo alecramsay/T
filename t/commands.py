@@ -44,10 +44,10 @@ class Command:
         tokens: list[str] = tokenize(self._args_str)
 
         args: list[str] = unwrap_args(tokens)
-        bound_args_list: str = bind_args(args, self._scriptargs)
+        bound_args: str = bind_args(args, self._scriptargs)
 
         assert self._verb is not None
-        self._string = self._verb + "(" + bound_args_list + ")"
+        self._string = self._verb + "(" + bound_args + ")"
 
         self._split_verb_and_args()  # again
 
@@ -124,10 +124,10 @@ class Command:
 
 
 def split_args(s: str) -> list[str]:
-    """Split a string into a list of arguments.
+    """Split a string into a list of arguments, ignoring commas within parentheses."""
 
-    Ignore commas within parentheses.
-    """
+    if s == "":
+        return list()
 
     args: list[str] = re.split(r",\s*(?![^()]*\))", s)  # negative lookahead
 
