@@ -9,7 +9,6 @@ NOTE - Verbs don't know anything about the program stack.
 
 from typing import NoReturn
 
-from .constants import *
 from .utils import *
 from .expressions import *
 from .datamodel import *

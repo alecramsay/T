@@ -14,7 +14,7 @@ import string  # for string.whitespace
 from enum import Enum
 from typing import Callable, Literal
 
-from .constants import *
+from .constants import TOK_DELIM_SPEC, BEG, END
 from .readwrite import *
 
 

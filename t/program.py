@@ -11,7 +11,6 @@ from functools import wraps
 from contextlib import contextmanager
 from typing import Any, Callable, Optional
 
-from .constants import *
 from .utils import *
 
 from .readwrite import *
@@ -19,7 +18,7 @@ from .datamodel import *
 from .stack import *
 from .verbs import *
 
-# HELPER_FNS = mod_fns(helpers)
+# HELPER_FNS = mod_fns(helpers) # TODO
 
 
 def do_pre_op(required: int = 1) -> Callable[..., Callable[..., Any]]:

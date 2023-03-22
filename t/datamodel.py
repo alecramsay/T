@@ -13,7 +13,6 @@ import copy
 from csv import DictWriter
 import json
 
-from .constants import *
 from .readwrite import DelimitedFileReader, FileSpec, smart_open
 from .expressions import *
 from .utils import *
