@@ -5,10 +5,75 @@
 UTILITIES
 """
 
+import re
 import builtins
 from typing import Any
 
-# import inspect
+EXPR_DELIMS: str = " ,|()[]{}<>=+-*/:"  # NOTE - with colon
+# EXPR_DELIMS: str = " ,|()[]{}<>=+-*/"
+# EXPR_DELIMS: str = " ,'|()[]{}<>=+-*/"  # NOTE - with single quotes
+# EXPR_DELIMS: str = " ,'|()[]<>=+-*/"    # NOTE - without {}'s
+
+DELIM_TOKS: list[str] = [d.strip() for d in EXPR_DELIMS if d != " "] + ["=="]
+
+
+def tokenize(expr: str) -> list[str]:
+    tokens: list[str] = list()
+
+    word: str = ""
+    for i, c in enumerate(expr):
+        if c in EXPR_DELIMS:
+            if len(word) > 0:
+                tokens.append(word)
+                word = ""
+            if c != " ":
+                tokens.append(c)
+        else:
+            word = word + c
+
+    if len(word) > 0:
+        tokens.append(word)
+
+    # Collapse successive '='s
+    for i, tok in enumerate(tokens):
+        if tok == "=":
+            if i > 0 and tokens[i - 1] == "=":
+                tokens[i - 1] = "=="
+                tokens[i] = ""
+
+    # Remove empty tokens
+    tokens = [tok for tok in tokens if len(tok) > 0]
+
+    return tokens
+
+
+def find_args_string(s: str) -> tuple[int, int]:
+    """Find the offsets of the open & close parens bounding the args string in a command."""
+
+    # Args are between mandatory outside delimiting parens
+    left: int = s.find("(")
+    right: int = s.rfind(")")
+
+    if (left == -1 or right == -1) or (left > right):
+        raise Exception(
+            "Commands have zero or more arguments w/in matching parentheses."
+        )
+
+    if left < 1:
+        raise Exception("Commands start with a verb and open parenthesis.")
+
+    return left, right
+
+
+def split_args_string(s: str) -> list[str]:
+    """Split a string into a list of arguments, ignoring commas within parentheses."""
+
+    if s == "":
+        return list()
+
+    args: list[str] = re.split(r",\s*(?![^()]*\))", s)  # negative lookahead
+
+    return args
 
 
 def parse_spec(spec: str | list[str] | tuple) -> tuple:

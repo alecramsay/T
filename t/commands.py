@@ -5,11 +5,11 @@
 COMMANDS
 """
 
-import re
 import keyword
 from typing import Optional
 
-from .expressions import tokenize
+# from .expressions import tokenize
+from .utils import *
 from .program import Namespace
 
 
@@ -18,7 +18,8 @@ class Command:
 
     1. Instantiate a Command object
     2. Bind args to scriptargs
-    3. Parse the command
+    3. Rewrite aggregate functions?
+    4. Parse the command
     """
 
     _string: str
@@ -95,17 +96,9 @@ class Command:
     def _split_verb_and_args(self) -> None:
         """Return the verb & args (as a string) of a command."""
 
-        # Args are between mandatory outside delimiting parens
-        left: int = self._string.find("(")
-        right: int = self._string.rfind(")")
-
-        if (left == -1 or right == -1) or (left > right):
-            raise Exception("Verbs must have matching parentheses.")
-
-        if left < 1:
-            raise Exception(
-                "No verb found. Commands must have a verb and zero or more arguments."
-            )
+        left: int
+        right: int
+        left, right = find_args_string(self._string)
 
         self._verb = self._string[:left].strip()
         self._args_str = self._string[left + 1 : right].strip()
@@ -114,24 +107,13 @@ class Command:
         """Split the args string into a list of args."""
 
         assert self._args_str is not None
-        self._args_list = split_args(self._args_str)
+        self._args_list = split_args_string(self._args_str)
         # self._args_list = [x.strip() for x in self._args_str.split(",")]
 
         pass
 
 
 ### HELPERS ###
-
-
-def split_args(s: str) -> list[str]:
-    """Split a string into a list of arguments, ignoring commas within parentheses."""
-
-    if s == "":
-        return list()
-
-    args: list[str] = re.split(r",\s*(?![^()]*\))", s)  # negative lookahead
-
-    return args
 
 
 def unwrap_args(tokens) -> list[str]:

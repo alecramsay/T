@@ -9,45 +9,7 @@ import ast
 from typing import Optional
 
 from .udf import *
-
-### CONSTANTS ###
-
-EXPR_DELIMS: str = " ,|()[]{}<>=+-*/:"  # NOTE - with colon
-# EXPR_DELIMS: str = " ,|()[]{}<>=+-*/"
-# EXPR_DELIMS: str = " ,'|()[]{}<>=+-*/"  # NOTE - with single quotes
-# EXPR_DELIMS: str = " ,'|()[]<>=+-*/"    # NOTE - without {}'s
-
-DELIM_TOKS: list[str] = [d.strip() for d in EXPR_DELIMS if d != " "] + ["=="]
-
-
-def tokenize(expr: str) -> list[str]:
-    tokens: list[str] = list()
-
-    word: str = ""
-    for i, c in enumerate(expr):
-        if c in EXPR_DELIMS:
-            if len(word) > 0:
-                tokens.append(word)
-                word = ""
-            if c != " ":
-                tokens.append(c)
-        else:
-            word = word + c
-
-    if len(word) > 0:
-        tokens.append(word)
-
-    # Collapse successive '='s
-    for i, tok in enumerate(tokens):
-        if tok == "=":
-            if i > 0 and tokens[i - 1] == "=":
-                tokens[i - 1] = "=="
-                tokens[i] = ""
-
-    # Remove empty tokens
-    tokens = [tok for tok in tokens if len(tok) > 0]
-
-    return tokens
+from .utils import *
 
 
 def rewrite_expr(
