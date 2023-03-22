@@ -14,9 +14,10 @@ import string  # for string.whitespace
 from enum import Enum
 from typing import Callable, Literal
 
-from .constants import TOK_DELIM_SPEC, BEG, END
+from .constants import BEG, END
 from .readwrite import *
 
+TOK_DELIM_SPEC: str = "[\\s\\(\\)=]"
 
 readline.parse_and_bind("tab: complete")
 

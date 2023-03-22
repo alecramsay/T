@@ -5,12 +5,11 @@
 CONSTANTS
 """
 
-TOK_DELIM_SPEC: str = "[\\s\\(\\)=]"
-
 # Canonical pair indices
 BEG: int = 0
 END: int = 1
 
+# TODO - Move to lang.py
 ERROR: str = "_error_"
 
 ### FOR TESTING ###
