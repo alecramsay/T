@@ -12,6 +12,7 @@ from logging.handlers import RotatingFileHandler
 from .commands import Namespace, Command
 from .program import Program
 from .reader import Reader, ReadState, FILE_IN_VERBS, make_input_fn
+from .readwrite import FileSpec
 
 ERROR: str = "_error_"
 
