@@ -361,6 +361,27 @@ def issortarg(arg: str) -> bool:
     return False
 
 
+def isint(arg: str) -> bool:
+    """For verbs that take a positive integer."""
+
+    try:
+        n: int = int(arg)
+        if n < 1:
+            return False
+        return True
+    except ValueError:
+        return False
+
+
+def ispct(arg: str) -> bool:
+    """For verbs that take a positive percentage."""
+
+    if arg.endswith("%") and isint(arg[:-1]):
+        return True
+
+    return False
+
+
 def validate_name(verb, arg, pos) -> None:
     """Language parser helper to validate a name argument & report errors."""
 

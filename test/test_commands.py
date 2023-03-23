@@ -259,7 +259,7 @@ class TestCommands:
         for i, arg in enumerate(args):
             assert isidpair(arg) == expected[i]
 
-    def test_issortarg(self):
+    def test_issortarg(self) -> None:
         # Just a column name
         arg = "bar"
         actual = issortarg(arg)
@@ -283,6 +283,21 @@ class TestCommands:
         actual = issortarg(arg)
         expected = True
         assert actual != expected
+
+    def test_isint(self) -> None:
+        assert isint("1")
+        assert isint("5")
+        assert not isint("0")
+        assert not isint("-1")
+        assert not isint("5%")
+
+    def test_isintorpct(self) -> None:
+        assert ispct("1%")
+        assert ispct("5%")
+        assert not ispct("0%")
+        assert not ispct("-1%")
+        assert not ispct("5")
+        assert not ispct("5@")
 
     def test_validate_name(self):
         arg: str
