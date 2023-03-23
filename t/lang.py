@@ -642,7 +642,6 @@ def parse_keyword_arg(arg):
     return arg.keyword.value, arg.value.value
 
 
-# TODO - Port this
 def parse_call_args(args):
     d = {}
 

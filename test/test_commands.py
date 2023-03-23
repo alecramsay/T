@@ -252,7 +252,7 @@ class TestCommands:
         name = "1bar"
         assert not isidentifier(name)
 
-    def test_isvalidname(self):
+    def test_validate_name(self):
         arg: str
         command: str
         verb: str = "test"
@@ -261,7 +261,7 @@ class TestCommands:
         arg = "bar"
 
         try:
-            isvalidname(verb, arg, 1)
+            validate_name(verb, arg, 1)
             assert True
         except:
             assert False
@@ -270,7 +270,7 @@ class TestCommands:
         arg = "3"
 
         try:
-            isvalidname(verb, arg, 1)
+            validate_name(verb, arg, 1)
             assert False
         except:
             assert True
@@ -392,6 +392,23 @@ class TestCommands:
             cmd: Command = Command(command, Namespace(scriptargs))
             cmd.bind()
             cmd.parse()
+            assert False
+        except:
+            assert True
+
+    def test_validate_filename(self):
+        # Valid
+        arg = "test/files/exists.csv"
+        try:
+            validate_filename(arg)
+            assert True
+        except:
+            assert False
+
+        # Not valid
+        arg = "test/files/does_not_exist.csv"
+        try:
+            validate_filename(arg)
             assert False
         except:
             assert True

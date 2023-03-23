@@ -11,8 +11,6 @@ from typing import Optional, Iterator, Match
 
 from .utils import tokenize, find_args_string, split_args_string
 
-# from .program import Namespace  # TODO - Move this here
-
 
 class Namespace:
     _args: dict[str, str]
@@ -286,6 +284,16 @@ def bind_args(tokens: list[str], scriptargs) -> str:
     return bound
 
 
+def split_keyword_arg(arg: str) -> tuple[str, str]:
+    """Split a keyword argument into keyword and value."""
+
+    pos: int = arg.find("=")
+    keyword: str = arg[:pos]
+    value: str = arg[pos + 1 :]
+
+    return keyword, value
+
+
 def isidentifier(ident: str) -> bool:
     """Determines if string is valid Python identifier.
 
@@ -304,15 +312,6 @@ def isidentifier(ident: str) -> bool:
     return True
 
 
-def isvalidname(verb, arg, pos) -> None:
-    """Language parser helper to validate a name argument & report errors."""
-
-    if not isidentifier(arg):
-        raise Exception(
-            f"The '{verb}' command requires a valid name for argument {pos}."
-        )
-
-
 def iskeywordarg(arg: str) -> bool:
     """Return True if arg a keyword argument; otherwise False."""
 
@@ -324,14 +323,33 @@ def iskeywordarg(arg: str) -> bool:
     return one_equals and word_before
 
 
-def split_keyword_arg(arg: str) -> tuple[str, str]:
-    """Split a keyword argument into keyword and value."""
+def validate_name(verb, arg, pos) -> None:
+    """Language parser helper to validate a name argument & report errors."""
 
-    pos: int = arg.find("=")
-    keyword: str = arg[:pos]
-    value: str = arg[pos + 1 :]
+    if not isidentifier(arg):
+        raise Exception(
+            f"The '{verb}' command requires a valid name for argument {pos}."
+        )
 
-    return keyword, value
+
+def validate_nargs(verb, n, least, most=None) -> None:
+    if most == 0 and n > 0:
+        raise Exception(f"The '{verb}' command doesn't take any arguments.")
+
+    if n < least:
+        raise Exception(f"Too few arguments for '{verb}' command.")
+
+    if most and (n > most):
+        raise Exception(f"Too many arguments for '{verb}' command.")
+
+
+def validate_filename(arg: str) -> None:
+    """For 'read' and 'write'"""
+
+    try:
+        open(arg, "r")
+    except OSError:
+        raise Exception("File not found.")
 
 
 ### END ###
