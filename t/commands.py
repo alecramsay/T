@@ -9,7 +9,7 @@ import re
 import keyword
 from typing import Optional, Iterator, Match
 
-from .utils import tokenize, find_args_string, split_args_string
+from .utils import tokenize, find_args_string, split_args_string, parse_spec
 
 
 class Namespace:
@@ -336,6 +336,29 @@ def isidpair(arg: str) -> bool:
             return False
 
     return True
+
+
+def issortarg(arg: str) -> bool:
+    """For 'sort'"""
+
+    # Just a column name
+    if isidentifier(arg):
+        return True
+
+    # A column name and sort order (ASC or DESC)
+    if isidpair(arg):
+        # Both are name & order are valid identifiers
+        pair: list[str] = [x.strip() for x in arg[1:-1].split(",")]
+        name: str
+        order: str
+        name, order = parse_spec(pair)
+
+        if order not in ["ASC", "DESC"]:
+            return False
+
+        return True
+
+    return False
 
 
 def validate_name(verb, arg, pos) -> None:
