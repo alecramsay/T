@@ -323,6 +323,21 @@ def iskeywordarg(arg: str) -> bool:
     return one_equals and word_before
 
 
+def isidpair(arg: str) -> bool:
+    """A tuple pair of valid identifiers."""
+
+    matches: Match[str] | None = re.fullmatch(r"\(.+,.+\)", arg)
+    if matches is None:
+        return False
+
+    pair: list[str] = [x.strip() for x in matches.group(0)[1:-1].split(",")]
+    for name in pair:
+        if not isidentifier(name):
+            return False
+
+    return True
+
+
 def validate_name(verb, arg, pos) -> None:
     """Language parser helper to validate a name argument & report errors."""
 

@@ -252,6 +252,13 @@ class TestCommands:
         name = "1bar"
         assert not isidentifier(name)
 
+    def test_isidpair(self) -> None:
+        args = ["(a, b)", "c, d", "(a b, c)"]
+        expected = [True, False, False]
+
+        for i, arg in enumerate(args):
+            assert isidpair(arg) == expected[i]
+
     def test_validate_name(self):
         arg: str
         command: str
