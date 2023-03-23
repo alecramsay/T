@@ -553,6 +553,7 @@ def rewrite_input_line(line: str) -> str:
     if line.find("from(") > -1:
         line = line.replace("from(", "from_(")
 
+    # TODO - Am I still handling percent signs correctly?
     # HACK - '%' is a reserved Python symbol
     line = rewrite_pct(line)
 

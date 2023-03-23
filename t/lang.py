@@ -5,11 +5,11 @@
 INTERPRETER AND REPL, RUN SCRIPT, & DEBUGGER MODES
 """
 
-import libcst as cst
 import logging
 from logging.handlers import RotatingFileHandler
+from typing import Callable, Literal, Optional
 
-from .commands import Namespace, Command
+from .commands import Command
 from .program import Program
 from .reader import Reader, ReadState, FILE_IN_VERBS, make_input_fn
 from .readwrite import FileSpec
@@ -48,9 +48,6 @@ def interpret(command: str, env: Program) -> str:
     match verb:
         case "from_":
             return _handle_from(cmd, env)
-
-        ### TABLE VERBS ###
-
         case "write":
             return _handle_write(cmd, env)
         case "duplicate":
@@ -63,9 +60,6 @@ def interpret(command: str, env: Program) -> str:
             return _handle_union(cmd, env)
         case "groupby":
             return _handle_groupby(cmd, env)
-
-        ### ROW VERBS ###
-
         case "keep":
             return _handle_keep(cmd, env)
         case "drop":
@@ -86,18 +80,12 @@ def interpret(command: str, env: Program) -> str:
             return _handle_sample(cmd, env)
         case "cast":
             return _handle_cast(cmd, env)
-
-        ### MISCELLANEOUS ###
-
         case "show":
             return _handle_show(cmd, env)
         case "history":
             return _handle_history(cmd, env)
         case "inspect":
             return _handle_inspect(cmd, env)
-
-        ### STACK OPERATIONS ###
-
         case "clear":
             return _handle_clear(cmd, env)
         case "pop":
@@ -108,20 +96,17 @@ def interpret(command: str, env: Program) -> str:
             return _handle_reverse(cmd, env)
         case "rotate":
             return _handle_rotate(cmd, env)
-
-        ### UNRECOGNIZED VERB ###
-
         case _:
             print("Unrecognized command: ", verb)
             print("Note: File names need to be enclosed in quotes.")
             return ERROR
 
 
-def repl_mode(env: Program):
+def repl_mode(env: Program) -> None:
     """Interpret T commands in a REPL"""
 
-    count = 0
-    is_rooted = False  # Has a table been read in in some fashion?
+    count: int = 0
+    is_rooted: bool = False  # Has a table been read in in some fashion?
 
     # Setup 1MB history log
 
@@ -133,27 +118,29 @@ def repl_mode(env: Program):
         maxBytes=1 * 1024 * 1024,
         backupCount=2,
         encoding=None,
-        delay=0,
+        delay=False,
     )
     log_handler.setFormatter(log_formatter)
     log_handler.setLevel(logging.INFO)
 
-    app_log = logging.getLogger("root")
+    app_log: logging.Logger = logging.getLogger("root")
     app_log.setLevel(logging.INFO)
 
     app_log.addHandler(log_handler)
     app_log.info("000")
 
-    r = Reader()
+    r: Reader = Reader()
     prompt = ">>> "
 
     while True:
         try:
-            current_cols = env.cols if env.cols else []
-            input_fn = make_input_fn(is_rooted, current_cols)
+            current_cols: list[str] = env.cols if env.cols else list()
+            input_fn: Callable[..., str] = make_input_fn(is_rooted, current_cols)
 
-            line = input_fn(prompt)
-            state = r.next(line)
+            line: str = input_fn(prompt)
+            state: Literal[
+                ReadState.BLANK, ReadState.COMMANDS, ReadState.CONTINUED
+            ] = r.next(line)
 
             if state == ReadState.BLANK:
                 continue
@@ -170,7 +157,7 @@ def repl_mode(env: Program):
             print()
 
             for command in r.commands:
-                result = interpret(command, env)
+                result: str = interpret(command, env)
 
                 count += 1
                 app_log.info(str(count).zfill(3) + " " + command)
@@ -184,24 +171,26 @@ def repl_mode(env: Program):
             print("Exception while processing command: ", e)
 
 
-def run_mode(rel_path: str, env: Program):
+def run_mode(rel_path: str, env: Program) -> tuple[bool, str | None]:
     """Run a T script, i.e., interpret a file of T commands"""
 
     if env.src:
         rel_path = env.src + rel_path
 
-    result = None
-    exit = False
-    last_verb = None
+    result: Optional[str] = None
+    exit: bool = False
+    last_verb: Optional[str] = None
 
-    fs = FileSpec(rel_path)
-    abs_path = fs.abs_path
+    fs: FileSpec = FileSpec(rel_path)
+    abs_path: str = fs.abs_path
     with open(abs_path, "r") as f:
-        r = Reader()
-        line = f.readline()
+        r: Reader = Reader()
+        line: str = f.readline()
 
         while line:
-            state = r.next(line)
+            state: Literal[
+                ReadState.BLANK, ReadState.COMMANDS, ReadState.CONTINUED
+            ] = r.next(line)
 
             if state == ReadState.COMMANDS:
                 for command in r.commands:
@@ -234,17 +223,22 @@ def run_mode(rel_path: str, env: Program):
 class DebugMode:
     """Run/debug a 'T' script loaded in memory"""
 
-    def __init__(self, env, lines):
+    env: Program
+    reader: Reader
+    lines: list[str]
+    pc: int
+
+    def __init__(self, env: Program, lines: list[str]):
         self.env = env
         self.reader = Reader()
         self.lines = lines
         self.pc = 0
         # TODO - Add breakpoints, etc.
 
-    def add_line(self, line):
+    def add_line(self, line: str):
         self.lines.append(line)
 
-    def insert_line(self, line, index):
+    def insert_line(self, line: str, index: int):
         self.lines.insert(index, line)
         self.reset()
 
@@ -252,18 +246,18 @@ class DebugMode:
         self.reader = Reader()
         self.pc = 0
 
-    def run(self, step=False):
-        result = None
-
-        end = self.pc + 1 if step else len(self.lines)
+    def run(self, step: bool = False):
+        end: int = self.pc + 1 if step else len(self.lines)
 
         for line in self.lines[self.pc : end]:
-            state = self.reader.next(line)
+            state: Literal[
+                ReadState.BLANK, ReadState.COMMANDS, ReadState.CONTINUED
+            ] = self.reader.next(line)
             self.pc += 1
 
             if state == ReadState.COMMANDS:
                 for command in self.reader.commands:
-                    result = interpret(command, self.env)
+                    result: str = interpret(command, self.env)
 
                     if result == ERROR:
                         raise Exception("Error in T script.")
@@ -280,6 +274,9 @@ def _handle_from(cmd: Command, env: Program) -> str:
     print(f"{cmd.verb} {cmd.args}")
 
     return cmd.verb
+
+
+# Table verbs
 
 
 def _handle_write(cmd: Command, env: Program) -> str:
@@ -316,6 +313,9 @@ def _handle_groupby(cmd: Command, env: Program) -> str:
     print(f"{cmd.verb} {cmd.args}")
 
     return cmd.verb
+
+
+# Row verbs
 
 
 def _handle_keep(cmd: Command, env: Program) -> str:
@@ -378,6 +378,9 @@ def _handle_cast(cmd: Command, env: Program) -> str:
     return cmd.verb
 
 
+# Info verbs
+
+
 def _handle_show(cmd: Command, env: Program) -> str:
     print(f"{cmd.verb} {cmd.args}")
 
@@ -394,6 +397,9 @@ def _handle_inspect(cmd: Command, env: Program) -> str:
     print(f"{cmd.verb} {cmd.args}")
 
     return cmd.verb
+
+
+# Stack operations
 
 
 def _handle_clear(cmd: Command, env: Program) -> str:
