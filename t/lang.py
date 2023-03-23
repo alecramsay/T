@@ -9,14 +9,9 @@ import libcst as cst
 import logging
 from logging.handlers import RotatingFileHandler
 
-# TODO - Limit these imports to what's needed
 from .commands import Namespace, Command
 from .program import Program
 from .reader import Reader, ReadState, FILE_IN_VERBS, make_input_fn
-
-# from .expressions import *
-# from .readwrite import *
-
 
 ERROR: str = "_error_"
 
@@ -51,91 +46,74 @@ def interpret(command: str, env: Program) -> str:
 
     match verb:
         case "from_":
-            print(f"from_ {cmd.args}")
+            return _handle_from(cmd, env)
 
         ### TABLE VERBS ###
 
         case "write":
-            print(f"write {cmd.args}")
-
+            return _handle_write(cmd, env)
         case "duplicate":
-            print(f"duplicate {cmd.args}")
-
+            return _handle_duplicate(cmd, env)
         case "sort":
-            print(f"sort {cmd.args}")
-
+            return _handle_sort(cmd, env)
         case "join":
-            print(f"join {cmd.args}")
-
+            return _handle_join(cmd, env)
         case "union":
-            print(f"union {cmd.args}")
-
+            return _handle_union(cmd, env)
         case "groupby":
-            print(f"groupby {cmd.args}")
+            return _handle_groupby(cmd, env)
 
         ### ROW VERBS ###
 
         case "keep":
-            print(f"keep {cmd.args}")
-
+            return _handle_keep(cmd, env)
         case "drop":
-            print(f"drop {cmd.args}")
-
+            return _handle_drop(cmd, env)
         case "rename":
-            print(f"rename {cmd.args}")
-
+            return _handle_rename(cmd, env)
         case "alias":
-            print(f"alias {cmd.args}")
-
+            return _handle_alias(cmd, env)
         case "derive":
-            print(f"derive {cmd.args}")
-
+            return _handle_derive(cmd, env)
         case "select":
-            print(f"select {cmd.args}")
-
+            return _handle_select(cmd, env)
         case "first":
-            print(f"first {cmd.args}")
-
+            return _handle_first(cmd, env)
         case "last":
-            print(f"last {cmd.args}")
-
+            return _handle_last(cmd, env)
         case "sample":
-            print(f"sample {cmd.args}")
-
+            return _handle_sample(cmd, env)
         case "cast":
-            print(f"cast {cmd.args}")
+            return _handle_cast(cmd, env)
 
         ### MISCELLANEOUS ###
 
         case "show":
-            print(f"show {cmd.args}")
-
+            return _handle_show(cmd, env)
         case "history":
-            print(f"history {cmd.args}")
-
+            return _handle_history(cmd, env)
         case "inspect":
-            print(f"inspect {cmd.args}")
+            return _handle_inspect(cmd, env)
 
         ### STACK OPERATIONS ###
 
         case "clear":
-            print(f"clear {cmd.args}")
-
+            return _handle_clear(cmd, env)
         case "pop":
-            print(f"pop {cmd.args}")
-
+            return _handle_pop(cmd, env)
         case "swap":
-            print(f"swap {cmd.args}")
-
+            return _handle_swap(cmd, env)
         case "reverse":
-            print(f"reverse {cmd.args}")
-
+            return _handle_reverse(cmd, env)
         case "rotate":
-            print(f"rotate {cmd.args}")
+            return _handle_rotate(cmd, env)
 
-        # TODO - Else?
+        ### UNRECOGNIZED VERB ###
 
-    return verb  # TODO
+        case _:
+            print("Unrecognized command: ", verb)
+            print("Note: File names need to be enclosed in quotes.")
+            return ERROR
 
 
 def repl_mode(env: Program):
@@ -292,6 +270,162 @@ class DebugMode:
         # Check for unclosed block comments or multi-line statements
         if self.reader.continued or self.reader.in_block:
             raise Exception("Unexpected end of script.")
+
+
+### COMMAND HANDLERS ###
+
+
+def _handle_from(cmd: Command, env: Program) -> str:
+    print(f"{cmd.verb} {cmd.args}")
+
+    return cmd.verb
+
+
+def _handle_write(cmd: Command, env: Program) -> str:
+    print(f"{cmd.verb} {cmd.args}")
+
+    return cmd.verb
+
+
+def _handle_duplicate(cmd: Command, env: Program) -> str:
+    print(f"{cmd.verb} {cmd.args}")
+
+    return cmd.verb
+
+
+def _handle_sort(cmd: Command, env: Program) -> str:
+    print(f"{cmd.verb} {cmd.args}")
+
+    return cmd.verb
+
+
+def _handle_join(cmd: Command, env: Program) -> str:
+    print(f"{cmd.verb} {cmd.args}")
+
+    return cmd.verb
+
+
+def _handle_union(cmd: Command, env: Program) -> str:
+    print(f"{cmd.verb} {cmd.args}")
+
+    return cmd.verb
+
+
+def _handle_groupby(cmd: Command, env: Program) -> str:
+    print(f"{cmd.verb} {cmd.args}")
+
+    return cmd.verb
+
+
+def _handle_keep(cmd: Command, env: Program) -> str:
+    print(f"{cmd.verb} {cmd.args}")
+
+    return cmd.verb
+
+
+def _handle_drop(cmd: Command, env: Program) -> str:
+    print(f"{cmd.verb} {cmd.args}")
+
+    return cmd.verb
+
+
+def _handle_rename(cmd: Command, env: Program) -> str:
+    print(f"{cmd.verb} {cmd.args}")
+
+    return cmd.verb
+
+
+def _handle_alias(cmd: Command, env: Program) -> str:
+    print(f"{cmd.verb} {cmd.args}")
+
+    return cmd.verb
+
+
+def _handle_derive(cmd: Command, env: Program) -> str:
+    print(f"{cmd.verb} {cmd.args}")
+
+    return cmd.verb
+
+
+def _handle_select(cmd: Command, env: Program) -> str:
+    print(f"{cmd.verb} {cmd.args}")
+
+    return cmd.verb
+
+
+def _handle_first(cmd: Command, env: Program) -> str:
+    print(f"{cmd.verb} {cmd.args}")
+
+    return cmd.verb
+
+
+def _handle_last(cmd: Command, env: Program) -> str:
+    print(f"{cmd.verb} {cmd.args}")
+
+    return cmd.verb
+
+
+def _handle_sample(cmd: Command, env: Program) -> str:
+    print(f"{cmd.verb} {cmd.args}")
+
+    return cmd.verb
+
+
+def _handle_cast(cmd: Command, env: Program) -> str:
+    print(f"{cmd.verb} {cmd.args}")
+
+    return cmd.verb
+
+
+def _handle_show(cmd: Command, env: Program) -> str:
+    print(f"{cmd.verb} {cmd.args}")
+
+    return cmd.verb
+
+
+def _handle_history(cmd: Command, env: Program) -> str:
+    print(f"{cmd.verb} {cmd.args}")
+
+    return cmd.verb
+
+
+def _handle_inspect(cmd: Command, env: Program) -> str:
+    print(f"{cmd.verb} {cmd.args}")
+
+    return cmd.verb
+
+
+def _handle_clear(cmd: Command, env: Program) -> str:
+    print(f"{cmd.verb} {cmd.args}")
+
+    return cmd.verb
+
+
+def _handle_pop(cmd: Command, env: Program) -> str:
+    print(f"{cmd.verb} {cmd.args}")
+
+    return cmd.verb
+
+
+def _handle_swap(cmd: Command, env: Program) -> str:
+    print(f"{cmd.verb} {cmd.args}")
+
+    return cmd.verb
+
+
+def _handle_reverse(cmd: Command, env: Program) -> str:
+    print(f"{cmd.verb} {cmd.args}")
+
+    return cmd.verb
+
+
+def _handle_rotate(cmd: Command, env: Program) -> str:
+    print(f"{cmd.verb} {cmd.args}")
+
+    return cmd.verb
+
+
+### HELPERS ###
 
 
 def print_parsing_exception(verb, e):
