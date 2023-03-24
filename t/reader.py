@@ -542,6 +542,11 @@ class Reader:
 
 
 def rewrite_input_line(line: str) -> str:
+    """Rewrite input lines, so you can use the Python parser to parse commands.
+
+    I don't use libcst anymore, but I'm leaving in this in, in case we want to in the future.
+    """
+
     line = remove_hash_comments(line)
     line = remove_inline_block_comments(line)
     line = trim_whitespace(line)
@@ -553,7 +558,6 @@ def rewrite_input_line(line: str) -> str:
     if line.find("from(") > -1:
         line = line.replace("from(", "from_(")
 
-    # TODO - Am I still handling percent signs correctly?
     # HACK - '%' is a reserved Python symbol
     line = rewrite_pct(line)
 
