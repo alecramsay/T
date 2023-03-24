@@ -1,54 +1,52 @@
 #!/usr/bin/env python3
 
 """
-DEBUG sandbox
+A script harness for debugging.
 
-User-defined functions:
+Use one of these arg sets:
 
-https://stackoverflow.com/questions/26886653/create-new-column-based-on-values-from-other-columns-apply-a-function-of-multi
+$ scripts/t.py
+$ scripts/t.py -u user/alec.py
+$ scripts/t.py -u user/alec.py -s examples/rd -d data/rd/NC
+$
+$ scripts/t.py -u user/alec.py -s examples -d data/rd/NC -f demo.t > temp/demo.txt
+$ scripts/t.py -u user/alec.py -s examples -d data/join -f join.t > temp/join.txt
+$ scripts/t.py -u user/alec.py -s examples -d data/rd/NC -f aliases.t > temp/aliases.txt
+$ scripts/t.py -u user/alec.py -s examples -d data/rd/NC -f top10precincts.t > temp/top10precincts.txt
+$
+$ scripts/t.py -u user/alec.py -s examples/rd -d data/rd/NC -f census.t > temp/census.txt
+$ scripts/t.py -u user/alec.py -s examples/rd -d data/rd/NC -f elections.t > temp/elections.txt
+$ scripts/t.py -u user/alec.py -s examples/rd -d data/rd/NC -f precincts.t > temp/precincts.txt
+$ scripts/t.py -u user/alec.py -s examples/rd -d data/rd/NC -f districts.t > temp/districts.txt
+$ scripts/t.py -u user/alec.py -s examples/rd -d data/rd/NC -f geographic_seats.t > temp/geographic_seats.txt
+$ scripts/t.py -u user/alec.py -s examples/rd -d data/rd/NC -f misc.t > temp/misc.txt
 
-1. User writes & tests a function that takes column values and constants as arguments.
-2. Get the source translate that into a lambda function that takes a row as an argument
-   with column values converted to row[column] references.
-3. Apply that lambda function to the dataframe.
-
-Example:
-
-def composite(ag, gov, sen1, sen2, pres1, pres2) -> float:
-    # NOTE - This could be fleshed out to handle missing elections.
-    return ((ag + gov) / 2 + (sen1 + sen2) / 2 + (pres1 + pres2) / 2) / 3
-
-expr: str = "composite(D_2020_ag, D_2020_gov, D_2016_sen, D_2020_sen, D_2016_pres, D_2020_pres))"
-tokens: list[str] = tokenize(expr)
-re_expr: str = generate_df_syntax(tokens, self.col_names())
+>>> from('2020_census_NC.csv')
+>>> from('precincts.t')
 
 """
 
-import inspect
+import json
 
-from T import *
+from src.pytables import *
 
+user: str = "user/alec.py"
+file: str = "elections.t"
 
-rel_path: str = "user/alec.py"
-udf: UDF = UDF(rel_path)
+scriptargs: str = ""
+# scriptargs = '{"paf": "2020_alt_assignments_NC.csv"}'
+# scriptargs = '{"paf": "\'2020_alt_assignments_NC.csv\'"}' <<< This doesn't work in argparse
 
-expr: str = (
-    "composite(D_2020_ag, D_2020_gov, D_2016_sen, D_2020_sen, D_2016_pres, D_2020_pres)"
+# source = "examples"
+source: str = "examples/rd"
+
+data: str = "data/rd/NC"
+# data = "data/join"
+
+verbose: bool = False
+
+scriptargs = json.loads(scriptargs) if (scriptargs) else {}
+
+run_script(
+    user=user, file=file, src=source, data=data, verbose=verbose, scriptargs=scriptargs
 )
-tokens: list[str] = tokenize(expr)
-col_names: list[str] = [
-    "D_2020_ag",
-    "D_2020_gov",
-    "D_2016_sen",
-    "D_2020_sen",
-    "D_2016_pres",
-    "D_2020_pres",
-]
-
-re_expr: str
-wrappers: list[str]
-re_expr, wrappers = rewrite_expr(tokens, col_names, udf)
-
-pass
-
-### END ###

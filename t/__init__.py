@@ -10,6 +10,7 @@ from .program import *
 from .reader import *
 from .readwrite import *
 from .stack import *
+from .T import *
 from .udf import *
 from .utils import *
 from .verbs import *
