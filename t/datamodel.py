@@ -574,17 +574,16 @@ def table_to_csv(table: Table, rel_path: Optional[str]) -> None:
             FileSpec(rel_path).abs_path if (rel_path is not None) else None
         )
 
-        cols: list[str] = table.col_names()
+        col_names: list[str] = table.col_names()
         header: str = ",".join(table.col_aliases_or_names()) + "\n"
 
         with smart_open(cf) as handle:
-            writer: DictWriter[str] = DictWriter(handle, fieldnames=cols)
+            writer: DictWriter[str] = DictWriter(handle, fieldnames=col_names)
 
             # Write the header row with aliases (faking out 'writer')
             handle.write(header)
 
-            col_names: list[str] = table.col_names()
-            for row in table._data.iterrows():
+            for _, row in table._data.iterrows():
                 mod: dict = dict(zip(col_names, row))
                 # TODO - Handle missing values?
                 # mod = {k: missing_to_str(v) for (k, v) in row.dict().items()}
@@ -594,6 +593,7 @@ def table_to_csv(table: Table, rel_path: Optional[str]) -> None:
         raise Exception("Exception writing CSV.")
 
 
+# TODO - Verify this works
 def table_to_json(table: Table, rel_path: Optional[str]) -> None:
     """Write a table to a JSON file
 
@@ -611,11 +611,11 @@ def table_to_json(table: Table, rel_path: Optional[str]) -> None:
             table.map_names_to_aliases() if table.has_aliases() else None
         )
 
-        for row in table._data.iterrows():
-            d1: dict = dict(zip(col_names, row))
+        for _, row in table._data.iterrows():
+            d: dict = dict(zip(col_names, row))
             if mapping:
-                d1 = map_keys(d1, mapping)
-            rows.append(d1)
+                d = map_keys(d, mapping)
+            rows.append(d)
 
         with smart_open(cf) as handle:
             json.dump(rows, handle)

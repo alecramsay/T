@@ -31,21 +31,21 @@ import json
 from T import run_script
 
 user: str = "user/alec.py"
-file: str = "elections.t"
+file: str = "debug.t"
 
 args_str: str = ""
 # args_str = '{"paf": "2020_alt_assignments_NC.csv"}'
 # args_str = '{"paf": "\'2020_alt_assignments_NC.csv\'"}' <<< This doesn't work in argparse
 
-# source = "examples"
-source: str = "examples/rd"
+source: str = "examples"
+# source: str = "examples/rd"
 
 data: str = "data/rd/NC"
 # data = "data/join"
 
-verbose: bool = False
+verbose: bool = True
 
-scriptargs: dict = json.loads(args_str) if (args_str) else dict()
+scriptargs: dict = json.loads(args_str) if args_str else dict()
 
 run_script(
     user=user, file=file, src=source, data=data, verbose=verbose, scriptargs=scriptargs
