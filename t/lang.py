@@ -9,7 +9,7 @@ import logging
 from logging.handlers import RotatingFileHandler
 from typing import Callable, Literal, Optional
 
-from .commands import Command, validate_nargs, could_be_filename
+from .commands import Command, Namespace, validate_nargs, could_be_filename
 from .program import Program
 from .reader import Reader, ReadState, FILE_IN_VERBS, make_input_fn
 from .readwrite import FileSpec
@@ -286,20 +286,27 @@ def _handle_from(cmd: Command, env: Program) -> str:
     verb: str = "from"  # HACK - cmd.verb has 'from_'
 
     try:
-        validate_nargs(verb, cmd.n_pos, 1, 1)  # There's one positional argument
+        validate_nargs(verb, cmd.n_pos, 1, 1)  # There's one positional arg
 
         name: str = cmd.positional_args[0].strip("'")
         could_be_filename(name)
         # It could be a filename
 
         fs = FileSpec(name)
-        if fs.extension == ".t":
-            # Run a T script
-            print(f"Run T script: {name}")
+        match fs.extension:
+            case ".t":  # Run a T script <<< TODO - Verify this code path
+                call_args = cmd.keyword_args if cmd.n_kw > 0 else dict()
+                env.call_stack.push(Namespace(call_args))
 
-        else:
-            # Read table from a file
-            print(f"Read CSV file: {name}")
+                run_mode(fs.rel_path, env)
+
+                env.call_stack.pop()
+                env._display_table()
+
+            case _:  # Read table from a file
+                validate_nargs(verb, cmd.n_kw, 0, 0)  # There are no kw args
+                env.read(fs.rel_path)
+                env._display_table()
 
     except Exception as e:
         print_parsing_exception(cmd.verb, e)
