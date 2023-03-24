@@ -1,4 +1,4 @@
-# scripts/t.py -u user/alec.py -s test/reader -d data/rd/NC -f script.t > temp/script.txt
+# scripts/T.py -u user/alec.py -s test/reader -d data/rd/NC -f script.t > temp/script.txt
 
 """
 A docstring

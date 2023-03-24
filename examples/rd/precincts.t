@@ -1,4 +1,4 @@
-# scripts/t.py -u user/alec.py -s examples/rd -d data/rd/NC -f precincts.t > temp/precincts.txt
+# scripts/T.py -u user/alec.py -s examples/rd -d data/rd/NC -f precincts.t > temp/precincts.txt
 
 from(args.paf or '2020_precinct_assignments_NC.csv')
 

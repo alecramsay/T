@@ -5,17 +5,17 @@ Run a 'T' script from the command line.
 
 For example:
 
-$ scripts/t.py -u user/alec.py -s examples/rd -d data/rd/NC -f census.t > temp/census.txt
-$ scripts/t.py -u user/alec.py -s examples/rd -d data/rd/NC -f elections.t > temp/elections.txt
-$ scripts/t.py -u user/alec.py -s examples/rd -d data/rd/NC -f precincts.t > temp/precincts.txt
-$ scripts/t.py -u user/alec.py -s examples/rd -d data/rd/NC -f districts.t > temp/districts.txt
+$ scripts/T.py -u user/alec.py -s examples/rd -d data/rd/NC -f census.t > temp/census.txt
+$ scripts/T.py -u user/alec.py -s examples/rd -d data/rd/NC -f elections.t > temp/elections.txt
+$ scripts/T.py -u user/alec.py -s examples/rd -d data/rd/NC -f precincts.t > temp/precincts.txt
+$ scripts/T.py -u user/alec.py -s examples/rd -d data/rd/NC -f districts.t > temp/districts.txt
 $
-$ scripts/t.py -u user/alec.py -s examples/rd -d data/rd/NC -f precincts.t -a '{"paf": "2020_alt_assignments_NC.csv"}'
-$ scripts/t.py -u user/alec.py -s examples/rd -d data/rd/NC -f precincts.t -a '{"paf": "\'2020_alt_assignments_NC.csv\'"}' <<< This doesn't work in argparse
+$ scripts/T.py -u user/alec.py -s examples/rd -d data/rd/NC -f precincts.t -a '{"paf": "2020_alt_assignments_NC.csv"}'
+$ scripts/T.py -u user/alec.py -s examples/rd -d data/rd/NC -f precincts.t -a '{"paf": "\'2020_alt_assignments_NC.csv\'"}' <<< This doesn't work in argparse
 
 For documentation, type:
 
-$ scripts/t.py -h
+$ scripts/T.py -h
 
 """
 

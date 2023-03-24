@@ -382,7 +382,7 @@ def ispct(arg: str) -> bool:
     return False
 
 
-def validate_name(verb, arg, pos) -> None:
+def validate_name(verb: str, arg: str, pos: int) -> None:
     """Language parser helper to validate a name argument & report errors."""
 
     if not isidentifier(arg):
@@ -391,7 +391,7 @@ def validate_name(verb, arg, pos) -> None:
         )
 
 
-def validate_nargs(verb, n, least, most=None) -> None:
+def validate_nargs(verb: str, n: int, least: int, most: Optional[int] = None) -> None:
     if most == 0 and n > 0:
         raise Exception(f"The '{verb}' command doesn't take any arguments.")
 

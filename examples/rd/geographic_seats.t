@@ -1,4 +1,4 @@
-# scripts/t.py -u user/alec.py -s examples/rd -d data/rd/NC -f geographic_seats.t > temp/geographic_seats.txt
+# scripts/T.py -u user/alec.py -s examples/rd -d data/rd/NC -f geographic_seats.t > temp/geographic_seats.txt
 
 from('precincts.csv')
 derive(county_fips, GEOID[2:5])

@@ -12,7 +12,7 @@ $ scripts/repl.py -u user/alec.py -s examples/rd -d data/rd/NC
 
 For documentation, type:
 
-$ scripts/t.py -h
+$ scripts/T.py -h
 
 """
 

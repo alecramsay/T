@@ -1,4 +1,4 @@
-# scripts/t.py -u user/alec.py -s examples/rd -d data/rd/NC -f misc.t > temp/misc.txt
+# scripts/T.py -u user/alec.py -s examples/rd -d data/rd/NC -f misc.t > temp/misc.txt
 
 from('2020_census_NC.csv')
 

@@ -1,4 +1,4 @@
-# scripts/t.py -u user/alec.py -s examples -d data/rd/NC -f error.t > temp/error.txt
+# scripts/T.py -u user/alec.py -s examples -d data/rd/NC -f error.t > temp/error.txt
 
 from(args.elections or '2020_election_NC.csv')
 

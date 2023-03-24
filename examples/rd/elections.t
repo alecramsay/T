@@ -1,4 +1,4 @@
-# scripts/t.py -u user/alec.py -s examples/rd -d data/rd/NC -f elections.t > temp/elections.txt
+# scripts/T.py -u user/alec.py -s examples/rd -d data/rd/NC -f elections.t > temp/elections.txt
 
 from(args.elections or '2020_election_NC.csv')
 

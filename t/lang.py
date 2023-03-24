@@ -9,7 +9,7 @@ import logging
 from logging.handlers import RotatingFileHandler
 from typing import Callable, Literal, Optional
 
-from .commands import Command
+from .commands import Command, validate_nargs, could_be_filename
 from .program import Program
 from .reader import Reader, ReadState, FILE_IN_VERBS, make_input_fn
 from .readwrite import FileSpec
@@ -286,15 +286,20 @@ def _handle_from(cmd: Command, env: Program) -> str:
     verb: str = "from"  # HACK - cmd.verb has 'from_'
 
     try:
-        pass
+        validate_nargs(verb, cmd.n_pos, 1, 1)  # There's one positional argument
 
-        # Run a T script
+        name: str = cmd.positional_args[0].strip("'")
+        could_be_filename(name)
+        # It could be a filename
 
-        pass
+        fs = FileSpec(name)
+        if fs.extension == ".t":
+            # Run a T script
+            print(f"Run T script: {name}")
 
-        # Read a file
-
-        pass
+        else:
+            # Read table from a file
+            print(f"Read CSV file: {name}")
 
     except Exception as e:
         print_parsing_exception(cmd.verb, e)
