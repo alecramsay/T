@@ -391,15 +391,22 @@ def validate_name(verb: str, arg: str, pos: int) -> None:
         )
 
 
-def validate_nargs(verb: str, n: int, least: int, most: Optional[int] = None) -> None:
+def validate_nargs(
+    verb: str,
+    n: int,
+    least: int,
+    *,
+    most: Optional[int] = None,
+    arg_type: str = "positional",
+) -> None:
     if most == 0 and n > 0:
-        raise Exception(f"The '{verb}' command doesn't take any arguments.")
+        raise Exception(f"The '{verb}' command doesn't take any {arg_type} arguments.")
 
     if n < least:
-        raise Exception(f"Too few arguments for '{verb}' command.")
+        raise Exception(f"Too few {arg_type} arguments for '{verb}' command.")
 
     if most and (n > most):
-        raise Exception(f"Too many arguments for '{verb}' command.")
+        raise Exception(f"Too many {arg_type} arguments for '{verb}' command.")
 
 
 def validate_filename(arg: str) -> None:

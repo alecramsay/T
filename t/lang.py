@@ -286,7 +286,7 @@ def _handle_from(cmd: Command, env: Program) -> str:
     verb: str = "from"  # HACK - cmd.verb has 'from_'
 
     try:
-        validate_nargs(verb, cmd.n_pos, 1, 1)  # There's one positional arg
+        validate_nargs(verb, cmd.n_pos, 1, most=1)  # There is one positional arg
 
         name: str = cmd.positional_args[0].strip("'")
         could_be_filename(name)
@@ -304,12 +304,14 @@ def _handle_from(cmd: Command, env: Program) -> str:
                 env._display_table()
 
             case _:  # Read table from a file
-                validate_nargs(verb, cmd.n_kw, 0, 0)  # There are no kw args
+                validate_nargs(
+                    verb, cmd.n_kw, 0, most=0, arg_type="keyword"
+                )  # There are no keyword args
                 env.read(fs.rel_path)
                 env._display_table()
 
     except Exception as e:
-        print_parsing_exception(cmd.verb, e)
+        print_parsing_exception(verb, e)
         return ERROR
 
     return cmd.verb
@@ -358,7 +360,17 @@ def _handle_groupby(cmd: Command, env: Program) -> str:
 
 
 def _handle_keep(cmd: Command, env: Program) -> str:
-    print(f"{cmd.verb} {cmd.args}")
+    try:
+        validate_nargs(cmd.verb, cmd.n_pos, 1)  # There is one or more positional args
+        validate_nargs(
+            cmd.verb, cmd.n_kw, 0, most=0, arg_type="keyword"
+        )  # But no keyword args
+
+        env.keep(cmd.positional_args)
+
+    except Exception as e:
+        print_parsing_exception(cmd.verb, e)
+        return ERROR
 
     return cmd.verb
 
