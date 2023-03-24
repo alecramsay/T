@@ -19,7 +19,7 @@ $ scripts/t.py -h
 import json
 import argparse as ap
 
-from T import *
+from T import start_repl
 
 
 parser = ap.ArgumentParser(description="Start the T language processor")
@@ -35,7 +35,7 @@ parser.add_argument(
 )
 
 args: ap.Namespace = parser.parse_args()
-scriptargs: dict = json.loads(args.scriptargs) if (args.scriptargs) else {}
+scriptargs: dict = json.loads(args.scriptargs) if (args.scriptargs) else dict()
 
 start_repl(
     user=args.user,

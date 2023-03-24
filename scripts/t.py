@@ -22,7 +22,7 @@ $ scripts/t.py -h
 import json
 import argparse as ap
 
-from T import run_script, Namespace
+from T import run_script
 
 
 parser = ap.ArgumentParser(description="Start the T language processor")

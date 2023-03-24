@@ -28,14 +28,14 @@ $ scripts/t.py -u user/alec.py -s examples/rd -d data/rd/NC -f misc.t > temp/mis
 
 import json
 
-from src.pytables import *
+from T import run_script
 
 user: str = "user/alec.py"
 file: str = "elections.t"
 
-scriptargs: str = ""
-# scriptargs = '{"paf": "2020_alt_assignments_NC.csv"}'
-# scriptargs = '{"paf": "\'2020_alt_assignments_NC.csv\'"}' <<< This doesn't work in argparse
+args_str: str = ""
+# args_str = '{"paf": "2020_alt_assignments_NC.csv"}'
+# args_str = '{"paf": "\'2020_alt_assignments_NC.csv\'"}' <<< This doesn't work in argparse
 
 # source = "examples"
 source: str = "examples/rd"
@@ -45,7 +45,7 @@ data: str = "data/rd/NC"
 
 verbose: bool = False
 
-scriptargs = json.loads(scriptargs) if (scriptargs) else {}
+scriptargs: dict = json.loads(args_str) if (args_str) else dict()
 
 run_script(
     user=user, file=file, src=source, data=data, verbose=verbose, scriptargs=scriptargs
