@@ -47,6 +47,7 @@ def interpret(command: str, env: Program) -> str:
 
     match verb:
         case "from_":
+            # NOTE - The reader hack to change "from" to "from_" is reversed in Command parsing.
             return _handle_from(cmd, env)
         case "write":
             return _handle_write(cmd, env)
@@ -271,7 +272,22 @@ class DebugMode:
 
 
 def _handle_from(cmd: Command, env: Program) -> str:
-    print(f"{cmd.verb} {cmd.args}")
+    """Execute a 'from' command"""
+
+    try:
+        pass
+
+        # Run a T script
+
+        pass
+
+        # Read a file
+
+        pass
+
+    except Exception as e:
+        print_parsing_exception(cmd.verb, e)
+        return ERROR
 
     return cmd.verb
 

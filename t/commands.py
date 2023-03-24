@@ -149,6 +149,9 @@ class Command:
         left, right = find_args_string(self._string)
 
         self._verb = self._string[:left].strip()
+        # NOTE - Undo the reader HACK
+        if self._verb == "from_":
+            self._verb = "from"
         self._args_str = self._string[left + 1 : right].strip()
 
     def _split_args_string(self) -> None:
