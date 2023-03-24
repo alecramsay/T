@@ -149,9 +149,6 @@ class Command:
         left, right = find_args_string(self._string)
 
         self._verb = self._string[:left].strip()
-        # NOTE - Undo the reader HACK
-        if self._verb == "from_":
-            self._verb = "from"
         self._args_str = self._string[left + 1 : right].strip()
 
     def _split_args_string(self) -> None:
@@ -406,12 +403,24 @@ def validate_nargs(verb, n, least, most=None) -> None:
 
 
 def validate_filename(arg: str) -> None:
-    """For 'read' and 'write'"""
+    """Raise an exception if arg file does not exist."""
 
     try:
         open(arg, "r")
     except OSError:
         raise Exception("File not found.")
+
+
+def could_be_filename(arg: str) -> None:
+    """Raise an exception if arg could not be a valid filename."""
+
+    if not isinstance(arg, str):
+        raise Exception("Filenames must be strings.")
+
+    matches: Match[str] | None = re.fullmatch(r"((?:[^/]+/)*)([^/]+)", arg)
+
+    if not matches:
+        raise Exception("Invalid filename: {arg}.")
 
 
 ### END ###

@@ -460,5 +460,22 @@ class TestCommands:
         except:
             assert True
 
+    def test_could_be_filename(self) -> None:
+        args: list[str] = [
+            "precincts.t",
+            "2020_census_NC.csv",
+            "foo/bar.csv",
+            "foo/",
+            "foo//bar",
+        ]
+        expected: list[bool] = [True, True, True, False, False]
+
+        for i, arg in enumerate(args):
+            try:
+                could_be_filename(arg)
+                assert expected[i] == True
+            except:
+                assert expected[i] == False
+
 
 ### END ###
