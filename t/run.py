@@ -13,12 +13,14 @@ from .lang import run_mode, repl_mode
 from .reader import DISPLAY_VERBS
 
 
-def run_script(user, file: str, src: str, data: str, verbose: bool, **kwargs) -> None:
+def run_script(
+    user, file: str, src: str, data: str, output: str, log: str, verbose: bool, **kwargs
+) -> None:
     """Execute a 'T' script file."""
 
     scriptargs: dict = fixup_quotes(kwargs.get("scriptargs", {}))
 
-    with Tables(user=user, src=src, data=data, repl=False) as T:
+    with Tables(user=user, src=src, data=data, output=output, log=log, repl=False) as T:
         try:
             exit: bool
             last_verb: str | None
@@ -49,12 +51,14 @@ def run_script(user, file: str, src: str, data: str, verbose: bool, **kwargs) ->
             print("Exception executing program: ", e)
 
 
-def run_repl(user: str, src: str, data: str, verbose: bool, **kwargs) -> None:
+def run_repl(
+    user: str, src: str, data: str, output: str, log: str, verbose: bool, **kwargs
+) -> None:
     """Start 'T' REPL"""
 
     scriptargs: dict = fixup_quotes(kwargs.get("scriptargs", {}))
 
-    with Tables(user=user, src=src, data=data, repl=True) as T:
+    with Tables(user=user, src=src, data=data, output=output, log=log, repl=True) as T:
         try:
             # Finish binding args
             if scriptargs:

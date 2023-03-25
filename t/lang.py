@@ -110,7 +110,10 @@ def repl_mode(env: Program) -> None:
 
     # Setup 1MB history log
 
-    logFile = "logs/history.log"
+    logFile: str = env.log
+    with open(logFile, "a+"):
+        pass  # Touch the file to create it if it doesn't exist
+    # logFile = "logs/history.log"
     log_formatter = logging.Formatter("%(message)s")
     log_handler = RotatingFileHandler(
         logFile,
@@ -294,7 +297,8 @@ def _handle_from(cmd: Command, env: Program) -> str:
 
         fs = FileSpec(name)
         match fs.extension:
-            case ".t":  # Run a T script <<< TODO - Verify this code path
+            case ".t":  # Run a T script
+                # TODO - Verify this code path
                 call_args = cmd.keyword_args if cmd.n_kw > 0 else dict()
                 env.call_stack.push(Namespace(call_args))
 

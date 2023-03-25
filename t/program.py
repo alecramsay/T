@@ -97,6 +97,9 @@ class Program:
     user: Optional[str]
     src: Optional[str]
     data: Optional[str]
+    output: Optional[str]
+    log: str
+
     cache: dict
 
     stats: Optional[dict]
@@ -109,6 +112,8 @@ class Program:
         user: Optional[str] = None,
         src: Optional[str] = None,
         data: Optional[str] = None,
+        output: Optional[str] = None,
+        log: Optional[str] = None,
         repl=True,
         silent=False,
     ) -> None:
@@ -129,6 +134,9 @@ class Program:
             self.use(user)
         self.src = os.path.join(src, "") if src else None
         self.data = os.path.join(data, "") if data else None
+
+        self.output = os.path.join("temp", "") if output is None else output
+        self.log = "logs/history.log" if log is None else log
 
         self.cache = dict()
         self._reset_cached_props()
@@ -215,7 +223,7 @@ class Program:
         """Echo the last N commands entered in the REPL to STDOUT."""
 
         try:
-            with open("logs/history.log", "r") as fh:
+            with open(self.log, "r") as fh:
                 lines: list[str] = fh.readlines()
                 nlines: int = len(lines)
                 count: int = 0
@@ -691,10 +699,14 @@ def Tables(
     user: Optional[str] = None,
     src: Optional[str] = None,
     data: Optional[str] = None,
+    output: Optional[str] = None,
+    log: Optional[str] = None,
     repl=False,
     silent=False,
 ) -> Generator[Program, None, None]:
-    T: Program = Program(user=user, src=src, data=data, repl=repl, silent=silent)
+    T: Program = Program(
+        user=user, src=src, data=data, output=output, log=log, repl=repl, silent=silent
+    )
 
     yield T
     del T
