@@ -310,7 +310,6 @@ def concatenate_string_literals(line: str):
     quoted_strings: list[tuple[int, int]] = list()
 
     for i, c in enumerate(line):
-        # print("char: ", i, c)
         if not begin_char and c in [DOUBLE_QUOTE, SINGLE_QUOTE]:
             begin_char = c
             begin_pos = i

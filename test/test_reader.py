@@ -266,10 +266,11 @@ class TestReader:
         line = "foo"
         assert not isblank(line)
 
-    # TODO - Write some test cases for this!
     def test_concatenate_string_literals(self) -> None:
         line: str = 'message = "Hello There.\nYou have come to the right place to learn Python Programming.\n" "Follow the tutorials to become expert in Python. " "Don\'t forget to share it with your friends too."'
         line = 'message = ("Hello\n" "Hi\n" "Namaste")'
+
+        # TODO - Write some test cases for this!
 
         assert True
 
