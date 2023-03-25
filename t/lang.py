@@ -573,13 +573,51 @@ def _handle_cast(cmd: Command, env: Program) -> str:
 
 
 def _handle_show(cmd: Command, env: Program) -> str:
-    print(f"{cmd.verb} {cmd.args}")
+    """Execute a 'show' command
+
+    Example:
+
+    >>> show()
+    """
+
+    try:
+        # There are zero or one positional args
+        validate_nargs(cmd.verb, cmd.n_pos, 0, most=1)
+        # And no keyword args
+        validate_nargs(cmd.verb, cmd.n_kw, 0, most=0, arg_type="keyword")
+
+        n: Optional[int] = None if cmd.n_pos == 0 else int(cmd.positional_args[0])
+
+        env.show(n)
+
+    except Exception as e:
+        print_parsing_exception(cmd.verb, e)
+        return ERROR
 
     return cmd.verb
 
 
 def _handle_history(cmd: Command, env: Program) -> str:
-    print(f"{cmd.verb} {cmd.args}")
+    """Execute a 'history' command
+
+    Example:
+
+    >>> history()
+    """
+
+    try:
+        # There are zero or one positional args
+        validate_nargs(cmd.verb, cmd.n_pos, 0, most=1)
+        # And no keyword args
+        validate_nargs(cmd.verb, cmd.n_kw, 0, most=0, arg_type="keyword")
+
+        n: Optional[int] = None if cmd.n_pos == 0 else int(cmd.positional_args[0])
+
+        env.history(n)
+
+    except Exception as e:
+        print_parsing_exception(cmd.verb, e)
+        return ERROR
 
     return cmd.verb
 
@@ -594,31 +632,116 @@ def _handle_inspect(cmd: Command, env: Program) -> str:
 
 
 def _handle_clear(cmd: Command, env: Program) -> str:
-    print(f"{cmd.verb} {cmd.args}")
+    """Execute a 'clear' command
+
+    Example:
+
+    >>> clear()
+    """
+
+    try:
+        # There are no positional args
+        validate_nargs(cmd.verb, cmd.n_pos, 0)
+        # And no keyword args
+        validate_nargs(cmd.verb, cmd.n_kw, 0, most=0, arg_type="keyword")
+
+        env.clear()
+
+    except Exception as e:
+        print_parsing_exception(cmd.verb, e)
+        return ERROR
 
     return cmd.verb
 
 
 def _handle_pop(cmd: Command, env: Program) -> str:
-    print(f"{cmd.verb} {cmd.args}")
+    """Execute a 'pop' command
+
+    Example:
+
+    >>> pop()
+    """
+
+    try:
+        # There are no positional args
+        validate_nargs(cmd.verb, cmd.n_pos, 0)
+        # And no keyword args
+        validate_nargs(cmd.verb, cmd.n_kw, 0, most=0, arg_type="keyword")
+
+        env.pop()
+
+    except Exception as e:
+        print_parsing_exception(cmd.verb, e)
+        return ERROR
 
     return cmd.verb
 
 
 def _handle_swap(cmd: Command, env: Program) -> str:
-    print(f"{cmd.verb} {cmd.args}")
+    """Execute a 'swap' command
+
+    Example:
+
+    >>> swap()
+    """
+
+    try:
+        # There are no positional args
+        validate_nargs(cmd.verb, cmd.n_pos, 0)
+        # And no keyword args
+        validate_nargs(cmd.verb, cmd.n_kw, 0, most=0, arg_type="keyword")
+
+        env.swap()
+
+    except Exception as e:
+        print_parsing_exception(cmd.verb, e)
+        return ERROR
 
     return cmd.verb
 
 
 def _handle_reverse(cmd: Command, env: Program) -> str:
-    print(f"{cmd.verb} {cmd.args}")
+    """Execute a 'reverse' command
+
+    Example:
+
+    >>> reverse()
+    """
+
+    try:
+        # There are no positional args
+        validate_nargs(cmd.verb, cmd.n_pos, 0)
+        # And no keyword args
+        validate_nargs(cmd.verb, cmd.n_kw, 0, most=0, arg_type="keyword")
+
+        env.reverse()
+
+    except Exception as e:
+        print_parsing_exception(cmd.verb, e)
+        return ERROR
 
     return cmd.verb
 
 
 def _handle_rotate(cmd: Command, env: Program) -> str:
-    print(f"{cmd.verb} {cmd.args}")
+    """Execute a 'rotate' command
+
+    Example:
+
+    >>> rotate()
+    """
+
+    try:
+        # There are no positional args
+        validate_nargs(cmd.verb, cmd.n_pos, 0)
+        # And no keyword args
+        validate_nargs(cmd.verb, cmd.n_kw, 0, most=0, arg_type="keyword")
+
+        env.rotate()
+
+    except Exception as e:
+        print_parsing_exception(cmd.verb, e)
+        return ERROR
 
     return cmd.verb
 
