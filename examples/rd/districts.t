@@ -2,7 +2,7 @@
 
 from('precincts.t', paf='2020_precinct_assignments_NC.csv', census='2020_census_NC.csv', elections='2020_election_NC.csv')
 
-pivot(by=District)
+groupby(by=District)
 
 derive(D_pct, vote_share(sum(D_votes), sum(R_votes)))
 derive(R_pct, 1 - D_pct)

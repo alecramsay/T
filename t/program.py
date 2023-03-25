@@ -423,7 +423,7 @@ class Program:
             return new_table
 
         except Exception as e:
-            print_execution_exception("pivot", e)
+            print_execution_exception("groupby", e)
             return
 
     @do_pre_op(required=2)
