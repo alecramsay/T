@@ -35,9 +35,6 @@ def run_script(
                 last_verb = None
                 exit = False
 
-                # When piping output to a file, this puts a blank line at the beginning.
-                # print()
-
                 exit, last_verb = run_mode(file, T)
 
                 if (not exit) and last_verb and (last_verb not in DISPLAY_VERBS):

@@ -18,7 +18,7 @@ from .constants import BEG, END
 
 TOK_DELIM_SPEC: str = "[\\s\\(\\)=]"
 
-readline.parse_and_bind("tab: complete")
+readline.parse_and_bind("tab: complete")  # TODO - This is not working
 
 
 def make_input_fn(is_session_rooted, cols: list[str]) -> Callable[..., str]:

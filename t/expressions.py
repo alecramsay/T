@@ -34,7 +34,7 @@ def rewrite_expr(
 def rewrite_agg_refs(command: str, names: list[str]):
     """Re-write aggregate function references as column names."""
 
-    # TODO
+    # TODO - Not re-implemented yet
 
     return command
 

@@ -184,10 +184,7 @@ class Table:
         return self._data.loc[n, :].values.flatten().tolist()
 
     def first_n_rows(self, n: int) -> list:
-        """Return the first n rows as a list of lists of values
-
-        TODO - Verify
-        """
+        """Return the first n rows as a list of lists of values."""
 
         return self._data.head(n).values.tolist()
 
@@ -593,7 +590,6 @@ def table_to_csv(table: Table, rel_path: Optional[str]) -> None:
         raise Exception("Exception writing CSV.")
 
 
-# TODO - Verify this works
 def table_to_json(table: Table, rel_path: Optional[str]) -> None:
     """Write a table to a JSON file
 
