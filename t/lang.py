@@ -345,7 +345,7 @@ def _handle_sort(cmd: Command, env: Program) -> str:
         validate_nargs(cmd.verb, cmd.n_kw, 0, most=0, arg_type="keyword")
 
         # All positional args are pairs of valid identifiers
-        # ASC and DESC are valid identifiers
+        # HACK - ASC and DESC, if given, are valid identifiers
         for pair in cmd.positional_args:
             if not isidpair(pair):
                 raise Exception(f"Invalid sort argument: {pair}")
