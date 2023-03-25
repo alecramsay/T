@@ -104,8 +104,8 @@ class Program:
 
     stats: Optional[dict]
     cols: Optional[list[str]]
-    ncols: Optional[int]
-    nrows: Optional[int]
+    _n_cols: Optional[int]
+    _n_rows: Optional[int]
 
     def __init__(
         self,
@@ -140,6 +140,20 @@ class Program:
 
         self.cache = dict()
         self._reset_cached_props()
+
+    @property
+    def n_cols(self) -> int:
+        """Return the number of columns in the top table on the stack."""
+
+        assert self._n_cols is not None
+        return self._n_cols
+
+    @property
+    def n_rows(self) -> int:
+        """Return the number of rows in the top table on the stack."""
+
+        assert self._n_rows is not None
+        return self._n_rows
 
     ### TABLE OPERATIONS ###
 
@@ -652,8 +666,8 @@ class Program:
 
         self.stats = None
         self.cols = None
-        self.ncols = None
-        self.nrows = None
+        self._n_cols = None
+        self._n_rows = None
 
     def _update_stack(self, new_table, pop=1) -> None:
         """Implement stack semantics."""
@@ -672,8 +686,8 @@ class Program:
         top: Table = self.table_stack.first()
 
         self.cols = top.col_names()
-        self.ncols = top.n_cols
-        self.nrows = top.n_rows
+        self._n_cols = top.n_cols
+        self._n_rows = top.n_rows
 
         self.stats = top.stats
 
