@@ -32,6 +32,7 @@ class TestUtils:
 
     def test_split_col_spec_string(self) -> None:
         assert split_col_spec_string("(foo, bar)") == ("foo", "bar")
+        assert split_col_spec_string("foobar") == "foobar"
 
     def test_islistofstr(self) -> None:
         assert islistofstr(["foo", "bar"])

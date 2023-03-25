@@ -338,7 +338,24 @@ def _handle_duplicate(cmd: Command, env: Program) -> str:
 
 
 def _handle_sort(cmd: Command, env: Program) -> str:
-    print(f"{cmd.verb} {cmd.args}")
+    try:
+        # There are one or more positional args
+        validate_nargs(cmd.verb, cmd.n_pos, 1)
+        # But no keyword args
+        validate_nargs(cmd.verb, cmd.n_kw, 0, most=0, arg_type="keyword")
+
+        # All positional args are pairs of valid identifiers
+        # ASC and DESC are valid identifiers
+        for pair in cmd.positional_args:
+            if not isidpair(pair):
+                raise Exception(f"Invalid sort argument: {pair}")
+
+        col_specs: list = [split_col_spec_string(arg) for arg in cmd.positional_args]
+        env.sort(col_specs)
+
+    except Exception as e:
+        print_parsing_exception(cmd.verb, e)
+        return ERROR
 
     return cmd.verb
 
@@ -396,7 +413,7 @@ def _handle_rename(cmd: Command, env: Program) -> str:
         # All positional args are pairs of valid identifiers
         for pair in cmd.positional_args:
             if not isidpair(pair):
-                raise Exception(f"Invalid identifier: {pair}")
+                raise Exception(f"Invalid rename argument: {pair}")
 
         col_specs: list = [split_col_spec_string(arg) for arg in cmd.positional_args]
         env.rename(col_specs)
