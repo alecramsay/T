@@ -187,6 +187,9 @@ class Program:
         try:
             top: Table = self.table_stack.first()
 
+            if rel_path and self.output:
+                rel_path = self.output + rel_path
+
             if (format is None) or (format == "CSV"):
                 table_to_csv(top, rel_path)
             elif format == "JSON":

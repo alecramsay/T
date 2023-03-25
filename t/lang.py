@@ -326,18 +326,66 @@ def _handle_from(cmd: Command, env: Program) -> str:
 
 
 def _handle_write(cmd: Command, env: Program) -> str:
-    print(f"{cmd.verb} {cmd.args}")
+    """Execute a 'write' command
+
+    Examples:
+
+    >>> # Write a table to a CSV file
+    >>> write('2020_census_NC.csv')
+
+    >>> # Write a table to a JSON file
+    >>> write('2020_census_NC.json', format=JSON)
+    """
+
+    try:
+        # There is one positional args
+        validate_nargs(cmd.verb, cmd.n_pos, 1, most=1)
+        # And at most one keyword arg
+        validate_nargs(cmd.verb, cmd.n_kw, 0, most=1, arg_type="keyword")
+
+        filename: str = cmd.positional_args[0].strip("'")
+        format: Optional[str] = None if cmd.n_kw == 0 else cmd.keyword_args["format"]
+
+        env.write(filename, format)
+
+    except Exception as e:
+        print_parsing_exception(cmd.verb, e)
+        return ERROR
 
     return cmd.verb
 
 
 def _handle_duplicate(cmd: Command, env: Program) -> str:
-    print(f"{cmd.verb} {cmd.args}")
+    """Execute a 'duplicate' command
+
+    Example:
+
+    >>> duplicate()
+    """
+
+    try:
+        # There are no positional args
+        validate_nargs(cmd.verb, cmd.n_pos, 0)
+        # And no keyword args
+        validate_nargs(cmd.verb, cmd.n_kw, 0, most=0, arg_type="keyword")
+
+        env.duplicate()
+
+    except Exception as e:
+        print_parsing_exception(cmd.verb, e)
+        return ERROR
 
     return cmd.verb
 
 
 def _handle_sort(cmd: Command, env: Program) -> str:
+    """Execute a 'sort' command
+
+    Examples:
+
+    >>> sort((Total, DESC))
+    """
+
     try:
         # There are one or more positional args
         validate_nargs(cmd.verb, cmd.n_pos, 1)
@@ -382,6 +430,13 @@ def _handle_groupby(cmd: Command, env: Program) -> str:
 
 
 def _handle_keep(cmd: Command, env: Program) -> str:
+    """Execute a 'keep' command
+
+    Example:
+
+    >>> keep(GEOID20, Tot_2020_tot)
+    """
+
     try:
         # There are one or more positional args
         validate_nargs(cmd.verb, cmd.n_pos, 1)
@@ -404,6 +459,13 @@ def _handle_drop(cmd: Command, env: Program) -> str:
 
 
 def _handle_rename(cmd: Command, env: Program) -> str:
+    """Execute a 'rename' command
+
+    Example:
+
+    >>> rename((Tot_2020_tot, Total))
+    """
+
     try:
         # There are one or more positional args
         validate_nargs(cmd.verb, cmd.n_pos, 1)
