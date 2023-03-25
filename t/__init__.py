@@ -9,8 +9,8 @@ from .lang import *
 from .program import *
 from .reader import *
 from .readwrite import *
+from .run import *
 from .stack import *
-from .t import *
 from .udf import *
 from .utils import *
 from .verbs import *

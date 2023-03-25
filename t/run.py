@@ -1,5 +1,9 @@
-# t.py
+# run.py
 #!/usr/bin/env python3
+
+"""
+RUN A SCRIPT OR REPL
+"""
 
 from typing import Any
 
@@ -45,7 +49,7 @@ def run_script(user, file: str, src: str, data: str, verbose: bool, **kwargs) ->
             print("Exception executing program: ", e)
 
 
-def start_repl(user: str, src: str, data: str, verbose: bool, **kwargs) -> None:
+def run_repl(user: str, src: str, data: str, verbose: bool, **kwargs) -> None:
     """Start 'T' REPL"""
 
     scriptargs: dict = fixup_quotes(kwargs.get("scriptargs", {}))
