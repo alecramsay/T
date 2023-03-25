@@ -10,6 +10,7 @@ from collections import defaultdict
 from typing import Any
 
 from .readwrite import fns_from_path
+from .utils import find_args_string, split_args_string
 
 
 class UDF:
@@ -60,14 +61,14 @@ class UDF:
 
         return wrapper
 
-    def is_udf(self, fn_name: str) -> bool:
+    def isudf(self, fn_name: str) -> bool:
         return fn_name in self.user_fns
 
 
 ### HELPERS ###
 
 
-def parse_args(def_or_call: str) -> list[str]:
+def extract_args_list(def_or_call: str) -> list[str]:
     """Find the arguments in a function definition or call.
 
     Examples:
@@ -76,9 +77,11 @@ def parse_args(def_or_call: str) -> list[str]:
     composite(D_2020_ag, D_2020_gov, D_2016_sen, D_2020_sen, D_2016_pres, D_2020_pres)
     """
 
-    open_i: int = def_or_call.find("(")
-    close_i: int = def_or_call.find(")")
-    args: list[str] = [x.strip() for x in def_or_call[open_i + 1 : close_i].split(",")]
+    left: int
+    right: int
+    left, right = find_args_string(def_or_call)
+
+    args: list[str] = split_args_string(def_or_call[left + 1 : right])
 
     return args
 
@@ -87,8 +90,8 @@ def map_args(call_expr: str, source: str) -> dict[str, str]:
     """Map function arguments to call arguments."""
 
     def_line: str = source.splitlines()[0]
-    def_args: list[str] = parse_args(def_line)
-    call_args: list[str] = parse_args(call_expr)
+    def_args: list[str] = extract_args_list(def_line)
+    call_args: list[str] = extract_args_list(call_expr)
 
     return dict(zip(def_args, call_args))
 

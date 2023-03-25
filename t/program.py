@@ -5,21 +5,46 @@
 PROGRAM - Apply verbs to the stack & update it
 """
 
+import os
 import copy
 import pprint
 from functools import wraps
 from contextlib import contextmanager
-from typing import Any, Callable, Optional
+from typing import Any, Callable, Optional, Generator
 
-from .constants import *
-from .utils import *
+from .utils import value_width
 
-from .readwrite import *
-from .datamodel import *
-from .stack import *
-from .verbs import *
+from .readwrite import fns_from_path
+from .datamodel import (
+    Table,
+    Column,
+    table_to_csv,
+    table_to_json,
+    MergeHow,
+    ValidationOptions,
+)
+from .stack import Stack
+from .commands import Namespace
+from .verbs import (
+    KeepVerb,
+    DropVerb,
+    RenameVerb,
+    SortVerb,
+    SelectVerb,
+    DeriveVerb,
+    AliasVerb,
+    FirstVerb,
+    LastVerb,
+    SampleVerb,
+    CastVerb,
+    SortVerb,
+    JoinVerb,
+    GroupByVerb,
+    UnionVerb,
+    AGG_FNS,
+)
 
-# HELPER_FNS = mod_fns(helpers)
+# HELPER_FNS = mod_fns(helpers) # TODO
 
 
 def do_pre_op(required: int = 1) -> Callable[..., Callable[..., Any]]:
@@ -260,7 +285,7 @@ class Program:
                 #     values = []
                 #     for fn in AGG_FNS:
                 #         v = top.stats[col.name][fn]
-                #         if not is_missing(v):
+                #         if not ismissing(v):
                 #             if (col.type == float and fn != "count") or fn == "avg":
                 #                 out = "{:,.3f}".format(v)
                 #             else:
@@ -325,7 +350,9 @@ class Program:
         *,
         how: MergeHow = "inner",
         on: Optional[str | list[str] | list[list[str]]] = None,
-        suffixes: tuple[Optional[str], Optional[str]] = (
+        suffixes: tuple[str, str]
+        | tuple[None, str]
+        | tuple[str, None] = (
             "_y",
             "_x",
         ),  # Note: This is reversed from Pandas, to match T stack semantics.
@@ -337,7 +364,6 @@ class Program:
             x_table: Table = self.table_stack.first()
             y_table: Table = self.table_stack.second()
 
-            # TYPE HINT
             v: JoinVerb = JoinVerb(
                 y_table, x_table, how=how, on=on, suffixes=suffixes, validate=validate
             )
@@ -657,19 +683,6 @@ class Program:
     def _display_table(self) -> None:
         if (len(self.call_stack._queue_) == 1) and self.repl and not self.silent:
             self.show(5)
-
-
-class Namespace:
-    _args: dict[str, str]
-
-    def __init__(self, args_dict: dict) -> None:
-        self._args = args_dict
-
-    def bind(self, name: str, default: Optional[str] = None) -> str | None:
-        if name in self._args:
-            return self._args[name]
-        else:
-            return default if default else None
 
 
 @contextmanager

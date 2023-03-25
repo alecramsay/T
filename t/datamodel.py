@@ -6,17 +6,17 @@ The T data model for 2D tables with rows & columns, implemented over Pandas.
 """
 
 import pandas as pd
-from typing import Any, Literal
+from typing import Any, Literal, Optional
 from collections import namedtuple
 import re
 import copy
 from csv import DictWriter
 import json
 
-from .constants import *
 from .readwrite import DelimitedFileReader, FileSpec, smart_open
-from .expressions import *
-from .utils import *
+
+from .expressions import rewrite_expr
+from .utils import map_keys
 from .udf import UDF
 
 ### PANDAS DATA TYPES ###
@@ -218,7 +218,7 @@ class Table:
         else:
             return False
 
-    def is_column(self, name: str) -> bool:
+    def iscolumn(self, name: str) -> bool:
         """Does the table have a column called <name>? (hard fail)"""
 
         if self.has_column(name):
@@ -238,7 +238,7 @@ class Table:
             raise Exception("No columns referenced.")
 
         for i, x in enumerate(names):
-            if self.is_column(x):
+            if self.iscolumn(x):
                 continue
 
         return True
@@ -464,6 +464,13 @@ def do_join(
     - Verify the parameters before calling this
     """
 
+    # TYPE HINT - WTF ... why does this work?
+    # assert suffixes[0] is not None or suffixes[1] is not None
+    # swapped: tuple[str, str] | tuple[None, str] | tuple[str, None] = (
+    #     suffixes[1],
+    #     suffixes[0],
+    # )
+
     join_table: Table = Table()
     if validate:
         join_table._data = pd.merge(
@@ -567,17 +574,16 @@ def table_to_csv(table: Table, rel_path: Optional[str]) -> None:
             FileSpec(rel_path).abs_path if (rel_path is not None) else None
         )
 
-        cols: list[str] = table.col_names()
+        col_names: list[str] = table.col_names()
         header: str = ",".join(table.col_aliases_or_names()) + "\n"
 
         with smart_open(cf) as handle:
-            writer: DictWriter[str] = DictWriter(handle, fieldnames=cols)
+            writer: DictWriter[str] = DictWriter(handle, fieldnames=col_names)
 
             # Write the header row with aliases (faking out 'writer')
             handle.write(header)
 
-            col_names: list[str] = table.col_names()
-            for row in table._data.iterrows():
+            for _, row in table._data.iterrows():
                 mod: dict = dict(zip(col_names, row))
                 # TODO - Handle missing values?
                 # mod = {k: missing_to_str(v) for (k, v) in row.dict().items()}
@@ -587,6 +593,7 @@ def table_to_csv(table: Table, rel_path: Optional[str]) -> None:
         raise Exception("Exception writing CSV.")
 
 
+# TODO - Verify this works
 def table_to_json(table: Table, rel_path: Optional[str]) -> None:
     """Write a table to a JSON file
 
@@ -604,11 +611,11 @@ def table_to_json(table: Table, rel_path: Optional[str]) -> None:
             table.map_names_to_aliases() if table.has_aliases() else None
         )
 
-        for row in table._data.iterrows():
-            d1: dict = dict(zip(col_names, row))
+        for _, row in table._data.iterrows():
+            d: dict = dict(zip(col_names, row))
             if mapping:
-                d1 = map_keys(d1, mapping)
-            rows.append(d1)
+                d = map_keys(d, mapping)
+            rows.append(d)
 
         with smart_open(cf) as handle:
             json.dump(rows, handle)

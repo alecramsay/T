@@ -68,12 +68,12 @@ class TestReader:
         assert char
         assert line == expected
 
-    def test_is_compound(self) -> None:
+    def test_iscompound(self) -> None:
         line: str = "x = 1; y = 2; z = 3"
-        assert is_compound(line)
+        assert iscompound(line)
 
         line = "x = 1"
-        assert not is_compound(line)
+        assert not iscompound(line)
 
     def test_split_compound_commands(self) -> None:
         line: str = "x = 1; y = 2; z = 3"
@@ -259,12 +259,12 @@ class TestReader:
         assert continuations_match("{", "}")
         assert not continuations_match("(", "]")
 
-    def test_is_blank(self) -> None:
+    def test_isblank(self) -> None:
         line: str = ""
-        assert is_blank(line)
+        assert isblank(line)
 
         line = "foo"
-        assert not is_blank(line)
+        assert not isblank(line)
 
     # TODO - Write some test cases for this!
     def test_concatenate_string_literals(self) -> None:
