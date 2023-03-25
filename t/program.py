@@ -135,6 +135,7 @@ class Program:
         self.src = os.path.join(src, "") if src else None
         self.data = os.path.join(data, "") if data else None
 
+        # TODO - Wire up output dir
         self.output = os.path.join("temp", "") if output is None else output
         self.log = "logs/history.log" if log is None else log
 
