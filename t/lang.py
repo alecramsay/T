@@ -453,7 +453,24 @@ def _handle_keep(cmd: Command, env: Program) -> str:
 
 
 def _handle_drop(cmd: Command, env: Program) -> str:
-    print(f"{cmd.verb} {cmd.args}")
+    """Execute a 'drop' command
+
+    Example:
+
+    >>> drop(AsnC_2010_tot)
+    """
+
+    try:
+        # There are one or more positional args
+        validate_nargs(cmd.verb, cmd.n_pos, 1)
+        # But no keyword args
+        validate_nargs(cmd.verb, cmd.n_kw, 0, most=0, arg_type="keyword")
+
+        env.drop(cmd.positional_args)
+
+    except Exception as e:
+        print_parsing_exception(cmd.verb, e)
+        return ERROR
 
     return cmd.verb
 
@@ -488,7 +505,30 @@ def _handle_rename(cmd: Command, env: Program) -> str:
 
 
 def _handle_alias(cmd: Command, env: Program) -> str:
-    print(f"{cmd.verb} {cmd.args}")
+    """Execute an 'alias' command
+
+    Example:
+
+    >>> alias((Tot_2020_tot, Total))
+    """
+
+    try:
+        # There are one or more positional args
+        validate_nargs(cmd.verb, cmd.n_pos, 1)
+        # But no keyword args
+        validate_nargs(cmd.verb, cmd.n_kw, 0, most=0, arg_type="keyword")
+
+        # All positional args are pairs of valid identifiers
+        for pair in cmd.positional_args:
+            if not isidpair(pair):
+                raise Exception(f"Invalid alias argument: {pair}")
+
+        col_specs: list = [split_col_spec_string(arg) for arg in cmd.positional_args]
+        env.alias(col_specs)
+
+    except Exception as e:
+        print_parsing_exception(cmd.verb, e)
+        return ERROR
 
     return cmd.verb
 
