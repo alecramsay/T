@@ -30,6 +30,9 @@ class TestUtils:
         assert parse_spec(["FIRST", "SECOND"]) == ("FIRST", "SECOND")
         assert parse_spec(["COLUMN", "ASC"]) == ("COLUMN", "ASC")
 
+    def test_split_col_spec_string(self) -> None:
+        assert split_col_spec_string("(foo, bar)") == ("foo", "bar")
+
     def test_islistofstr(self) -> None:
         assert islistofstr(["foo", "bar"])
         assert not islistofstr(["foo", 1])

@@ -27,6 +27,7 @@ $ scripts/T.py -u user/alec.py -s examples/rd -d data/rd/NC -f misc.t > temp/mis
 """
 
 import json
+from typing import Optional
 
 from T import run_script
 
@@ -43,10 +44,21 @@ source: str = "examples"
 data: str = "data/rd/NC"
 # data = "data/join"
 
+output: str = ""
+log: str = ""
+
+
 verbose: bool = True
 
 scriptargs: dict = json.loads(args_str) if args_str else dict()
 
 run_script(
-    user=user, file=file, src=source, data=data, verbose=verbose, scriptargs=scriptargs
+    user=user,
+    file=file,
+    src=source,
+    data=data,
+    output=output,
+    log=log,
+    verbose=verbose,
+    scriptargs=scriptargs,
 )

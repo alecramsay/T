@@ -76,6 +76,13 @@ def split_args_string(s: str) -> list[str]:
     return args
 
 
+def split_col_spec_string(arg: str) -> tuple[str, str]:
+    """Split a column spec string into a pair of column names."""
+
+    pair: list[str] = [x.strip() for x in arg[1:-1].split(",")]
+    return pair[0], pair[1]
+
+
 def parse_spec(spec: str | list[str] | tuple) -> tuple:
     """Parse a spec singleton -or- pair.
 
