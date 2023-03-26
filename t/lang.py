@@ -631,7 +631,7 @@ def _handle_inspect(cmd: Command, env: Program) -> str:
     >>> inspect()
 
     >>> # All columns with '2020' in the name
-    >>> inspect("2020")
+    >>> inspect(2020)
     """
 
     try:
