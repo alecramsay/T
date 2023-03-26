@@ -625,9 +625,13 @@ def _handle_history(cmd: Command, env: Program) -> str:
 def _handle_inspect(cmd: Command, env: Program) -> str:
     """Execute an 'inspect' command
 
-    Example:
+    Examples:
 
-    >>> inspect("His_")
+    >>> # All numeric columns
+    >>> inspect()
+
+    >>> # All columns with '2020' in the name
+    >>> inspect("2020")
     """
 
     try:
@@ -636,9 +640,9 @@ def _handle_inspect(cmd: Command, env: Program) -> str:
         # And no keyword args
         validate_nargs(cmd.verb, cmd.n_kw, 0, most=0, arg_type="keyword")
 
-        n: Optional[int] = None if cmd.n_pos == 0 else int(cmd.positional_args[0])
+        filter_on: Optional[str] = None if cmd.n_pos == 0 else cmd.positional_args[0]
 
-        env.history(n)
+        env.inspect(filter_on)
 
     except Exception as e:
         print_parsing_exception(cmd.verb, e)

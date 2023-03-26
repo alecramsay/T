@@ -22,15 +22,13 @@ from .datamodel import (
     do_join,
     do_union,
     columns_match,
+    PD_AGG_FNS,
 )
 from .udf import UDF
 
 
-AGG_FNS: list[str] = ["count", "min", "max", "std", "sum", "mean", "median"]
-
-
 def isaggfn(fn: str) -> bool:
-    if fn in AGG_FNS:
+    if fn in PD_AGG_FNS:
         return True
 
     raise Exception(f"{fn} is not a valid aggregation function.")
@@ -498,7 +496,7 @@ class GroupByVerb(Verb):
             for fn in self._agg_fns:
                 isaggfn(fn)
         else:
-            self._agg_fns = AGG_FNS
+            self._agg_fns = PD_AGG_FNS
 
     def apply(self) -> Table:
         assert self._x_table is not None

@@ -41,7 +41,7 @@ from .verbs import (
     JoinVerb,
     GroupByVerb,
     UnionVerb,
-    AGG_FNS,
+    PD_AGG_FNS,
 )
 
 # HELPER_FNS = mod_fns(helpers) # TODO
@@ -256,18 +256,21 @@ class Program:
             return
 
     @do_pre_op()
-    def inspect(self, match: Optional[str] = None) -> None:
+    def inspect(self, filter_on: Optional[str] = None) -> None:
         try:
             top: Table = self.table_stack.first()
 
             cols: list[Column] = (
-                [x for x in top.cols() if match in x.name]
-                if match
+                [x for x in top.cols() if filter_on in x.name]
+                if filter_on
                 else copy.deepcopy(top.cols())
             )
             filtered: bool = True if len(cols) < len(top.cols()) else False
 
             cols = sorted(cols, key=lambda x: x.name)
+
+            assert top.stats is not None
+            stats_cols: set[str] = set(top.stats.keys())
 
             name_width: int = max([len(x.name) for x in cols])
 
@@ -279,13 +282,15 @@ class Program:
             print()
 
             if filtered:
-                print(f"{len(cols)} of {top.n_cols} columns matching '{match}'")
+                print(
+                    f"{len(cols)} of {top.n_cols} column names matching '{filter_on}'"
+                )
             else:
                 print("All columns")
             print()
 
             stats_width: int = 15
-            stats_headers: list[str] = [x.upper() for x in AGG_FNS]
+            stats_headers: list[str] = [x.upper() for x in PD_AGG_FNS]
             stats_headers = [x.center(stats_width) for x in stats_headers]
             stats_header: str = " ".join(stats_headers)
             underlines: str = "-" * stats_width
@@ -294,6 +299,7 @@ class Program:
             template: str = (
                 "{0:<" + str(name_width) + "} {1:<" + str(name_width) + "} {2:<5} {3:<}"
             )
+
             print(template.format("NAME", "ALIAS", "TYPE", stats_header))
             print(template.format("----", "----", "----", stats_underline))
 
@@ -301,31 +307,23 @@ class Program:
                 alias: str = col.alias if col.alias else "N/A"
 
                 # stats
-                # # TODO - Re-work stats over Pandas
-                # if col.type in [int, float]:
-                #     values = []
-                #     for fn in AGG_FNS:
-                #         v = top.stats[col.name][fn]
-                #         if not ismissing(v):
-                #             if (col.type == float and fn != "count") or fn == "avg":
-                #                 out = "{:,.3f}".format(v)
-                #             else:
-                #                 out = "{:,d}".format(v)
-                #         else:
-                #             out = "-"
-                #         pad = " " * (stats_width - len(out))
-                #         values.append(pad + out)
+                if col.name in stats_cols:
+                    values: list = []
+                    for fn in PD_AGG_FNS:
+                        v: int | float = top.stats[col.name][fn]
+                        # https://docs.python.org/2/library/string.html#format-specification-mini-language
+                        out: str
+                        if fn == "count":
+                            out = "{:,d}".format(int(v))
+                        else:
+                            out = "{:,.3f}".format(v)
 
-                #     stats_display = " ".join(values)
-                # else:
-                #     stats_display = "Examples: " + ", ".join(
-                #         [str(x) for x in top.sample_values(col)]
-                #     )
+                        pad: str = " " * (stats_width - len(out))
+                        values.append(pad + out)
 
-                # # TODO - Re-work stats over Pandas data types: col.type is a string
-                # print(
-                #     template.format(col.name, alias, col.type.__name__, stats_display)
-                # )
+                    stats_display: str = " ".join(values)
+
+                    print(template.format(col.name, alias, col.type, stats_display))
 
             print()
         except Exception as e:
@@ -694,7 +692,7 @@ class Program:
         """Automatically calc column statistics for a table"""
 
         top: Table = self.table_stack.first()
-        top.calc_stats()
+        top._calc_stats()
 
     def _display_table(self) -> None:
         if (len(self.call_stack._queue_) == 1) and self.repl and not self.silent:

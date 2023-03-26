@@ -32,7 +32,7 @@ from typing import Optional
 from T import run_script
 
 user: str = "user/alec.py"
-file: str = "debug.t"
+file: str = "demo.t"
 
 args_str: str = ""
 # args_str = '{"paf": "2020_alt_assignments_NC.csv"}'

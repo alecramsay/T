@@ -35,6 +35,10 @@ PD_TYPES: list[str] = [
 ]
 PD_GROUP_ABLE_TYPES: list[str] = ["int64", "float64", "datetime64", "timedelta64"]
 
+# The stats Pandas df.describe() returns
+PD_AGG_FNS: list[str] = ["count", "mean", "std", "min", "25%", "50%", "75%", "max"]
+# AGG_FNS: list[str] = ["count", "min", "max", "std", "sum", "mean", "median"]
+
 
 class Column:
     """Column definitions are meta data for managing aliases & data types"""
@@ -164,6 +168,28 @@ class Table:
         dtypes: list[str] = [x.name for x in self._data.dtypes]
         self._cols = [Column(name, dtype) for name, dtype in zip(names, dtypes)]
 
+    def _calc_stats(self) -> None:
+        """Calculate statistics for numeric columns in a table.
+
+        https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.describe.html
+
+                        count         mean          std   min      25%     50%      75%      max
+        Tot_2010_tot   2666.0  3576.700300  2176.170775  37.0  2137.25  3204.0  4557.50  33124.0
+        Wh_2010_tot    2666.0  2334.581770  1599.392462   5.0  1222.25  2066.5  3133.75  22290.0
+        His_2010_tot   2666.0   300.120030   397.547706   0.0    72.00   168.0   363.00   4696.0
+        BlC_2010_tot   2666.0   806.997749   957.650283   0.0   142.00   457.5  1113.50   6918.0
+        NatC_2010_tot  2666.0    69.048012   254.456423   0.0    17.00    32.0    55.00   5712.0
+        AsnC_2010_tot  2666.0    94.743061   189.572929   0.0    12.00    37.0   102.75   4019.0
+        PacC_2010_tot  2666.0     5.541635    12.372363   0.0     1.00     2.0     6.00    310.0
+        Tot_2010_vap   2666.0  2720.873218  1627.584872  29.0  1658.75  2469.5  3436.75  26768.0
+        Wh_2010_vap    2666.0  1862.087397  1247.839395   4.0  1000.50  1669.0  2504.00  18500.0
+        His_2010_vap   2666.0   184.669917   249.148990   0.0    44.00   104.0   225.00   3598.0
+        ...
+        """
+
+        stats_df: pd.DataFrame = self._data.describe().transpose()
+        self.stats = stats_df.to_dict(orient="index")
+
     ### PUBLIC METHODS ###
 
     @property
@@ -263,28 +289,6 @@ class Table:
 
     def group_able_col_names(self) -> list[str]:
         return [c.name for c in self._cols if c.type in PD_GROUP_ABLE_TYPES]
-
-    def calc_stats(self) -> None:
-        """Calculate statistics for numeric columns in a table.
-
-        https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.describe.html
-
-                        count         mean          std   min      25%     50%      75%      max
-        Tot_2010_tot   2666.0  3576.700300  2176.170775  37.0  2137.25  3204.0  4557.50  33124.0
-        Wh_2010_tot    2666.0  2334.581770  1599.392462   5.0  1222.25  2066.5  3133.75  22290.0
-        His_2010_tot   2666.0   300.120030   397.547706   0.0    72.00   168.0   363.00   4696.0
-        BlC_2010_tot   2666.0   806.997749   957.650283   0.0   142.00   457.5  1113.50   6918.0
-        NatC_2010_tot  2666.0    69.048012   254.456423   0.0    17.00    32.0    55.00   5712.0
-        AsnC_2010_tot  2666.0    94.743061   189.572929   0.0    12.00    37.0   102.75   4019.0
-        PacC_2010_tot  2666.0     5.541635    12.372363   0.0     1.00     2.0     6.00    310.0
-        Tot_2010_vap   2666.0  2720.873218  1627.584872  29.0  1658.75  2469.5  3436.75  26768.0
-        Wh_2010_vap    2666.0  1862.087397  1247.839395   4.0  1000.50  1669.0  2504.00  18500.0
-        His_2010_vap   2666.0   184.669917   249.148990   0.0    44.00   104.0   225.00   3598.0
-        ...
-        """
-
-        stats_df: pd.DataFrame = self._data.describe().transpose()
-        self.stats = stats_df.to_dict(orient="index")
 
     ### WRAPPERS ENCAPSULATING PANDAS DATAFRAME METHODS ###
     ### Validate column references before calling them. ###
