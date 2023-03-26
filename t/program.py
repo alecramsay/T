@@ -279,11 +279,7 @@ class Program:
             print()
 
             if filtered:
-                print(
-                    "{0} of {1} columns matching '{2}'".format(
-                        len(cols), top.n_cols, match
-                    )
-                )
+                print(f"{len(cols)} of {top.n_cols} columns matching '{match}'")
             else:
                 print("All columns")
             print()
@@ -305,7 +301,7 @@ class Program:
                 alias: str = col.alias if col.alias else "N/A"
 
                 # stats
-                # TODO - Re-work stats over Pandas
+                # # TODO - Re-work stats over Pandas
                 # if col.type in [int, float]:
                 #     values = []
                 #     for fn in AGG_FNS:
@@ -326,7 +322,7 @@ class Program:
                 #         [str(x) for x in top.sample_values(col)]
                 #     )
 
-                # TODO - Re-work stats over Pandas data types: col.type is a string
+                # # TODO - Re-work stats over Pandas data types: col.type is a string
                 # print(
                 #     template.format(col.name, alias, col.type.__name__, stats_display)
                 # )
@@ -698,12 +694,7 @@ class Program:
         """Automatically calc column statistics for a table"""
 
         top: Table = self.table_stack.first()
-        agg_cols: list[Column] = [col for col in top.cols() if col.type in [int, float]]
-
-        # TODO - Re-work this over Pandas
-        # top.stats = aggregate_cols(None, top, agg_cols)
-
-        pass
+        top.calc_stats()
 
     def _display_table(self) -> None:
         if (len(self.call_stack._queue_) == 1) and self.repl and not self.silent:
