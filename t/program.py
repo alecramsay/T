@@ -273,6 +273,7 @@ class Program:
             stats_cols: set[str] = set(top.stats.keys())
 
             name_width: int = max([len(x.name) for x in cols])
+            alias_width: int = max(max([len(x.alias) for x in cols]), 5)
 
             print()
             print("TOP TABLE")
@@ -294,14 +295,22 @@ class Program:
             stats_headers = [x.center(stats_width) for x in stats_headers]
             stats_header: str = " ".join(stats_headers)
             underlines: str = "-" * stats_width
-            stats_underline: str = " ".join([underlines] * 5)
+            stats_underline: str = " ".join([underlines] * len(PD_AGG_FNS))
 
             template: str = (
-                "{0:<" + str(name_width) + "} {1:<" + str(name_width) + "} {2:<5} {3:<}"
+                "{0:<"
+                + str(name_width)
+                + "} {1:<"
+                + str(alias_width)
+                + "} {2:<7} {3:<}"
             )
 
             print(template.format("NAME", "ALIAS", "TYPE", stats_header))
-            print(template.format("----", "----", "----", stats_underline))
+            print(
+                template.format(
+                    "-" * name_width, "-" * alias_width, "-------", stats_underline
+                )
+            )
 
             for col in cols:
                 alias: str = col.alias if col.alias else "N/A"
