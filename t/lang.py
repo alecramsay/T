@@ -560,7 +560,26 @@ def _handle_derive(cmd: Command, env: Program) -> str:
 
 
 def _handle_select(cmd: Command, env: Program) -> str:
-    print(f"{cmd.verb} {cmd.args}")
+    """Execute a 'select' command
+
+    Example:
+
+    >>> select(county_fips == '191')
+    """
+
+    try:
+        # There is one positional arg
+        validate_nargs(cmd.verb, cmd.n_pos, 1, most=1)
+        # and no keyword args
+        validate_nargs(cmd.verb, cmd.n_kw, 0, most=0, arg_type="keyword")
+
+        expr: str = cmd.positional_args[0]
+
+        env.select(expr)
+
+    except Exception as e:
+        print_parsing_exception(cmd.verb, e)
+        return ERROR
 
     return cmd.verb
 
