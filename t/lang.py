@@ -534,7 +534,27 @@ def _handle_alias(cmd: Command, env: Program) -> str:
 
 
 def _handle_derive(cmd: Command, env: Program) -> str:
-    print(f"{cmd.verb} {cmd.args}")
+    """Execute a 'derive' command
+
+    Example:
+
+    >>> derive(county_fips, GEOID20[2:5])
+    """
+
+    try:
+        # There are two positional args
+        validate_nargs(cmd.verb, cmd.n_pos, 2, most=2)
+        # and no keyword args
+        validate_nargs(cmd.verb, cmd.n_kw, 0, most=0, arg_type="keyword")
+
+        name: str = cmd.positional_args[0]
+        expr: str = cmd.positional_args[1]
+
+        env.derive(name, expr)
+
+    except Exception as e:
+        print_parsing_exception(cmd.verb, e)
+        return ERROR
 
     return cmd.verb
 

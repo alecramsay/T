@@ -7,4 +7,4 @@ select(county_fips == '191')
 keep(GEOID20, county_fips, Tot_2020_tot)
 rename((Tot_2020_tot, Total))
 sort((Total, DESC))
-first(10%)
+# first(10%) TODO - Uncomment
