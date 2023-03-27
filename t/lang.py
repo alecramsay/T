@@ -596,7 +596,8 @@ def _handle_first(cmd: Command, env: Program) -> str:
 
     Example:
 
-    >>> first()
+    >>> first(10)
+    >>> first(10%)
     """
 
     try:
@@ -622,13 +623,63 @@ def _handle_first(cmd: Command, env: Program) -> str:
 
 
 def _handle_last(cmd: Command, env: Program) -> str:
-    print(f"{cmd.verb} {cmd.args}")
+    """Execute a 'last' command
+
+    Example:
+
+    >>> last(10)
+    >>> last(10%)
+    """
+
+    try:
+        # There are one or two positional args
+        validate_nargs(cmd.verb, cmd.n_pos, 1, most=2)
+        # And no keyword args
+        validate_nargs(cmd.verb, cmd.n_kw, 0, most=0, arg_type="keyword")
+
+        n: int = int(cmd.positional_args[0])
+
+        if (len(cmd.positional_args) == 2) and not ispct(cmd.positional_args[1]):
+            raise Exception(f"Invalid percentage: {cmd.positional_args[1]}")
+
+        pct: str | None = "%" if len(cmd.positional_args) == 2 else None
+
+        env.last(n, pct)
+
+    except Exception as e:
+        print_parsing_exception(cmd.verb, e)
+        return ERROR
 
     return cmd.verb
 
 
 def _handle_sample(cmd: Command, env: Program) -> str:
-    print(f"{cmd.verb} {cmd.args}")
+    """Execute a 'sample' command
+
+    Example:
+
+    >>> sample(10)
+    >>> sample(10%)
+    """
+
+    try:
+        # There are one or two positional args
+        validate_nargs(cmd.verb, cmd.n_pos, 1, most=2)
+        # And no keyword args
+        validate_nargs(cmd.verb, cmd.n_kw, 0, most=0, arg_type="keyword")
+
+        n: int = int(cmd.positional_args[0])
+
+        if (len(cmd.positional_args) == 2) and not ispct(cmd.positional_args[1]):
+            raise Exception(f"Invalid percentage: {cmd.positional_args[1]}")
+
+        pct: str | None = "%" if len(cmd.positional_args) == 2 else None
+
+        env.sample(n, pct)
+
+    except Exception as e:
+        print_parsing_exception(cmd.verb, e)
+        return ERROR
 
     return cmd.verb
 

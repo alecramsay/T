@@ -341,11 +341,13 @@ class Table:
         """Select the last n rows of the table"""
 
         self._data = self._data.tail(n)
+        self._data = self._data.reset_index(drop=True)
 
     def do_sample(self, n: int = 5) -> None:
         """Sample n rows of the table"""
 
         self._data = self._data.sample(n)
+        self._data = self._data.reset_index(drop=True)
 
     def do_cast_cols(self, names: list[str], dtype: str) -> None:
         """Cast the specified columns to the given data type"""
