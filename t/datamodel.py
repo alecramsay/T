@@ -335,6 +335,7 @@ class Table:
         """Select the first n rows of the table"""
 
         self._data = self._data.head(n)
+        self._data = self._data.reset_index(drop=True)
 
     def do_last(self, n: int = 5) -> None:
         """Select the last n rows of the table"""

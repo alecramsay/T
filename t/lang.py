@@ -311,6 +311,7 @@ def _handle_from(cmd: Command, env: Program) -> str:
                 env.call_stack.push(Namespace(call_args))
 
                 run_mode(fs.rel_path, env)
+                # NOTE - Run mode updates the env/program Table stack
 
                 env.call_stack.pop()
                 env._display_table()
@@ -320,7 +321,6 @@ def _handle_from(cmd: Command, env: Program) -> str:
                     verb, cmd.n_kw, 0, most=0, arg_type="keyword"
                 )  # There are no keyword args
                 env.read(fs.rel_path)
-                env._display_table()
 
     except Exception as e:
         print_parsing_exception(verb, e)
