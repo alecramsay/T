@@ -197,7 +197,8 @@ class Table:
 
     @property
     def n_cols(self) -> int:
-        assert len(self._cols) == self._data.shape[1]
+        if len(self._cols) != self._data.shape[1]:
+            raise ValueError("Number of columns doesn't match DataFrame")
         return len(self._cols)
 
     @property
