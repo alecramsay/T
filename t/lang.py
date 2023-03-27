@@ -422,7 +422,24 @@ def _handle_join(cmd: Command, env: Program) -> str:
 
 
 def _handle_union(cmd: Command, env: Program) -> str:
-    print(f"{cmd.verb} {cmd.args}")
+    """Execute a 'union' command
+
+    Examples:
+
+    >>> union()
+    """
+
+    try:
+        # There are no positional args
+        validate_nargs(cmd.verb, cmd.n_pos, 0, most=0)
+        # and no keyword args
+        validate_nargs(cmd.verb, cmd.n_kw, 0, most=0, arg_type="keyword")
+
+        env.union()
+
+    except Exception as e:
+        print_parsing_exception(cmd.verb, e)
+        return ERROR
 
     return cmd.verb
 

@@ -58,7 +58,21 @@ class TestLangHelpers:
 
     # TODO - def test_join(self) -> None:
 
-    # TODO - def test_union(self) -> None:
+    def test_union(self) -> None:
+        try:
+            run_script(
+                user="user/alec.py",
+                file="union.t",
+                src="test/lang",
+                data="test/union",
+                output="",
+                log="",
+                verbose=False,
+                scriptargs=dict(),
+            )
+            assert True
+        except:
+            assert False
 
     # TODO - def test_grouby(self) -> None:
 
@@ -142,6 +156,8 @@ class TestLangHelpers:
         except:
             assert False
 
+    # TODO - def test_UDF(self) -> None:
+
     def test_select(self) -> None:
         try:
             run_script(
@@ -207,6 +223,8 @@ class TestLangHelpers:
             assert False
 
     # TODO - def test_cast(self) -> None:
+
+    # TODO - def test_scriptargs(self) -> None:
 
     def test_show(self) -> None:
         try:
