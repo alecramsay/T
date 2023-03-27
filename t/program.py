@@ -684,13 +684,36 @@ class Program:
     def _update_stack(self, new_table, pop=1) -> None:
         """Implement stack semantics."""
 
+        if self.debug:
+            if self.table_stack.isempty():
+                print("Before - Stack is empty.")
+            else:
+                print(f"Before - Stack size: {self.table_stack.len()}")
+                for i, t in enumerate(self.table_stack._queue_):
+                    print(
+                        f"Table {i+1} ({id(t)}) - {t.command[:10]} ...: {t.n_rows} rows, {t.n_cols} cols"
+                    )
+
         for _ in range(pop):
             self.table_stack.pop()
 
+        new_table.command = self.command  # for debugging
         self.table_stack.push(new_table)
 
         self._calc_column_stats()
         self._update_table_shortcuts()
+
+        if self.debug:
+            if self.table_stack.isempty():
+                print("After - Stack is empty.")
+            else:
+                print(f"After - Stack size: {self.table_stack.len()}")
+                for i, t in enumerate(self.table_stack._queue_):
+                    print(
+                        f"Table {i+1} ({id(t)}) - {t.command[:10]} ...: {t.n_rows} rows, {t.n_cols} cols"
+                    )
+
+            print()
 
     def _update_table_shortcuts(self) -> None:
         """Cache table stats on the program object, so they can be referenced w/o stack ops."""
