@@ -65,6 +65,19 @@ def find_args_string(s: str) -> tuple[int, int]:
     return left, right
 
 
+def split_verb_and_args(s: str) -> tuple[str, str]:
+    """Split a command string into a verb and args string."""
+
+    left: int
+    right: int
+    left, right = find_args_string(s)
+
+    verb = s[:left].strip()
+    args_str = s[left + 1 : right].strip()
+
+    return verb, args_str
+
+
 def split_args_string(s: str) -> list[str]:
     """Split a string into a list of arguments, ignoring commas within parentheses."""
 

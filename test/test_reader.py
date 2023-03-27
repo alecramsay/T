@@ -277,7 +277,7 @@ class TestReader:
     def test_rewrite_pct(self) -> None:
         raw: str = "first(5%)"
         actual: str = rewrite_pct(raw)
-        expected: str = "first(5, '%')"
+        expected: str = "first(5, %)"
         assert actual == expected
 
         raw = "where(foo % bar)"

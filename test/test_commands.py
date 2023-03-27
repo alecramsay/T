@@ -292,12 +292,9 @@ class TestCommands:
         assert not isint("5%")
 
     def test_isintorpct(self) -> None:
-        assert ispct("1%")
-        assert ispct("5%")
-        assert not ispct("0%")
-        assert not ispct("-1%")
+        assert ispct("%")
         assert not ispct("5")
-        assert not ispct("5@")
+        assert not ispct("@")
 
     def test_validate_name(self):
         arg: str

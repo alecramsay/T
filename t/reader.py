@@ -7,13 +7,13 @@ REPL INPUT WITH AUTOCOMPLETE
 Patterned after https://sites.google.com/site/xiangyangsite/home/technical-tips/software-development/python/python-readline-completions
 """
 
-import libcst as cst
 import readline
 import re
 import string  # for string.whitespace
 from enum import Enum
 from typing import Callable, Literal, Optional
 
+from .utils import split_verb_and_args
 from .constants import BEG, END
 
 TOK_DELIM_SPEC: str = "[\\s\\(\\)=]"
@@ -372,12 +372,13 @@ def concatenate_string_literals(line: str):
 def rewrite_pct(command: str) -> str:
     """For 'first', 'last', & 'random', rewrite '%' in non-select, non-derive commands to fake out the Python parser."""
 
-    alt: str = command.replace("%", ", '%'")
+    alt: str = command.replace("%", ", %")
     try:
-        tree: cst.BaseExpression = cst.parse_expression(alt)
-        # TYPE HINT
-        verb = tree.func.value.lower()
-        if verb in ["first", "last", "random"]:
+        verb: str
+        args_str: str
+        verb, args_str = split_verb_and_args(command)
+
+        if verb in ["first", "last", "sample"]:
             return alt
         else:
             return command

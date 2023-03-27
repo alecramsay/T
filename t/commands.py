@@ -9,7 +9,12 @@ import re
 import keyword
 from typing import Optional, Iterator, Match
 
-from .utils import tokenize, find_args_string, split_args_string, parse_spec
+from .utils import (
+    tokenize,
+    split_verb_and_args,
+    split_args_string,
+    parse_spec,
+)
 
 
 class Namespace:
@@ -144,12 +149,7 @@ class Command:
     def _split_verb_and_args(self) -> None:
         """Return the verb & args (as a string) of a command."""
 
-        left: int
-        right: int
-        left, right = find_args_string(self._string)
-
-        self._verb = self._string[:left].strip()
-        self._args_str = self._string[left + 1 : right].strip()
+        self._verb, self._args_str = split_verb_and_args(self._string)
 
     def _split_args_string(self) -> None:
         """Split the args string into a list of args."""
@@ -376,10 +376,7 @@ def isint(arg: str) -> bool:
 def ispct(arg: str) -> bool:
     """For verbs that take a positive percentage."""
 
-    if arg.endswith("%") and isint(arg[:-1]):
-        return True
-
-    return False
+    return arg == "%"
 
 
 def validate_name(verb: str, arg: str, pos: int) -> None:

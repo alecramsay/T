@@ -100,6 +100,8 @@ class Program:
     output: Optional[str]
     log: str
 
+    command: str  # current command
+
     cache: dict
 
     stats: Optional[dict]
@@ -114,10 +116,11 @@ class Program:
         data: Optional[str] = None,
         output: Optional[str] = None,
         log: Optional[str] = None,
-        repl=True,
-        silent=False,
+        repl: bool = True,
+        silent: bool = False,
+        debug: bool = False,
     ) -> None:
-        self.debug = False
+        self.debug = debug
         self.repl = repl
         self.silent = silent
 
@@ -135,9 +138,12 @@ class Program:
         self.src = os.path.join(src, "") if src else None
         self.data = os.path.join(data, "") if data else None
 
-        self.output = os.path.join("temp", "") if output is None else output
-        self.log = "logs/history.log" if log is None else log
+        self.output = (
+            os.path.join("temp", "") if (output is None) or (output == "") else output
+        )
+        self.log = "logs/history.log" if (log is None) or (log == "") else log
 
+        self.command = ""
         self.cache = dict()
         self._reset_cached_props()
 
@@ -716,11 +722,19 @@ def Tables(
     data: Optional[str] = None,
     output: Optional[str] = None,
     log: Optional[str] = None,
-    repl=False,
-    silent=False,
+    repl: bool = False,
+    silent: bool = False,
+    debug: bool = False,
 ) -> Generator[Program, None, None]:
     T: Program = Program(
-        user=user, src=src, data=data, output=output, log=log, repl=repl, silent=silent
+        user=user,
+        src=src,
+        data=data,
+        output=output,
+        log=log,
+        repl=repl,
+        silent=silent,
+        debug=debug,
     )
 
     yield T

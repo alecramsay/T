@@ -55,7 +55,16 @@ def run_repl(
 
     scriptargs: dict = fixup_quotes(kwargs.get("scriptargs", {}))
 
-    with Tables(user=user, src=src, data=data, output=output, log=log, repl=True) as T:
+    with Tables(
+        user=user,
+        src=src,
+        data=data,
+        output=output,
+        log=log,
+        repl=True,
+        silent=False,
+        debug=verbose,
+    ) as T:
         try:
             # Finish binding args
             if scriptargs:

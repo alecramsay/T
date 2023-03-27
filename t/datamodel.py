@@ -122,6 +122,8 @@ class Table:
     _data: pd.DataFrame
     stats: Optional[dict[Any, dict[Any, Any]]]
 
+    command: str  # for debugging
+
     ### CONSTRUCTORS ###
 
     def __init__(self) -> None:
@@ -131,6 +133,7 @@ class Table:
         self._data = pd.DataFrame({})
 
         self.stats = None
+        self.command = "Unknown"
 
     def read(
         self,

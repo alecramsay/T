@@ -9,7 +9,14 @@ import logging
 from logging.handlers import RotatingFileHandler
 from typing import Callable, Literal, Optional
 
-from .commands import Command, Namespace, validate_nargs, could_be_filename, isidpair
+from .commands import (
+    Command,
+    Namespace,
+    validate_nargs,
+    could_be_filename,
+    isidpair,
+    ispct,
+)
 from .program import Program
 from .reader import Reader, ReadState, FILE_IN_VERBS, make_input_fn
 from .readwrite import FileSpec
@@ -27,6 +34,7 @@ def interpret(command: str, env: Program) -> str:
         cmd: Command = Command(command, env.call_stack.first())
         cmd.bind()
         cmd.parse()
+        env.command = command  # for debugging
     except Exception as e:
         print("Exception binding command args: ", e)
         return ERROR
@@ -299,7 +307,6 @@ def _handle_from(cmd: Command, env: Program) -> str:
         fs = FileSpec(name)
         match fs.extension:
             case ".t":  # Run a T script
-                # TODO - Verify this code path
                 call_args = cmd.keyword_args if cmd.n_kw > 0 else dict()
                 env.call_stack.push(Namespace(call_args))
 
@@ -585,7 +592,31 @@ def _handle_select(cmd: Command, env: Program) -> str:
 
 
 def _handle_first(cmd: Command, env: Program) -> str:
-    print(f"{cmd.verb} {cmd.args}")
+    """Execute a 'first' command
+
+    Example:
+
+    >>> first()
+    """
+
+    try:
+        # There are one or two positional args
+        validate_nargs(cmd.verb, cmd.n_pos, 1, most=2)
+        # And no keyword args
+        validate_nargs(cmd.verb, cmd.n_kw, 0, most=0, arg_type="keyword")
+
+        n: int = int(cmd.positional_args[0])
+
+        if (len(cmd.positional_args) == 2) and not ispct(cmd.positional_args[1]):
+            raise Exception(f"Invalid percentage: {cmd.positional_args[1]}")
+
+        pct: str | None = "%" if len(cmd.positional_args) == 2 else None
+
+        env.first(n, pct)
+
+    except Exception as e:
+        print_parsing_exception(cmd.verb, e)
+        return ERROR
 
     return cmd.verb
 
