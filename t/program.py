@@ -22,6 +22,7 @@ from .datamodel import (
     table_to_json,
     MergeHow,
     ValidationOptions,
+    PD_DESCRIBE_TYPES,
     PD_DESCRIBE_FNS,
     PD_AGG_FNS,
 )
@@ -267,12 +268,34 @@ class Program:
         try:
             top: Table = self.table_stack.first()
 
+            print()
+            print("TOP TABLE")
+            print("---------")
+            print("# rows:", top.n_rows)
+            print("# cols:", top.n_cols)
+            print()
+
             cols: list[Column] = (
                 [x for x in top.cols() if filter_on in x.name]
                 if filter_on
                 else copy.deepcopy(top.cols())
             )
-            filtered: bool = True if len(cols) < len(top.cols()) else False
+            cols = [x for x in cols if x.type in PD_DESCRIBE_TYPES]
+
+            filtered: bool = True if filter_on else False
+
+            if len(cols) == 0:
+                print("No matching numeric columns to inspect.")
+                print()
+                return
+
+            if filtered:
+                print(
+                    f"{len(cols)} of {top.n_cols} numeric column names matching '{filter_on}'"
+                )
+            else:
+                print("All numeric columns")
+            print()
 
             cols = sorted(cols, key=lambda x: x.name)
 
@@ -281,21 +304,6 @@ class Program:
 
             name_width: int = max([len(x.name) for x in cols])
             alias_width: int = max(max([len(x.alias) for x in cols]), 5)
-
-            print()
-            print("TOP TABLE")
-            print("---------")
-            print("# rows:", top.n_rows)
-            print("# cols:", top.n_cols)
-            print()
-
-            if filtered:
-                print(
-                    f"{len(cols)} of {top.n_cols} column names matching '{filter_on}'"
-                )
-            else:
-                print("All columns")
-            print()
 
             stats_width: int = 15
             stats_headers: list[str] = [x.upper() for x in PD_DESCRIBE_FNS]

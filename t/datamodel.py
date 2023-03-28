@@ -33,10 +33,12 @@ PD_TYPES: list[str] = [
     "timedelta64",
     "category",
 ]
+
 PD_GROUP_ABLE_TYPES: list[str] = ["int64", "float64", "datetime64", "timedelta64"]
 
 # The stats Pandas df.describe() returns for inspect()
 PD_DESCRIBE_FNS: list[str] = ["count", "mean", "std", "min", "25%", "50%", "75%", "max"]
+PD_DESCRIBE_TYPES: list[str] = ["int64", "float64", "datetime64", "timedelta64"]
 
 # Pandas agg functions for groupby()
 PD_AGG_FNS: list[str] = ["count", "mean", "std", "min", "max"]
@@ -214,7 +216,7 @@ class Table:
     def nth_row(self, n: int) -> list:
         """Return the nth row as a list of values"""
 
-        # TODO - When do I need to flatten the row?!?
+        # When did I need to flatten the row?!?
         # return self._data.loc[n, :].values.flatten().tolist()
         return list(self._data.loc[n, :].values)
 
@@ -308,14 +310,14 @@ class Table:
         # https://stackoverflow.com/questions/53141240/pandas-how-to-swap-or-reorder-columns
 
         self._data = self._data[names]
-        self._data = self._data.reset_index(drop=True)  # TODO: Added
+        self._data = self._data.reset_index(drop=True)
         self._cols = [self.get_column(name) for name in names]
 
     def do_rename_cols(self, renames: dict[str, str]) -> None:
         """Rename columns in the table"""
 
         self._data.rename(columns=renames, inplace=True)
-        self._data = self._data.reset_index(drop=True)  # TODO: Added
+        self._data = self._data.reset_index(drop=True)
         for col in self._cols:
             if col.name in renames:
                 col.set_name(renames[col.name])
