@@ -22,6 +22,8 @@ from .datamodel import (
     table_to_json,
     MergeHow,
     ValidationOptions,
+    PD_DESCRIBE_FNS,
+    PD_AGG_FNS,
 )
 from .stack import Stack
 from .commands import Namespace
@@ -41,7 +43,6 @@ from .verbs import (
     JoinVerb,
     GroupByVerb,
     UnionVerb,
-    PD_AGG_FNS,
 )
 
 # HELPER_FNS = mod_fns(helpers) # TODO
@@ -297,11 +298,11 @@ class Program:
             print()
 
             stats_width: int = 15
-            stats_headers: list[str] = [x.upper() for x in PD_AGG_FNS]
+            stats_headers: list[str] = [x.upper() for x in PD_DESCRIBE_FNS]
             stats_headers = [x.center(stats_width) for x in stats_headers]
             stats_header: str = " ".join(stats_headers)
             underlines: str = "-" * stats_width
-            stats_underline: str = " ".join([underlines] * len(PD_AGG_FNS))
+            stats_underline: str = " ".join([underlines] * len(PD_DESCRIBE_FNS))
 
             template: str = (
                 "{0:<"
@@ -324,7 +325,7 @@ class Program:
                 # stats
                 if col.name in stats_cols:
                     values: list = []
-                    for fn in PD_AGG_FNS:
+                    for fn in PD_DESCRIBE_FNS:
                         v: int | float = top.stats[col.name][fn]
                         # https://docs.python.org/2/library/string.html#format-specification-mini-language
                         out: str

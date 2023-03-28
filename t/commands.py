@@ -294,6 +294,15 @@ def split_keyword_arg(arg: str) -> tuple[str, str]:
     return keyword, value
 
 
+def string_to_list(s: str) -> list[str]:
+    """Convert the string representation of a list to a list of strings."""
+
+    if not s.startswith("[") or not s.endswith("]"):
+        raise ValueError(f"Invalid list: {s}")
+
+    return [f"{x}" for x in s[1:-1].split(",")]
+
+
 def isidentifier(ident: str) -> bool:
     """Determines if string is valid Python identifier.
 

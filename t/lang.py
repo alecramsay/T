@@ -16,6 +16,7 @@ from .commands import (
     could_be_filename,
     isidpair,
     ispct,
+    string_to_list,
 )
 from .program import Program
 from .reader import Reader, ReadState, FILE_IN_VERBS, make_input_fn
@@ -445,7 +446,40 @@ def _handle_union(cmd: Command, env: Program) -> str:
 
 
 def _handle_groupby(cmd: Command, env: Program) -> str:
-    print(f"{cmd.verb} {cmd.args}")
+    """Execute a 'groupby' command
+
+    Examples:
+
+    >>> groupby(by=[county_fips])
+    >>> groupby(by=[county_fips], only=[Total], agg=[max])
+    """
+
+    try:
+        # There are no positional args
+        validate_nargs(cmd.verb, cmd.n_pos, 0, most=0)
+        # and one or more keyword args
+        validate_nargs(cmd.verb, cmd.n_kw, 1, arg_type="keyword")
+
+        keywords: list[str] = list(cmd.keyword_args.keys())
+        if "by" not in keywords:
+            raise Exception("Missing 'by' keyword argument")
+        for kw in keywords:
+            if kw not in ["by", "only", "agg"]:
+                raise Exception(f"Invalid keyword argument: {kw}")
+
+        by: list[str] = string_to_list(cmd.keyword_args["by"])
+        only: list[str] | None = (
+            string_to_list(cmd.keyword_args["only"]) if "only" in keywords else None
+        )
+        agg: list[str] | None = (
+            string_to_list(cmd.keyword_args["agg"]) if "agg" in keywords else None
+        )
+
+        env.groupby(by=by, only=only, agg=agg)
+
+    except Exception as e:
+        print_parsing_exception(cmd.verb, e)
+        return ERROR
 
     return cmd.verb
 

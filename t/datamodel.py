@@ -35,8 +35,11 @@ PD_TYPES: list[str] = [
 ]
 PD_GROUP_ABLE_TYPES: list[str] = ["int64", "float64", "datetime64", "timedelta64"]
 
-# The stats Pandas df.describe() returns
-PD_AGG_FNS: list[str] = ["count", "mean", "std", "min", "25%", "50%", "75%", "max"]
+# The stats Pandas df.describe() returns for inspect()
+PD_DESCRIBE_FNS: list[str] = ["count", "mean", "std", "min", "25%", "50%", "75%", "max"]
+
+# Pandas agg functions for groupby()
+PD_AGG_FNS: list[str] = ["count", "mean", "std", "min", "max"]
 # AGG_FNS: list[str] = ["count", "min", "max", "std", "sum", "mean", "median"]
 
 
@@ -414,10 +417,6 @@ class Table:
         self, by_list: list[str], agg_list: list[str], agg_fns: list
     ) -> None:
         """Group the table by the specified columns"""
-
-        print(f"by_list: {by_list}")
-        print(f"for_list: {agg_list}")
-        print(f"agg_fns: {agg_fns}")
 
         # Grab these to preserve aliases
         by_cols: list[Column] = [self.get_column(name) for name in by_list]

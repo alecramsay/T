@@ -7,7 +7,7 @@ TEST LANG
 from T.run import run_script
 
 
-class TestLangHelpers:
+class TestLangHandlers:
     def test_from(self) -> None:
         try:
             run_script(
@@ -74,7 +74,21 @@ class TestLangHelpers:
         except:
             assert False
 
-    # TODO - def test_grouby(self) -> None:
+    def test_groupby(self) -> None:
+        try:
+            run_script(
+                user="user/alec.py",
+                file="groupby.t",
+                src="test/lang",
+                data="test/files",
+                output="",
+                log="",
+                verbose=False,
+                scriptargs=dict(),
+            )
+            assert True
+        except:
+            assert False
 
     def test_keep(self) -> None:
         try:
