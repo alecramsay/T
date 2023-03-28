@@ -381,7 +381,7 @@ class TestTableVerbs:
         x_table: Table = Table()
         x_table.read("data/rd/NC/2020_census_NC.csv")
 
-        f: JoinVerb = JoinVerb(y_table, x_table)
+        f: JoinVerb = JoinVerb(y_table, x_table, how="inner")
         f.apply()
 
         assert isinstance(f._new_table, Table)
@@ -397,7 +397,7 @@ class TestTableVerbs:
         ## Explicit validation
         try:
             validation: str = "1:1"
-            f: JoinVerb = JoinVerb(y_table, x_table, validate=validation)
+            f: JoinVerb = JoinVerb(y_table, x_table, how="inner", validate=validation)
             f.apply()
             assert True
         except:
@@ -426,7 +426,7 @@ class TestTableVerbs:
 
         join_key: Any
         join_key = "ID"
-        f = JoinVerb(y_table, x_table, on=join_key)
+        f = JoinVerb(y_table, x_table, how="inner", on=join_key)
         f.apply()
         assert isinstance(f._new_table, Table)
 
@@ -437,7 +437,7 @@ class TestTableVerbs:
         ## Explicit suffixes
         join_key = "ID"
         suffixes = (None, "_mumble")
-        f = JoinVerb(y_table, x_table, on=join_key, suffixes=suffixes)
+        f = JoinVerb(y_table, x_table, how="inner", on=join_key, suffixes=suffixes)
         f.apply()
         assert isinstance(f._new_table, Table)
 
@@ -465,7 +465,11 @@ class TestTableVerbs:
         x_table.test(data)
 
         try:
-            f = JoinVerb(y_table, x_table)
+            f = JoinVerb(
+                y_table,
+                x_table,
+                how="inner",
+            )
             f.apply()
             assert False
         except:
@@ -492,7 +496,7 @@ class TestTableVerbs:
 
         try:
             on: Optional[str | list[str] | list[list[str]]] = [["a"], ["d"]]
-            f = JoinVerb(y_table, x_table, on=on)
+            f = JoinVerb(y_table, x_table, how="inner", on=on)
             f.apply()
             assert True
         except:
@@ -547,7 +551,7 @@ class TestTableVerbs:
         ## Bad join key
         try:
             join_key = ["ID", ["ID", "c"]]
-            f = JoinVerb(y_table, x_table, on=join_key)
+            f = JoinVerb(y_table, x_table, how="inner", on=join_key)
             f.apply()
             assert False
         except:
@@ -567,7 +571,7 @@ class TestTableVerbs:
         try:
             join_key = "ID"
             suffixes: tuple[Optional[str], Optional[str]] = (None, None)
-            f = JoinVerb(y_table, x_table, on=join_key, suffixes=suffixes)
+            f = JoinVerb(y_table, x_table, how="inner", on=join_key, suffixes=suffixes)
             f.apply()
             assert False
         except:
@@ -577,7 +581,7 @@ class TestTableVerbs:
         try:
             join_key = "ID"
             validate: ValidationOptions = "mumble"
-            f = JoinVerb(y_table, x_table, on=join_key, validate=validate)
+            f = JoinVerb(y_table, x_table, how="inner", on=join_key, validate=validate)
             f.apply()
             assert False
         except:

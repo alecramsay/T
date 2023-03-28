@@ -536,18 +536,21 @@ class JoinVerb(Verb):
 
     """
 
+    y_table: Table
+    x_table: Table
     _how: MergeHow
-    _y_cols: list[str]
-    _x_cols: list[str]
     _suffixes: tuple[str, str] | tuple[None, str] | tuple[str, None]
     _validate: Optional[ValidationOptions]
+
+    _y_cols: list[str]
+    _x_cols: list[str]
 
     def __init__(
         self,
         y_table: Table,
         x_table: Table,
         *,
-        how: MergeHow = "inner",
+        how: MergeHow,
         on: Optional[str | list[str] | list[list[str]]] = None,
         suffixes: tuple[str, str]
         | tuple[None, str]

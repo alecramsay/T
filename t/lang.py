@@ -9,7 +9,7 @@ import logging
 from logging.handlers import RotatingFileHandler
 from typing import Callable, Literal, Optional
 
-from .datamodel import PD_TYPES
+from .datamodel import PD_TYPES, MergeHowList, ValidationOptionsList
 from .commands import (
     Command,
     Namespace,
@@ -418,7 +418,43 @@ def _handle_sort(cmd: Command, env: Program) -> str:
 
 
 def _handle_join(cmd: Command, env: Program) -> str:
-    print(f"{cmd.verb} {cmd.args}")
+    """Execute a 'join' command
+
+    Examples:
+
+    >>> join()
+    >>> join(on=[[county_fips], [FIPS]])
+    """
+
+    try:
+        # There are no positional args
+        validate_nargs(cmd.verb, cmd.n_pos, 0, most=0)
+        # and 0–4 keyword args
+        validate_nargs(cmd.verb, cmd.n_kw, 0, most=4, arg_type="keyword")
+
+        keywords: list[str] = list(cmd.keyword_args.keys())
+        for kw in keywords:
+            if kw not in ["how", "on", "suffixes", "validate"]:
+                raise Exception(f"Invalid keyword argument: {kw}")
+
+        how: str = (cmd.keyword_args["how"]) if "how" in keywords else "inner"
+
+        on: Optional[str | list[str] | list[list[str]]] = None  # TODO - Join
+
+        suffixes: tuple[str, str] | tuple[None, str] | tuple[str, None] = (
+            "_y",
+            "_x",
+        )  # TODO - Join
+
+        validate: str | None = (
+            (cmd.keyword_args["validate"]) if "validate" in keywords else None
+        )  # TODO - Join
+
+        env.join(how=how, on=on, suffixes=suffixes, validate=validate)
+
+    except Exception as e:
+        print_parsing_exception(cmd.verb, e)
+        return ERROR
 
     return cmd.verb
 

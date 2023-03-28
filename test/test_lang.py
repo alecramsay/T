@@ -56,7 +56,21 @@ class TestLangHandlers:
         except:
             assert False
 
-    # TODO - def test_join(self) -> None:
+    def test_join(self) -> None:
+        try:
+            run_script(
+                user="user/alec.py",
+                file="join.t",
+                src="test/lang",
+                data="test/join",
+                output="",
+                log="",
+                verbose=False,
+                scriptargs=dict(),
+            )
+            assert True
+        except:
+            assert False
 
     def test_union(self) -> None:
         try:

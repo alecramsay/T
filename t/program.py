@@ -391,7 +391,7 @@ class Program:
     def join(
         self,
         *,
-        how: MergeHow = "inner",
+        how: MergeHow,
         on: Optional[str | list[str] | list[list[str]]] = None,
         suffixes: tuple[str, str]
         | tuple[None, str]
