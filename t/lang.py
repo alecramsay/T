@@ -9,6 +9,7 @@ import logging
 from logging.handlers import RotatingFileHandler
 from typing import Callable, Literal, Optional
 
+from .datamodel import PD_TYPES
 from .commands import (
     Command,
     Namespace,
@@ -736,7 +737,30 @@ def _handle_sample(cmd: Command, env: Program) -> str:
 
 
 def _handle_cast(cmd: Command, env: Program) -> str:
-    print(f"{cmd.verb} {cmd.args}")
+    """Execute a 'cast' command
+
+    Example:
+
+    >>> cast([GEOID20], string)
+    >>> cast([Total], int64)
+    """
+
+    try:
+        # There are two positional args
+        validate_nargs(cmd.verb, cmd.n_pos, 2, most=2)
+        # And no keyword args
+        validate_nargs(cmd.verb, cmd.n_kw, 0, most=0, arg_type="keyword")
+
+        col_names: list[str] = string_to_list(cmd.positional_args[0])
+        dtype: str = cmd.positional_args[1]
+        if dtype not in PD_TYPES:
+            raise Exception(f"Invalid Pandas dtype: {dtype}")
+
+        env.cast(col_names, dtype)
+
+    except Exception as e:
+        print_parsing_exception(cmd.verb, e)
+        return ERROR
 
     return cmd.verb
 

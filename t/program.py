@@ -181,7 +181,7 @@ class Program:
             return new_table
 
         except Exception as e:
-            print_execution_exception("read", e)
+            print_execution_exception("from", e)
             return
 
     @do_pre_op()

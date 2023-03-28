@@ -236,7 +236,21 @@ class TestLangHandlers:
         except:
             assert False
 
-    # TODO - def test_cast(self) -> None:
+    def test_cast(self) -> None:
+        try:
+            run_script(
+                user="user/alec.py",
+                file="cast.t",
+                src="test/lang",
+                data="test/files",
+                output="",
+                log="",
+                verbose=False,
+                scriptargs=dict(),
+            )
+            assert True
+        except:
+            assert False
 
     # TODO - def test_scriptargs(self) -> None:
 

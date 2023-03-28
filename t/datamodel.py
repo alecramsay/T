@@ -214,7 +214,9 @@ class Table:
     def nth_row(self, n: int) -> list:
         """Return the nth row as a list of values"""
 
-        return self._data.loc[n, :].values.flatten().tolist()
+        # TODO - When do I need to flatten the row?!?
+        # return self._data.loc[n, :].values.flatten().tolist()
+        return list(self._data.loc[n, :].values)
 
     def first_n_rows(self, n: int) -> list:
         """Return the first n rows as a list of lists of values."""
@@ -306,12 +308,14 @@ class Table:
         # https://stackoverflow.com/questions/53141240/pandas-how-to-swap-or-reorder-columns
 
         self._data = self._data[names]
+        self._data = self._data.reset_index(drop=True)  # TODO: Added
         self._cols = [self.get_column(name) for name in names]
 
     def do_rename_cols(self, renames: dict[str, str]) -> None:
         """Rename columns in the table"""
 
         self._data.rename(columns=renames, inplace=True)
+        self._data = self._data.reset_index(drop=True)  # TODO: Added
         for col in self._cols:
             if col.name in renames:
                 col.set_name(renames[col.name])
