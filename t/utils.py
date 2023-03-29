@@ -132,8 +132,28 @@ def parse_spec(spec: str | list[str] | tuple) -> tuple:
     return first, second
 
 
+def isstringifiedlist(s: str) -> bool:
+    """Is a string a stringified list?"""
+
+    if s.startswith("[") and s.endswith("]"):
+        return True
+    else:
+        return False
+
+
 def islistofstr(obj: Any) -> bool:
-    return isinstance(obj, list) and all(isinstance(elem, str) for elem in obj)
+    """Is obj a stringified list of strings? (but not nested lists))"""
+
+    if not isinstance(obj, list):
+        return False
+
+    if not all(isinstance(elem, str) for elem in obj):
+        return False
+
+    if any(isstringifiedlist(elem) for elem in obj):
+        return False
+
+    return True
 
 
 def value_width(v: Any, pad: int = 2) -> int:

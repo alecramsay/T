@@ -4,6 +4,9 @@
 TEST LANG
 """
 
+from typing import Optional
+
+from T.lang import *
 from T.run import run_script
 
 
@@ -71,6 +74,24 @@ class TestLangHandlers:
             assert True
         except:
             assert False
+
+    def test_parse_join_on(self) -> None:
+        cases: list[dict] = [
+            {},  # Case 1
+            {"on": "foo"},  # Case 2
+            {"on": "[foo, bar]"},  # Case 3
+            {"on": "[[county_fips], [FIPS]]"},  # Case 4
+        ]
+        expected: list = [
+            None,
+            "foo",
+            ["foo", "bar"],
+            [["county_fips"], ["FIPS"]],
+        ]
+
+        for i, case in enumerate(cases):
+            actual: Optional[str | list[str] | list[list[str]]] = parse_join_on(case)
+            assert actual == expected[i]
 
     def test_union(self) -> None:
         try:

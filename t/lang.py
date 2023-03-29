@@ -22,7 +22,7 @@ from .commands import (
 from .program import Program
 from .reader import Reader, ReadState, FILE_IN_VERBS, make_input_fn
 from .readwrite import FileSpec
-from .utils import split_col_spec_string
+from .utils import split_col_spec_string, isstringifiedlist, islistofstr
 
 ERROR: str = "_error_"
 
@@ -457,6 +457,45 @@ def _handle_join(cmd: Command, env: Program) -> str:
         return ERROR
 
     return cmd.verb
+
+
+def parse_join_on(keyword_args: dict) -> Optional[str | list[str] | list[list[str]]]:
+    """Parse a join-on string into a list of columns.
+
+    Cases:
+    1. 'on' is not in the keyword args -> return None
+    2. 'on' is a string that is not a stringified list -> return the string
+    3. 'on' is a a stringified list of strings -> return a list of strings
+    4. 'on' is a stringified list of stringified lists -> return a list of lists of strings
+    """
+
+    if "on" not in keyword_args:
+        # Case 1
+        return None
+
+    arg_string: str = keyword_args["on"]
+
+    if not isstringifiedlist(arg_string):
+        # Case 2
+        return arg_string
+
+    on: Optional[str | list[str] | list[list[str]]] = string_to_list(arg_string)
+
+    if islistofstr(on):
+        # Case 3
+        return on
+
+    if (
+        len(on) == 2
+        and isstringifiedlist(on[0])
+        and isstringifiedlist(on[1])
+        and len(one := string_to_list(on[0])) == len(two := string_to_list(on[1]))
+    ):
+        # Case 4
+
+        return [one, two]
+
+    raise ValueError(f"Invalid join-on specification: {arg_string}")
 
 
 def _handle_union(cmd: Command, env: Program) -> str:

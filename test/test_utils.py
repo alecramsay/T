@@ -38,6 +38,7 @@ class TestUtils:
         assert islistofstr(["foo", "bar"])
         assert not islistofstr(["foo", 1])
         assert not islistofstr(["foo", ["bar"]])
+        assert not islistofstr(["[county_fips]", "[FIPS]"])
 
     def test_find_args_string(self) -> None:
         examples: list[str] = [

@@ -300,7 +300,7 @@ def string_to_list(s: str) -> list[str]:
     if not s.startswith("[") or not s.endswith("]"):
         raise ValueError(f"Invalid list: {s}")
 
-    return [f"{x}" for x in s[1:-1].split(",")]
+    return [f"{x.strip()}" for x in s[1:-1].split(",")]
 
 
 def isidentifier(ident: str) -> bool:
