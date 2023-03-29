@@ -81,7 +81,7 @@ class TestUtils:
 
             assert args_list == expected[i]
 
-        # lists
+        # TODO - Ignore commas within brackets (lists)
         # l: str = "on=[[county_fips], [FIPS]]"
         # assert split_args_string(l) == l
 
