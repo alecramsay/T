@@ -79,7 +79,12 @@ def split_verb_and_args(s: str) -> tuple[str, str]:
 
 
 def split_args_string(s: str) -> list[str]:
-    """Split a string into a list of arguments, ignoring commas within parentheses."""
+    """Split a string into a list of arguments, ignoring commas within parentheses.
+
+    TODO - This is not splitting this arg string correctly:
+
+    "on=[[county_fips], [FIPS]]"
+    """
 
     if s == "":
         return list()

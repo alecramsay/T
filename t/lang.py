@@ -38,7 +38,7 @@ def interpret(command: str, env: Program) -> str:
         cmd.parse()
         env.command = command  # for debugging
     except Exception as e:
-        print("Exception binding command args: ", e)
+        print("Exception parsing command args: ", e)
         return ERROR
 
     ### RE-WRITE AGGREGATE FUNCTION REFERENCES ###
@@ -439,7 +439,9 @@ def _handle_join(cmd: Command, env: Program) -> str:
 
         how: str = (cmd.keyword_args["how"]) if "how" in keywords else "inner"
 
-        on: Optional[str | list[str] | list[list[str]]] = None  # TODO - Join
+        on: Optional[str | list[str] | list[list[str]]] = parse_join_on(
+            cmd.keyword_args
+        )
 
         suffixes: tuple[str, str] | tuple[None, str] | tuple[str, None] = (
             "_y",

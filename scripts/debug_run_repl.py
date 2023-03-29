@@ -13,8 +13,8 @@ user: str = "user/alec.py"
 
 source: str = "examples"
 
-# data: str = "data/rd/NC"
-data: str = "test/join"
+data: str = "data/rd/NC"
+# data: str = "test/join"
 # data: str = "test/union"
 
 output: str = ""
