@@ -57,6 +57,21 @@ class TestUtils:
 
             assert args_string == expected[i]
 
+    def test_mask_char(self) -> None:
+        assert mask_char("foo, bar", ",", "#") == "foo, bar"
+        assert (
+            mask_char("on=[[county_fips], [FIPS]]", ",", "#")
+            == "on=[[county_fips]# [FIPS]]"
+        )
+        assert (
+            mask_char("D_pct, vote_share(sum(D_votes), sum(R_votes))", ",", "#")
+            == "D_pct, vote_share(sum(D_votes)# sum(R_votes))"
+        )
+        assert (
+            unmask_char("D_pct, vote_share(sum(D_votes)# sum(R_votes))", "#", ",")
+            == "D_pct, vote_share(sum(D_votes), sum(R_votes))"
+        )
+
     def test_split_args_string(self) -> None:
         examples: list[str] = [
             "def composite(ag, gov, sen1, sen2, pres1, pres2) -> float:",
@@ -81,9 +96,9 @@ class TestUtils:
 
             assert args_list == expected[i]
 
-        # TODO - Ignore commas within brackets (lists)
-        # l: str = "on=[[county_fips], [FIPS]]"
-        # assert split_args_string(l) == l
+        # Ignore commas within brackets (lists)
+        l: str = "on=[[county_fips], [FIPS]]"
+        assert split_args_string(l) == [l]
 
 
 ### END ###

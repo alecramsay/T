@@ -78,18 +78,70 @@ def split_verb_and_args(s: str) -> tuple[str, str]:
     return verb, args_str
 
 
-def split_args_string(s: str) -> list[str]:
-    """Split a string into a list of arguments, ignoring commas within parentheses.
+def mask_char(in_str: str, from_char: str, to_char: str) -> str:
+    """Replace one character with another in a string, when it is with parentheses, brackets, or braces.
 
-    TODO - This is not splitting this arg string correctly:
-
-    "on=[[county_fips], [FIPS]]"
+    For example, make all commas w/in ()'s, []'s, or {}'s into hashes so the top-level string can be split on commas.
     """
+
+    out_str: str = ""
+    nparens: int = 0
+    nbrackets: int = 0
+    nbraces: int = 0
+
+    for i, c in enumerate(in_str):
+        match c:
+            case "(":
+                nparens += 1
+                out_str += c
+            case ")":
+                nparens -= 1
+                out_str += c
+            case "[":
+                nbrackets += 1
+                out_str += c
+            case "]":
+                nbrackets -= 1
+                out_str += c
+            case "{":
+                nbraces += 1
+                out_str += c
+            case "}":
+                nbraces -= 1
+                out_str += c
+            case _:
+                if c == from_char and (nparens > 0 or nbrackets > 0 or nbraces > 0):
+                    out_str += to_char
+                else:
+                    out_str += c
+
+    if nparens == 0 or nbrackets == 0 or nbraces == 0:
+        return out_str
+    else:
+        raise Exception("Mismatched parentheses, brackets, or braces.")
+
+
+def unmask_char(in_str: str, from_char: str, to_char: str) -> str:
+    """Reverse a mask_char operation."""
+
+    return mask_char(
+        in_str,
+        from_char,
+        to_char,
+    )
+
+
+def split_args_string(s: str) -> list[str]:
+    """Split a string into a list of arguments, ignoring commas within parentheses."""
 
     if s == "":
         return list()
 
-    args: list[str] = re.split(r",\s*(?![^()]*\))", s)  # negative lookahead
+    # This handles parens but not brackets or braces
+    # args: list[str] = re.split(r",\s*(?![^()]*\))", s)  # negative lookahead
+
+    s = mask_char(s, ",", "#")
+    args: list[str] = [unmask_char(x.strip(), "#", ",") for x in s.split(",")]
 
     return args
 
