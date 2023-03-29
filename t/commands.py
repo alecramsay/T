@@ -156,7 +156,6 @@ class Command:
 
         assert self._args_str is not None
         self._args_list = split_args_string(self._args_str)
-        # self._args_list = [x.strip() for x in self._args_str.split(",")]
 
     def _classify_args(self) -> None:
         """Classify the args as positional or keyword."""

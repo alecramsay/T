@@ -75,6 +75,21 @@ class TestLangHandlers:
         except:
             assert False
 
+        try:
+            run_script(
+                user="user/alec.py",
+                file="join2.t",
+                src="test/lang",
+                data="data/rd/NC",
+                output="",
+                log="",
+                verbose=False,
+                scriptargs=dict(),
+            )
+            assert True
+        except:
+            assert False
+
     def test_parse_join_on(self) -> None:
         cases: list[dict] = [
             {},  # Case 1
