@@ -1,5 +1,5 @@
 # scripts/T.py -u user/alec.py -s test/lang -d data/rd/NC -f join4.t 
-from('2020_census_NC.csv')
+from(2020_census_NC.csv)
 rename((GEOID20, GEOID), (Tot_2020_tot, Total))
 derive(county_fips, GEOID[2:5])
 keep(GEOID, county_fips, Total)
