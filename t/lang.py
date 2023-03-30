@@ -9,7 +9,7 @@ import logging
 from logging.handlers import RotatingFileHandler
 from typing import Callable, Literal, Optional
 
-from .datamodel import PD_TYPES, MergeHowList, ValidationOptionsList
+from .datamodel import PD_TYPES
 from .commands import (
     Command,
     Namespace,
@@ -424,6 +424,7 @@ def _handle_join(cmd: Command, env: Program) -> str:
 
     >>> join()
     >>> join(on=[[county_fips], [FIPS]])
+    >>> join(how=inner, on=[[county_fips], [FIPS]], suffixes=('_y', '_x'), validate=1:M)
     """
 
     try:
@@ -437,7 +438,7 @@ def _handle_join(cmd: Command, env: Program) -> str:
             if kw not in ["how", "on", "suffixes", "validate"]:
                 raise Exception(f"Invalid keyword argument: {kw}")
 
-        how: str = (cmd.keyword_args["how"]) if "how" in keywords else "inner"
+        how: str = (cmd.keyword_args["how"].lower()) if "how" in keywords else "inner"
 
         on: Optional[str | list[str] | list[list[str]]] = parse_join_on(
             cmd.keyword_args
@@ -446,11 +447,17 @@ def _handle_join(cmd: Command, env: Program) -> str:
         suffixes: tuple[str, str] | tuple[None, str] | tuple[str, None] = (
             "_y",
             "_x",
-        )  # TODO - Join
+        )  # default suffixes
+        if "suffixes" in keywords:
+            temp: tuple[str, str] | str = split_col_spec_string(
+                cmd.keyword_args["suffixes"]
+            )
+            assert isinstance(temp, tuple)
+            suffixes = temp
 
         validate: str | None = (
-            (cmd.keyword_args["validate"]) if "validate" in keywords else None
-        )  # TODO - Join
+            (cmd.keyword_args["validate"].lower()) if "validate" in keywords else None
+        )
 
         env.join(how=how, on=on, suffixes=suffixes, validate=validate)
 

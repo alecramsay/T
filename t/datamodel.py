@@ -480,9 +480,7 @@ def columns_match(table1: Table, table2: Table, match_names: bool = True) -> boo
 PD_JOIN_TYPES: list[str] = ["left", "right", "outer", "inner", "cross"]
 PD_VALIDATE_TYPES: list[str] = ["1:1", "1:m", "m:1", "m:m"]
 MergeHow = Literal["left", "right", "inner", "outer", "cross"]
-MergeHowList: list[str] = ["left", "right", "inner", "outer", "cross"]
 ValidationOptions = Literal["1:1", "1:m", "m:1", "m:m"]
-ValidationOptionsList: list[str] = ["1:1", "1:m", "m:1", "m:m"]
 
 
 def do_join(
@@ -527,6 +525,7 @@ def do_join(
             left_on=left_on,
             right_on=right_on,
             suffixes=suffixes,
+            # validate=validate,  # Can't be None
         )
     join_table._data = join_table._data.reset_index(drop=True)
 

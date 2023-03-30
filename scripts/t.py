@@ -13,6 +13,9 @@ $
 $ scripts/T.py -u user/alec.py -s examples/rd -d data/rd/NC -f precincts.t -a '{"paf": "2020_alt_assignments_NC.csv"}'
 $ scripts/T.py -u user/alec.py -s examples/rd -d data/rd/NC -f precincts.t -a '{"paf": "\'2020_alt_assignments_NC.csv\'"}' <<< This doesn't work in argparse
 
+$ scripts/T.py -u user/alec.py -s test/lang -d test/files -f groupby2.t 
+$ scripts/T.py -u user/alec.py -s test/lang -d data/rd/NC -f join3.t 
+
 For documentation, type:
 
 $ scripts/T.py -h

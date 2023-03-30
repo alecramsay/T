@@ -78,7 +78,7 @@ class TestLangHandlers:
         try:
             run_script(
                 user="user/alec.py",
-                file="join2.t",
+                file="join3.t",
                 src="test/lang",
                 data="data/rd/NC",
                 output="",
@@ -129,6 +129,21 @@ class TestLangHandlers:
             run_script(
                 user="user/alec.py",
                 file="groupby.t",
+                src="test/lang",
+                data="test/files",
+                output="",
+                log="",
+                verbose=False,
+                scriptargs=dict(),
+            )
+            assert True
+        except:
+            assert False
+
+        try:
+            run_script(
+                user="user/alec.py",
+                file="groupby2.t",
                 src="test/lang",
                 data="test/files",
                 output="",
