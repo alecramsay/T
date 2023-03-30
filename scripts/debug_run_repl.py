@@ -11,7 +11,8 @@ from T import run_repl
 
 user: str = "user/alec.py"
 
-source: str = "examples"
+# source: str = "examples"
+source: str = "examples/rd"
 
 data: str = "data/rd/NC"
 # data: str = "test/join"

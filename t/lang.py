@@ -15,6 +15,7 @@ from .commands import (
     Namespace,
     validate_nargs,
     could_be_filename,
+    isidentifier,
     isidpair,
     ispct,
     string_to_list,
@@ -392,9 +393,9 @@ def _handle_sort(cmd: Command, env: Program) -> str:
 
         # All positional args are pairs of valid identifiers
         # HACK - ASC and DESC, if given, are valid identifiers
-        for pair in cmd.positional_args:
-            if not isidpair(pair):
-                raise Exception(f"Invalid sort argument: {pair}")
+        for v in cmd.positional_args:
+            if not isidentifier(v) and not isidpair(v):
+                raise Exception(f"Invalid sort argument: {v}")
 
         col_specs: list = [split_col_spec_string(arg) for arg in cmd.positional_args]
         env.sort(col_specs)
