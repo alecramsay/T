@@ -498,7 +498,6 @@ def do_join(
     - Verify the parameters before calling this
     """
 
-    # TYPE HINT
     # Reverse the suffixes, to match Pandas semantics.
     assert suffixes[0] is not None or suffixes[1] is not None
     swapped: tuple[str, str] | tuple[None, str] | tuple[str, None] = suffixes[::-1]  # type: ignore

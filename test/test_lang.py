@@ -235,7 +235,21 @@ class TestLangHandlers:
         except:
             assert False
 
-    # TODO - def test_UDF(self) -> None:
+    def test_UDF(self) -> None:
+        try:
+            run_script(
+                user="user/alec.py",
+                file="udf.t",
+                src="test/lang",
+                data="test/files",
+                output="",
+                log="",
+                verbose=False,
+                scriptargs=dict(),
+            )
+            assert True
+        except:
+            assert False
 
     def test_select(self) -> None:
         try:

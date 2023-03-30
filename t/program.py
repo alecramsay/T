@@ -13,7 +13,7 @@ from contextlib import contextmanager
 from typing import Any, Callable, Optional, Generator
 
 from .utils import value_width
-
+from .udf import UDF
 from .readwrite import fns_from_path
 from .datamodel import (
     Table,
@@ -124,16 +124,11 @@ class Program:
         self.repl = repl
         self.silent = silent
 
-        # TODO - Re-work UDFs
-        self.user_functions = dict()
         self.table_stack = Stack()
         self.call_stack = Stack()
         self.call_stack.push(Namespace({}))
 
         self.user = user if user else None
-        if self.user:
-            assert user is not None
-            self.use(user)
         self.src = os.path.join(src, "") if src else None
         self.data = os.path.join(data, "") if data else None
 
@@ -555,10 +550,9 @@ class Program:
 
         try:
             top: Table = self.table_stack.first()
+            udf: Optional[UDF] = UDF(self.user) if self.user else None
 
-            v: DeriveVerb = DeriveVerb(
-                top, name, expr
-            )  # TODO, udf=self.user_functions)
+            v: DeriveVerb = DeriveVerb(top, name, expr, udf=udf)
             new_table: Table = v.apply()
 
             return new_table
@@ -664,18 +658,6 @@ class Program:
     def rotate(self) -> None:
         self.table_stack.rotate
         self._update_table_shortcuts()
-
-    ### MISCELLANEOUS ###
-
-    def use(self, rel_path: str) -> None:
-        """USE - Make user-defined functions available."""
-
-        try:
-            self.user_functions.update(fns_from_path(rel_path))
-
-        except Exception as e:
-            print("Exception loading user-defined functions: ", e)
-            return
 
     ### HOUSEKEEPING ROUTINES ###
 
