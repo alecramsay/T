@@ -41,8 +41,7 @@ PD_DESCRIBE_FNS: list[str] = ["count", "mean", "std", "min", "25%", "50%", "75%"
 PD_DESCRIBE_TYPES: list[str] = ["int64", "float64", "datetime64", "timedelta64"]
 
 # Pandas agg functions for groupby()
-PD_AGG_FNS: list[str] = ["count", "mean", "std", "min", "max"]
-# AGG_FNS: list[str] = ["count", "min", "max", "std", "sum", "mean", "median"]
+PD_AGG_FNS: list[str] = ["sum", "count", "mean", "std", "min", "max", "median"]
 
 
 class Column:
