@@ -60,27 +60,27 @@ class TestCommands:
 
     def test_bind_args(self):
         # No args in command fragment
-        scriptargs = {"bar": "'2022_precinct_assignments_AZ.csv'", "bas": "mumble"}
-        fragment = "'2020_precinct_assignments_NC.csv'"
+        scriptargs = {"bar": "2022_precinct_assignments_AZ.csv", "bas": "mumble"}
+        fragment = "2020_precinct_assignments_NC.csv"
         tokens = tokenize(fragment)
         actual = bind_args(tokens, Namespace(scriptargs))
         expected = fragment
         assert actual == expected
 
         # Args in the command fragment
-        scriptargs = {"bar": "'2022_precinct_assignments_AZ.csv'", "bas": "mumble"}
-        fragment = "args.bar or 2020_precinct_assignments_NC.csv', args.bas"
+        scriptargs = {"bar": "2022_precinct_assignments_AZ.csv", "bas": "mumble"}
+        fragment = "args.bar or 2020_precinct_assignments_NC.csv, args.bas"
         tokens = tokenize(fragment)
         actual = bind_args(tokens, Namespace(scriptargs))
-        expected = "'2022_precinct_assignments_AZ.csv',mumble"
+        expected = "2022_precinct_assignments_AZ.csv,mumble"
         assert actual == expected
 
         # Arg in read
-        scriptargs = {"census": "'2020_census_AZ.csv'"}
-        fragment = "args.census or 2020_census_NC.csv'"
+        scriptargs = {"census": "2020_census_AZ.csv"}
+        fragment = "args.census or 2020_census_NC.csv"
         tokens = tokenize(fragment)
         actual = bind_args(tokens, Namespace(scriptargs))
-        expected = "'2020_census_AZ.csv'"
+        expected = "2020_census_AZ.csv"
         assert actual == expected
 
         # Arg in filter
@@ -92,11 +92,11 @@ class TestCommands:
         assert actual == expected
 
         # Arg in run
-        scriptargs = {"census": "'2020_census_AZ.csv'"}
-        fragment = "'census.t', census=args.census or 2020_census_NC.csv'"
+        scriptargs = {"census": "2020_census_AZ.csv"}
+        fragment = "census.t, census=args.census or 2020_census_NC.csv"
         tokens = tokenize(fragment)
         actual = bind_args(tokens, Namespace(scriptargs))
-        expected = "'census.t',census='2020_census_AZ.csv'"
+        expected = "census.t,census=2020_census_AZ.csv"
         assert actual == expected
 
         # Arg in sort
