@@ -489,7 +489,6 @@ def do_join(
     how: MergeHow,
     left_on: list[str],
     right_on: list[str],
-    # TODO - Reverse the suffixes for Pandas
     # Note: These suffixes are reversed from Pandas, to match T stack semantics.
     suffixes: tuple[str, str] | tuple[None, str] | tuple[str, None],
     validate: Optional[ValidationOptions],
@@ -499,12 +498,10 @@ def do_join(
     - Verify the parameters before calling this
     """
 
-    # TYPE HINT - WTF ... why does this work?
-    # assert suffixes[0] is not None or suffixes[1] is not None
-    # swapped: tuple[str, str] | tuple[None, str] | tuple[str, None] = (
-    #     suffixes[1],
-    #     suffixes[0],
-    # )
+    # TYPE HINT
+    # Reverse the suffixes, to match Pandas semantics.
+    assert suffixes[0] is not None or suffixes[1] is not None
+    swapped: tuple[str, str] | tuple[None, str] | tuple[str, None] = suffixes[::-1]  # type: ignore
 
     join_table: Table = Table()
     if validate:
