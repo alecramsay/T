@@ -30,7 +30,7 @@ class Stack:
     def clear(self) -> None:
         self._queue_.clear()
 
-    # aka 'peek' or 'top'
+    # aka 'peek' or top'
     def first(self) -> Any:
         return self._queue_[0]
 

@@ -370,7 +370,7 @@ def concatenate_string_literals(line: str):
 
 
 def rewrite_pct(command: str) -> str:
-    """For 'first', 'last', & 'random', rewrite '%' in non-select, non-derive commands to fake out the Python parser."""
+    """For first', 'last', & 'random', rewrite '%' in non-select, non-derive commands to fake out the Python parser."""
 
     alt: str = command.replace("%", ", %")
     try:

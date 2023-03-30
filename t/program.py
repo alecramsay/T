@@ -529,7 +529,7 @@ class Program:
     @do_pre_op()
     @do_post_op()
     def select(self, expr: str) -> Table | None:
-        """SELECT (aka 'where' or 'filter')"""
+        """SELECT (aka 'where' or filter')"""
 
         try:
             top: Table = self.table_stack.first()
@@ -546,7 +546,7 @@ class Program:
     @do_pre_op()
     @do_post_op()
     def derive(self, name: str, expr: str) -> Table | None:
-        """DERIVE (aka 'let' or 'calc')"""
+        """DERIVE (aka 'let' or calc')"""
 
         try:
             top: Table = self.table_stack.first()
@@ -564,7 +564,7 @@ class Program:
     @do_pre_op()
     @do_post_op()
     def first(self, n: int, pct: Optional[Any] = None) -> Table | None:
-        """FIRST (aka 'take' or 'top')"""
+        """FIRST (aka 'take' or top')"""
 
         try:
             top: Table = self.table_stack.first()

@@ -329,10 +329,10 @@ def _handle_write(cmd: Command, env: Program) -> str:
     Examples:
 
     >>> # Write a table to a CSV file
-    >>> write('2020_census_NC.csv')
+    >>> write(2020_census_NC.csv)
 
     >>> # Write a table to a JSON file
-    >>> write('2020_census_NC.json', format=JSON)
+    >>> write(2020_census_NC.json, format=JSON)
     """
 
     try:

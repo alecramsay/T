@@ -347,7 +347,7 @@ def isidpair(arg: str) -> bool:
 
 
 def issortarg(arg: str) -> bool:
-    """For 'sort'"""
+    """For sort'"""
 
     # Just a column name
     if isidentifier(arg):
@@ -408,10 +408,10 @@ def validate_nargs(
         raise Exception(f"The '{verb}' command doesn't take any {arg_type} arguments.")
 
     if n < least:
-        raise Exception(f"Too few {arg_type} arguments for '{verb}' command.")
+        raise Exception(f"Too few {arg_type} arguments for {verb}' command.")
 
     if most and (n > most):
-        raise Exception(f"Too many {arg_type} arguments for '{verb}' command.")
+        raise Exception(f"Too many {arg_type} arguments for {verb}' command.")
 
 
 def validate_filename(arg: str) -> None:

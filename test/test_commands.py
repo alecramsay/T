@@ -15,8 +15,8 @@ class TestCommands:
         actual = unwrap_args(tokens)
         assert all([a == b for a, b in zip(actual, expected)])
 
-        subcommand = "args.foo or 'something'"
-        expected = ["args.foo", "or", "'something'"]
+        subcommand = "args.foo or something"
+        expected = ["args.foo", "or", "something"]
         tokens = tokenize(subcommand)
         actual = unwrap_args(tokens)
         assert all([a == b for a, b in zip(actual, expected)])
@@ -27,19 +27,19 @@ class TestCommands:
         actual = unwrap_args(tokens)
         assert all([a == b for a, b in zip(actual, expected)])
 
-        subcommand = "(args.foo or 'something')"
-        expected = ["args.foo", "or", "'something'"]
+        subcommand = "(args.foo or something)"
+        expected = ["args.foo", "or", "something"]
         tokens = tokenize(subcommand)
         actual = unwrap_args(tokens)
         assert all([a == b for a, b in zip(actual, expected)])
 
-        subcommand = "(foo + args.bar or 'something')"
-        expected = ["(", "foo", "+", "args.bar", "or", "'something'", ")"]
+        subcommand = "(foo + args.bar or something)"
+        expected = ["(", "foo", "+", "args.bar", "or", "something", ")"]
         tokens = tokenize(subcommand)
         actual = unwrap_args(tokens)
         assert all([a == b for a, b in zip(actual, expected)])
 
-        subcommand = "mumble * (foo + (args.bar or 'something') - blah)"
+        subcommand = "mumble * (foo + (args.bar or something) - blah)"
         expected = [
             "mumble",
             "*",
@@ -48,7 +48,7 @@ class TestCommands:
             "+",
             "args.bar",
             "or",
-            "'something'",
+            "something",
             "-",
             "blah",
             ")",
@@ -69,7 +69,7 @@ class TestCommands:
 
         # Args in the command fragment
         scriptargs = {"bar": "'2022_precinct_assignments_AZ.csv'", "bas": "mumble"}
-        fragment = "args.bar or '2020_precinct_assignments_NC.csv', args.bas"
+        fragment = "args.bar or 2020_precinct_assignments_NC.csv', args.bas"
         tokens = tokenize(fragment)
         actual = bind_args(tokens, Namespace(scriptargs))
         expected = "'2022_precinct_assignments_AZ.csv',mumble"
@@ -77,7 +77,7 @@ class TestCommands:
 
         # Arg in read
         scriptargs = {"census": "'2020_census_AZ.csv'"}
-        fragment = "args.census or '2020_census_NC.csv'"
+        fragment = "args.census or 2020_census_NC.csv'"
         tokens = tokenize(fragment)
         actual = bind_args(tokens, Namespace(scriptargs))
         expected = "'2020_census_AZ.csv'"
@@ -93,7 +93,7 @@ class TestCommands:
 
         # Arg in run
         scriptargs = {"census": "'2020_census_AZ.csv'"}
-        fragment = "'census.t', census=args.census or '2020_census_NC.csv'"
+        fragment = "'census.t', census=args.census or 2020_census_NC.csv'"
         tokens = tokenize(fragment)
         actual = bind_args(tokens, Namespace(scriptargs))
         expected = "'census.t',census='2020_census_AZ.csv'"
@@ -142,7 +142,7 @@ class TestCommands:
     def test_bind_command_args(self):
         # No args in the command
         scriptargs = {"bar": "2022_precinct_assignments_AZ.csv", "bas": "mumble"}
-        command = "read('2020_precinct_assignments_NC.csv')"
+        command = "read(2020_precinct_assignments_NC.csv)"
         cmd: Command = Command(command, Namespace(scriptargs))
         actual = cmd.bind()
         expected = command
@@ -150,18 +150,18 @@ class TestCommands:
 
         # Args in the command
         scriptargs = {"bar": "'2022_precinct_assignments_AZ.csv'", "bas": "mumble"}
-        command = "read(args.bar or '2020_precinct_assignments_NC.csv', args.bas)"
+        command = "read(args.bar or 2020_precinct_assignments_NC.csv', args.bas)"
         cmd: Command = Command(command, Namespace(scriptargs))
         actual = cmd.bind()
         expected = "read('2022_precinct_assignments_AZ.csv',mumble)"
         assert actual == expected
 
         # Arg in read
-        scriptargs = {"census": "'2020_census_AZ.csv'"}
-        command = "read(args.census or '2020_census_NC.csv')"
+        scriptargs = {"census": "2020_census_AZ.csv"}
+        command = "read(args.census or 2020_census_NC.csv)"
         cmd: Command = Command(command, Namespace(scriptargs))
         actual = cmd.bind()
-        expected = "read('2020_census_AZ.csv')"
+        expected = "read(2020_census_AZ.csv)"
         assert actual == expected
 
         # Arg in filter
@@ -322,8 +322,8 @@ class TestCommands:
     def test_parse_command(self) -> None:
         commands: list[str] = [
             "sort((args.sorton, DESC))",
-            "from_(args.census or '2020_census_NC.csv')",
-            "from_('precincts.t', paf='2020_precinct_assignments_NC.csv', census='2020_census_NC.csv', elections='2020_election_NC.csv')",
+            "from_(args.census or 2020_census_NC.csv)",
+            "from_(precincts.t, paf=2020_precinct_assignments_NC.csv, census=2020_census_NC.csv, elections=2020_election_NC.csv)",
             "foo(bar, bas, bat)",
             "foo(bar=bas, bat=mumble)",
             "foo()",
@@ -344,14 +344,14 @@ class TestCommands:
 
         expected: list[tuple[str, list[str]]] = [
             ("sort", ["(Total,DESC)"]),
-            ("from_", ["'2020_census_NC.csv'"]),
+            ("from_", ["2020_census_NC.csv"]),
             (
                 "from_",
                 [
-                    "'precincts.t'",
-                    "paf='2020_precinct_assignments_NC.csv'",
-                    "census='2020_census_NC.csv'",
-                    "elections='2020_election_NC.csv'",
+                    "precincts.t",
+                    "paf=2020_precinct_assignments_NC.csv",
+                    "census=2020_census_NC.csv",
+                    "elections=2020_election_NC.csv",
                 ],
             ),
             ("foo", ["bar", "bas", "bat"]),
