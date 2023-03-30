@@ -46,8 +46,6 @@ from .verbs import (
     UnionVerb,
 )
 
-# HELPER_FNS = mod_fns(helpers) # TODO
-
 
 def do_pre_op(required: int = 1) -> Callable[..., Callable[..., Any]]:
     """A decorator to take care of housekeeping tasks *before* each operation."""
@@ -128,7 +126,6 @@ class Program:
 
         # TODO - Re-work UDFs
         self.user_functions = dict()
-        # self.user_functions = HELPER_FNS
         self.table_stack = Stack()
         self.call_stack = Stack()
         self.call_stack.push(Namespace({}))

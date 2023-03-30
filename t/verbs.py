@@ -445,7 +445,6 @@ class GroupByVerb(Verb):
     * By default, compute all statistics. Optionally take an explicit list of stats to compute.
 
     * For each aggregated column 'x', the resulting rows contain columns of the form x_min, x_max, etc.
-    * TODO - They can also be referenced as min(X), max(X), sum(X), count(X), and avg(X). <<< Is this true?
     """
 
     _group_cols: list

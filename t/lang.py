@@ -41,17 +41,6 @@ def interpret(command: str, env: Program) -> str:
         print("Exception parsing command args: ", e)
         return ERROR
 
-    ### RE-WRITE AGGREGATE FUNCTION REFERENCES ###
-
-    # TODO - Not re-implemented yet
-    # try:
-    #     if not env.table_stack.isempty():
-    #         names = env.table_stack.first().col_names()
-    #         command = rewrite_agg_refs(command, names)
-    # except Exception as e:
-    #     print("Exception rewriting aggregate function references: ", e)
-    #     return ERROR
-
     ### HANDLE VERBS ###
 
     verb: str = cmd.verb

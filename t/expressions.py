@@ -31,14 +31,6 @@ def rewrite_expr(
     return expr, wrappers
 
 
-def rewrite_agg_refs(command: str, names: list[str]):
-    """Re-write aggregate function references as column names."""
-
-    # TODO - Not re-implemented yet
-
-    return command
-
-
 def isliteral(tok: str) -> bool:
     """Return True if tok is a Python literal, else False.
 
