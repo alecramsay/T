@@ -141,7 +141,7 @@ class TestCommands:
 
     def test_bind_command_args(self):
         # No args in the command
-        scriptargs = {"bar": "'2022_precinct_assignments_AZ.csv'", "bas": "mumble"}
+        scriptargs = {"bar": "2022_precinct_assignments_AZ.csv", "bas": "mumble"}
         command = "read('2020_precinct_assignments_NC.csv')"
         cmd: Command = Command(command, Namespace(scriptargs))
         actual = cmd.bind()
@@ -173,11 +173,11 @@ class TestCommands:
         assert actual == expected
 
         # Arg in from (was run)
-        scriptargs = {"census": "'2020_census_AZ.csv'"}
-        command = "from('census.t', census=args.census or '2020_census_NC.csv')"
+        scriptargs = {"census": "2020_census_AZ.csv"}
+        command = "from(census.t, census=args.census or 2020_census_NC.csv)"
         cmd: Command = Command(command, Namespace(scriptargs))
         actual = cmd.bind()
-        expected = "from('census.t',census='2020_census_AZ.csv')"
+        expected = "from(census.t,census=2020_census_AZ.csv)"
         assert actual == expected
 
         # Arg in sort

@@ -282,7 +282,7 @@ def _handle_from(cmd: Command, env: Program) -> str:
     >>> from(2020_census_NC.csv)
 
     >>> # Execute a T script with arguments
-    >>> from('precincts.t', paf='2020_precinct_assignments_NC.csv', census='2020_census_NC.csv', elections='2020_election_NC.csv')
+    >>> from(precincts.t, paf=2020_precinct_assignments_NC.csv, census=2020_census_NC.csv, elections=2020_election_NC.csv)
 
     """
 

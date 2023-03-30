@@ -1,10 +1,10 @@
 # scripts/T.py -u user/alec.py -s examples/rd -d data/rd/NC -f geographic_seats.t > temp/geographic_seats.txt
 
-from('precincts.csv')
+from(precincts.csv)
 derive(county_fips, GEOID[2:5])
 keep(county_fips, Total, D_votes, R_votes)
 
-from('NC_counties.csv', [str, str])
+from(NC_counties.csv)
 
 join(county_fips, FIPS)
 

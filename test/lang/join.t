@@ -1,3 +1,3 @@
-from('employee.csv')
-from('department.csv')
+from(employee.csv)
+from(department.csv)
 join()

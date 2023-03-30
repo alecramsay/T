@@ -1,3 +1,3 @@
-from('first_part.csv')
-from('second_part.csv')
+from(first_part.csv)
+from(second_part.csv)
 union()

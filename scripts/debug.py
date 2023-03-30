@@ -22,7 +22,7 @@ $ scripts/T.py -u user/alec.py -s examples/rd -d data/rd/NC -f geographic_seats.
 $ scripts/T.py -u user/alec.py -s examples/rd -d data/rd/NC -f misc.t > temp/misc.txt
 
 >>> from(2020_census_NC.csv)
->>> from('precincts.t')
+>>> from(precincts.t)
 
 """
 
