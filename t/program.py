@@ -75,8 +75,9 @@ def do_post_op(pop: int = 1) -> Callable[..., Callable[..., Any]]:
         @wraps(func)
         def wrapper(self, *args, **kwargs) -> Any:
             new_table: Table = func(self, *args, **kwargs)
-            self._update_stack(new_table, pop)
-            self._display_table()
+            if new_table is not None:
+                self._update_stack(new_table, pop)
+                self._display_table()
 
             return new_table
 
