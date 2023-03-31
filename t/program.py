@@ -753,7 +753,7 @@ def Tables(
 
 
 def print_execution_exception(verb, e) -> None:
-    print("Exception executing '{0}' command: ".format(verb, e))
+    print(f"Exception executing '{verb}' command: {e}")
 
 
 ### END ###

@@ -128,8 +128,11 @@ class Verb:
             by, order = parse_spec(pair)
             by_list.append(by.strip())
 
-            order = order.strip().upper()
-            order = "ASC" if order == by else order
+            if by == order:
+                order = "ASC"
+            else:
+                order = order.strip().upper()
+
             if order not in ["ASC", "DESC"]:
                 raise Exception(f"Invalid sort order: {order}")
             ascending_list.append(True if order == "ASC" else False)

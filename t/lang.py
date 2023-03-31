@@ -39,7 +39,7 @@ def interpret(command: str, env: Program) -> str:
         cmd.parse()
         env.command = command  # for debugging
     except Exception as e:
-        print("Exception parsing command args: ", e)
+        print("Exception parsing command syntax: ", e)
         return ERROR
 
     ### HANDLE VERBS ###
@@ -1043,7 +1043,7 @@ def _handle_rotate(cmd: Command, env: Program) -> str:
 
 
 def print_parsing_exception(verb, e):
-    print("Exception handling '{0}' commmand: {1}".format(verb, e))
+    print(f"Exception handling '{verb}' commmand: {e}")
 
 
 ### END ###
