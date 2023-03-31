@@ -6,7 +6,7 @@ EXPRESSION HANDLING for SELECT & DERIVE
 """
 
 import ast
-from typing import Optional
+from typing import Optional, Any, Type
 
 from .udf import UDF, map_args
 from .utils import DELIM_TOKS, tokenize
@@ -31,16 +31,26 @@ def rewrite_expr(
     return expr, wrappers
 
 
-def isliteral(tok: str) -> bool:
-    """Return True if tok is a Python literal, else False.
+def isliteral(node_or_string: Any, verbose: bool = False) -> bool:
+    """Is the argument a valid Python literal?
+
+    https://docs.python.org/3/library/ast.html -- "The string or node provided may
+    only consist of the following Python literal structures: strings, bytes, numbers,
+    tuples, lists, dicts, sets, booleans, None and Ellipsis."
 
     NOTE - Not all literals are supported.
     """
 
     try:
-        ast.literal_eval(tok)
+        l: Any = ast.literal_eval(node_or_string)
+        t: Type = type(l)
+
+        print(f"l: {l}, t: {t}")
+
         return True
-    except ValueError:
+
+    except:
+        print(f"Not a valid literal: {node_or_string}")
         return False
 
 

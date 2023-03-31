@@ -100,5 +100,23 @@ class TestExpressions:
         except:
             assert True
 
+    def test_isliteral(self) -> None:
+        values = [
+            "'foo'",
+            "b'Hello'",
+            "1",
+            "2.3",
+            "[1,2,3,4,5]",
+            "(1,2,3,4,5)",
+            "{1,2,3,4,5}",
+            "True",
+            "False",
+            "None",
+            "...",
+        ]
+
+        for v in values:
+            assert isliteral(v)
+
 
 ### END ###
