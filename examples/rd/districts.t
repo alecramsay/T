@@ -16,5 +16,3 @@ derive(Pacific_pct, Pacific_sum / Total_VAP_sum)
 keep(District, Total_sum, D_pct, R_pct, Total_VAP_sum, White_pct, Hispanic_pct, Black_pct, Native_pct, Asian_pct, Pacific_pct)
 
 sort(District)
-
-# inspect()

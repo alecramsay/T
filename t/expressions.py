@@ -32,7 +32,6 @@ def rewrite_expr(
     return expr, wrappers
 
 
-# TODO - Why is this printing output twice for districts.t?!?
 def isliteral(node_or_string: Any, verbose: bool = False) -> bool:
     """Is the argument a valid Python literal?
 
@@ -47,7 +46,8 @@ def isliteral(node_or_string: Any, verbose: bool = False) -> bool:
         l: Any = ast.literal_eval(node_or_string)
         t: Type = type(l)
 
-        print(f"l: {l}, t: {t}")
+        if verbose:
+            print(f"l: {l}, t: {t}")
 
         return True
 
