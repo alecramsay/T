@@ -10,6 +10,7 @@ from typing import Optional, Any, Type
 
 from .udf import UDF, map_args
 from .utils import DELIM_TOKS, tokenize
+from .commands import isidentifier
 
 
 def rewrite_expr(
@@ -65,10 +66,12 @@ def has_valid_col_refs(tokens: list[str], names: list[str]) -> bool:
             if tok == "=":
                 raise Exception("Use '==' for equality comparison.")
             continue
+        if isidentifier(tok):
+            continue
         if isliteral(tok):
             continue
         if tok not in names:
-            raise Exception(f"Invalid column reference: {tok}")
+            raise Exception(f"Invalid reference in SELECT expression: {tok}")
 
     return True
 
@@ -87,11 +90,9 @@ def has_valid_refs(
             if tok == "=":
                 raise Exception("Use '==' for equality comparison.")
             continue
+        if isidentifier(tok) and (tok in col_names or tok in udf_names):
+            continue
         if isliteral(tok):
-            continue
-        if tok in col_names:
-            continue
-        if tok in udf_names:
             continue
 
         raise Exception(f"Invalid reference in DERIVE expression: {tok}")
