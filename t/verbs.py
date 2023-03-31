@@ -399,8 +399,7 @@ class DeriveVerb(Verb):
         col_names: list[str] = x_table.col_names()
 
         # Validate column & UDF references
-        udf_names: list[str] = self._udf.names() if self._udf else []
-        has_valid_refs(tokens, col_names, udf_names)
+        has_valid_refs(tokens, col_names, self._udf)
         self._tokens: list[str] = tokenize(expr)
 
     def apply(self) -> Table:

@@ -5,7 +5,7 @@ from(precincts.t, paf=2020_precinct_assignments_NC.csv, census=2020_census_NC.cs
 groupby(by=[District])
 
 derive(D_pct, vote_share(D_votes_sum, R_votes_sum))
-# derive(R_pct, 1 - D_pct)
+derive(R_pct, 1 - D_pct)
 derive(White_pct, White_sum / Total_VAP_sum)
 derive(Hispanic_pct, Hispanic_sum / Total_VAP_sum)
 derive(Black_pct, Black_sum / Total_VAP_sum)
@@ -13,8 +13,7 @@ derive(Native_pct, Native_sum / Total_VAP_sum)
 derive(Asian_pct, Asian_sum / Total_VAP_sum)
 derive(Pacific_pct, Pacific_sum / Total_VAP_sum)
 
-keep(District, Total_sum, D_pct, Total_VAP_sum, White_pct, Hispanic_pct, Black_pct, Native_pct, Asian_pct, Pacific_pct)
-# keep(District, Total_sum, D_pct, R_pct, Total_VAP_sum, White_pct, Hispanic_pct, Black_pct, Native_pct, Asian_pct, Pacific_pct)
+keep(District, Total_sum, D_pct, R_pct, Total_VAP_sum, White_pct, Hispanic_pct, Black_pct, Native_pct, Asian_pct, Pacific_pct)
 
 sort(District)
 

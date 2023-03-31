@@ -62,6 +62,8 @@ class TestExpressions:
         assert new_tokens == ["slice[2:5]", "+", "foo"]
 
     def test_has_valid_refs(self) -> None:
+        rel_path: str = "user/alec.py"
+        udf: UDF = UDF(rel_path)
         expr: str = "composite(D_2020_ag, D_2020_gov, D_2016_sen, D_2020_sen, D_2016_pres, D_2020_pres)"
         tokens: list[str] = tokenize(expr)
         col_names: list[str] = [
@@ -72,10 +74,9 @@ class TestExpressions:
             "D_2016_pres",
             "D_2020_pres",
         ]
-        udf_names: list[str] = ["composite", "vote_share", "est_seat_probability"]
 
         try:
-            has_valid_refs(tokens, col_names, udf_names)
+            has_valid_refs(tokens, col_names, udf)
             assert True
         except:
             assert False

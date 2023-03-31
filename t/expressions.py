@@ -32,6 +32,7 @@ def rewrite_expr(
     return expr, wrappers
 
 
+# TODO - Why is this printing output twice for districts.t?!?
 def isliteral(node_or_string: Any, verbose: bool = False) -> bool:
     """Is the argument a valid Python literal?
 
@@ -77,7 +78,7 @@ def has_valid_col_refs(tokens: list[str], names: list[str]) -> bool:
 
 
 def has_valid_refs(
-    tokens: list[str], col_names: list[str], udf_names: list[str]
+    tokens: list[str], col_names: list[str], udf: Optional[UDF] = None
 ) -> bool:
     """Tokenized expression has valid column -or- UDF references.
 
@@ -85,12 +86,16 @@ def has_valid_refs(
     Cannot contain single equals signs.
     """
 
+    udf_names: list[str] = udf.names() if udf else []
+
     for tok in tokens:
         if tok in DELIM_TOKS:
             if tok == "=":
                 raise Exception("Use '==' for equality comparison.")
             continue
         if isidentifier(tok) and (tok in col_names or tok in udf_names):
+            continue
+        if isudfcall(tok, udf):
             continue
         if isliteral(tok):
             continue
@@ -111,6 +116,7 @@ def generate_df_syntax(
 
     expr: str = ""
     for tok in tokens:
+        # NOTE - The order of these checks is important!
         if tok in DELIM_TOKS:
             expr = expr + tok
         elif tok in col_names:
@@ -320,11 +326,13 @@ def isudfcall(tok: str, udf: Optional[UDF]) -> bool:
     if not udf:
         return False
 
-    tokens: list[str] = tokenize(tok)
-
-    return all(
-        [len(tokens) == 4, tokens[1] == "(", tokens[3] == ")", udf.isudf(tokens[0])]
-    )
+    try:
+        tokens: list[str] = tokenize(tok)
+        return all(
+            [len(tokens) == 4, tokens[1] == "(", tokens[3] == ")", udf.isudf(tokens[0])]
+        )
+    except:
+        return False
 
 
 def udf_rewrite_rule(tok: str, udf: Optional[UDF]) -> str:
