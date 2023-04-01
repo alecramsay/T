@@ -116,12 +116,21 @@ def generate_df_syntax(
     """
 
     expr: str = ""
+    skip: int = 0
+
     for i, tok in enumerate(tokens):
+        if skip > 0:
+            skip -= 1
+            continue
+
         # NOTE - The order of these checks is important!
         if tok in DELIM_TOKS:
             expr = expr + tok
         elif tok in col_names:
             expr = expr + col_rewrite_rule(tok)
+        elif isaggstatref(tok):
+            bind_agg_stat(tok, tokens.index(tok), tokens, stats)
+            skip = 3
         elif isslice(tok):
             expr = expr + slice_rewrite_rule(tok)
         elif isudfcall(tok, udf):
