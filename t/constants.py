@@ -5,6 +5,20 @@
 CONSTANTS
 """
 
+# The metrics available in inspect()
+STATS_METRICS: list[str] = [
+    "count",
+    "sum",
+    "mean",
+    "median",
+    "std",
+    "min",
+    "25%",
+    "50%",
+    "75%",
+    "max",
+]
+
 # Canonical pair indices
 BEG: int = 0
 END: int = 1

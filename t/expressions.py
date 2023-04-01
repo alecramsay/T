@@ -8,6 +8,7 @@ EXPRESSION HANDLING for SELECT & DERIVE
 import ast
 from typing import Optional, Any, Type
 
+from .constants import STATS_METRICS
 from .udf import UDF, map_args
 from .utils import DELIM_TOKS, tokenize
 from .commands import isidentifier
@@ -266,6 +267,30 @@ def slice_rewrite_rule(tok: str) -> str:
     """Rewrite a grouped slice expression (e.g., 'slice[2:5]') into a valid Python Pandas expression."""
 
     return tok.replace("slice", ".str")
+
+
+### AGGREGATE STATS ###
+
+
+def isaggstatref(tok: str) -> bool:
+    """Return True if token begins an aggregate statistic reference."""
+
+    return True if tok in STATS_METRICS else False
+
+
+def bind_agg_stat(tok: str, i: int, tokens: list[str], stats: dict) -> str:
+    """Bind an aggregate statistic expression to its value.
+
+    "sum(Total)" => "10439388.0"
+    """
+
+    if i + 3 > len(tokens):
+        raise Exception(
+            f"Invalid aggregate statistic expression: {tok}. Expression ends prematurely."
+        )
+    col_name: str = tokens[i + 2]
+
+    return f"{stats[col_name][tok]}"
 
 
 ### UDFs ###

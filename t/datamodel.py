@@ -44,20 +44,6 @@ PD_DESCRIBE_TYPES: list[str] = ["int64", "float64", "datetime64", "timedelta64"]
 # More - https://pandas.pydata.org/pandas-docs/stable/reference/groupby.html#computations-descriptive-stats
 PD_AGG_FNS: list[str] = ["sum", "count", "mean", "std", "min", "max", "median"]
 
-# For contrast, these are the metrics available in inspect()
-STATS_METRICS: list[str] = [
-    "count",
-    "sum",
-    "mean",
-    "median",
-    "std",
-    "min",
-    "25%",
-    "50%",
-    "75%",
-    "max",
-]
-
 
 class Column:
     """Column definitions are meta data for managing aliases & data types"""

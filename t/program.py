@@ -12,6 +12,7 @@ from functools import wraps
 from contextlib import contextmanager
 from typing import Any, Callable, Optional, Generator
 
+from .constants import STATS_METRICS
 from .utils import value_width
 from .udf import UDF
 from .readwrite import fns_from_path
@@ -23,7 +24,6 @@ from .datamodel import (
     MergeHow,
     ValidationOptions,
     PD_DESCRIBE_TYPES,
-    STATS_METRICS,
 )
 from .stack import Stack
 from .commands import Namespace
