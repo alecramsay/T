@@ -6,25 +6,22 @@ keep(county_fips, Total, D_votes, R_votes)
 
 from(NC_counties.csv)
 
-join(county_fips, FIPS)
+join(on=[[county_fips], [FIPS]])
 
 rename((NAME, County))
 keep(County, Total, D_votes, R_votes)
 
-groupby(by=County)
+groupby(by=[County], agg=[sum])
 
-derive(D_pct, vote_share(sum_D_votes, sum_R_votes))
+derive(D_pct, vote_share(D_votes_sum, R_votes_sum))
 derive(D_prob, est_seat_probability(D_pct))
-keep(County, sum_Total, D_pct, D_prob)
-rename((sum_Total, Total))
+keep(County, Total_sum, D_pct, D_prob)
+rename((Total_sum, Total))
+
+# TODO - Not reimplemented below here yet
 
 # Weight counties by population
-derive(w, Total / groupby(sum, Total))
-# w = Total / |sum(Total)|
+# derive(w, Total / sum_Total)
 
 # Compute seats by county (13 seats total).
-derive(D_seats, (w * 13) * D_prob)
-
-echo(stats)
-# Issue #74 to re-enable this:
-# echo(stats['D_seats']['sum'])
+# derive(D_seats, (w * 13) * D_prob)
