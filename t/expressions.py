@@ -14,7 +14,7 @@ from .commands import isidentifier
 
 
 def rewrite_expr(
-    tokens: list[str], col_names: list[str], udf: Optional[UDF] = None
+    tokens: list[str], col_names: list[str], stats: dict, udf: Optional[UDF] = None
 ) -> tuple[str, list[str]]:
     """Rewrite expression using Pandas dataframe syntax."""
 
@@ -27,7 +27,7 @@ def rewrite_expr(
         tokens, wrappers = mark_udf_calls(tokens, udf)
 
     # Rewrite the expression using Pandas dataframe syntax
-    expr: str = generate_df_syntax(tokens, col_names, udf)
+    expr: str = generate_df_syntax(tokens, col_names, stats, udf)
 
     return expr, wrappers
 
@@ -106,7 +106,7 @@ def has_valid_refs(
 
 
 def generate_df_syntax(
-    tokens: list[str], col_names: list[str], udf: Optional[UDF] = None
+    tokens: list[str], col_names: list[str], stats: dict, udf: Optional[UDF] = None
 ) -> str:
     """Rewrite the tokens of a (right-hand side) expression into a valid Python Pandas expression.
 
@@ -115,7 +115,7 @@ def generate_df_syntax(
     """
 
     expr: str = ""
-    for tok in tokens:
+    for i, tok in enumerate(tokens):
         # NOTE - The order of these checks is important!
         if tok in DELIM_TOKS:
             expr = expr + tok

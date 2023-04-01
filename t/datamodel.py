@@ -44,6 +44,20 @@ PD_DESCRIBE_TYPES: list[str] = ["int64", "float64", "datetime64", "timedelta64"]
 # More - https://pandas.pydata.org/pandas-docs/stable/reference/groupby.html#computations-descriptive-stats
 PD_AGG_FNS: list[str] = ["sum", "count", "mean", "std", "min", "max", "median"]
 
+# For contrast, these are the metrics available in inspect()
+STATS_METRICS: list[str] = [
+    "count",
+    "sum",
+    "mean",
+    "median",
+    "std",
+    "min",
+    "25%",
+    "50%",
+    "75%",
+    "max",
+]
+
 
 class Column:
     """Column definitions are meta data for managing aliases & data types"""
@@ -344,6 +358,8 @@ class Table:
         df.query('population>1e6 and area<1000')
 
         Validate the expression & columns referenced in it before calling this.
+
+        NOTE - This expression hasn't had aggregate column references replaced like 'DERIVE'.
         """
 
         self._data = self._data.query(expr)
@@ -389,7 +405,7 @@ class Table:
 
         expr: str
         wrappers: list[str]
-        expr, wrappers = rewrite_expr(tokens, self.col_names(), udf)
+        expr, wrappers = rewrite_expr(tokens, self.col_names(), self.stats, udf)
 
         env: dict = dict()
         if udf:
