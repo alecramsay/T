@@ -22,7 +22,7 @@ output: str = ""
 
 log: str = ""
 
-verbose: bool = True
+verbose: bool = False
 
 args_str: str = ""
 # args_str = '{"paf": "2020_alt_assignments_NC.csv"}'

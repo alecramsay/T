@@ -75,9 +75,10 @@ def do_post_op(pop: int = 1) -> Callable[..., Callable[..., Any]]:
         @wraps(func)
         def wrapper(self, *args, **kwargs) -> Any:
             new_table: Table = func(self, *args, **kwargs)
-            if new_table is not None:
-                self._update_stack(new_table, pop)
-                self._display_table()
+            if new_table is None:
+                raise Exception("Command failed. No new table created.")
+            self._update_stack(new_table, pop)
+            self._display_table()
 
             return new_table
 
@@ -347,8 +348,8 @@ class Program:
             print_execution_exception("inspect", e)
             return
 
-    @do_pre_op()
     @do_post_op(pop=0)
+    @do_pre_op()
     def duplicate(self) -> Table | None:
         """DUPLICATE the table on the top of the stack and push it onto the stack."""
 
@@ -362,8 +363,8 @@ class Program:
             print_execution_exception("duplicate", e)
             return
 
-    @do_pre_op()
     @do_post_op()
+    @do_pre_op()
     def sort(self, col_specs: list) -> Table | None:
         """SORT the table on the top of the stack."""
 
@@ -379,8 +380,8 @@ class Program:
             print_execution_exception("sort", e)
             return
 
-    @do_pre_op(required=2)
     @do_post_op(pop=2)
+    @do_pre_op(required=2)
     def join(
         self,
         *,
@@ -411,8 +412,8 @@ class Program:
             print_execution_exception("join", e)
             return
 
-    @do_pre_op()
     @do_post_op()
+    @do_pre_op()
     def groupby(
         self,
         by: list[str],
@@ -439,8 +440,8 @@ class Program:
             print_execution_exception("groupby", e)
             return
 
-    @do_pre_op(required=2)
     @do_post_op(pop=2)
+    @do_pre_op(required=2)
     def union(self) -> Table | None:
         """UNION the top two tables on the stack, pop them, and push the result."""
 
@@ -459,8 +460,8 @@ class Program:
 
     ### ROW OPERATIONS ###
 
-    @do_pre_op()
     @do_post_op()
+    @do_pre_op()
     def keep(self, cols: list[str]) -> Table | None:
         """KEEP (aka 'select')"""
 
@@ -476,8 +477,8 @@ class Program:
             print_execution_exception("keep", e)
             return
 
-    @do_pre_op()
     @do_post_op()
+    @do_pre_op()
     def drop(self, cols: list[str]) -> Table | None:
         """DROP (i.e., explicit not-selected/kept)"""
 
@@ -493,8 +494,8 @@ class Program:
             print_execution_exception("drop", e)
             return
 
-    @do_pre_op()
     @do_post_op()
+    @do_pre_op()
     def rename(self, col_specs: list) -> Table | None:
         """RENAME specified columns; keep everything else -- pulled out of SELECT"""
 
@@ -510,8 +511,8 @@ class Program:
             print_execution_exception("rename", e)
             return
 
-    @do_pre_op()
     @do_post_op()
+    @do_pre_op()
     def alias(self, col_specs: list) -> Table | None:
         """ALIAS specified columns. Use original names on write."""
 
@@ -527,8 +528,8 @@ class Program:
             print_execution_exception("alias", e)
             return
 
-    @do_pre_op()
     @do_post_op()
+    @do_pre_op()
     def select(self, expr: str) -> Table | None:
         """SELECT (aka 'where' or filter')"""
 
@@ -544,8 +545,8 @@ class Program:
             print_execution_exception("select", e)
             return
 
-    @do_pre_op()
     @do_post_op()
+    @do_pre_op()
     def derive(self, name: str, expr: str) -> Table | None:
         """DERIVE (aka 'let' or calc')"""
 
@@ -562,8 +563,8 @@ class Program:
             print_execution_exception("derive", e)
             return
 
-    @do_pre_op()
     @do_post_op()
+    @do_pre_op()
     def first(self, n: int, pct: Optional[Any] = None) -> Table | None:
         """FIRST (aka 'take' or top')"""
 
@@ -579,8 +580,8 @@ class Program:
             print_execution_exception("first", e)
             return
 
-    @do_pre_op()
     @do_post_op()
+    @do_pre_op()
     def last(self, n: int, pct: Optional[Any] = None) -> Table | None:
         """LAST"""
 
@@ -596,8 +597,8 @@ class Program:
             print_execution_exception("last", e)
             return
 
-    @do_pre_op()
     @do_post_op()
+    @do_pre_op()
     def sample(self, n: int, pct=None) -> Table | None:
         """SAMPLE"""
 
@@ -613,8 +614,8 @@ class Program:
             print_execution_exception("random", e)
             return
 
-    @do_pre_op()
     @do_post_op()
+    @do_pre_op()
     def cast(self, cast_cols: list[str], type_fn: str) -> Table | None:
         """CAST"""
 
