@@ -333,9 +333,10 @@ class TestLangHandlers:
 
     def test_scriptargs(self) -> None:
         try:
+            scriptargs = {"census": "2020_census_AZ.csv"}
             run_script(
                 user="user/alec.py",
-                file="udf.t",
+                file="scriptargs.t",
                 src="test/lang",
                 data="test/files",
                 output="",

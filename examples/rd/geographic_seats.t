@@ -21,7 +21,7 @@ rename((Total_sum, Total))
 # TODO - Not reimplemented below here yet
 
 # Weight counties by population
-# derive(w, Total / sum_Total)
+derive(w, Total / sum(Total))
 
 # Compute seats by county (13 seats total).
-# derive(D_seats, (w * 13) * D_prob)
+derive(D_seats, (w * 13) * D_prob)
