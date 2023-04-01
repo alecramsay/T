@@ -23,8 +23,6 @@ from .datamodel import (
     MergeHow,
     ValidationOptions,
     PD_DESCRIBE_TYPES,
-    PD_DESCRIBE_FNS,
-    PD_AGG_FNS,
 )
 from .stack import Stack
 from .commands import Namespace
@@ -299,12 +297,24 @@ class Program:
             name_width: int = max([len(x.name) for x in cols])
             alias_width: int = max(max([len(x.alias) for x in cols]), 5)
 
+            stats_metrics: list[str] = [
+                "count",
+                "sum",
+                "mean",
+                "median",
+                "std",
+                "min",
+                "25%",
+                "50%",
+                "75%",
+                "max",
+            ]
             stats_width: int = 15
-            stats_headers: list[str] = [x.upper() for x in PD_DESCRIBE_FNS]
+            stats_headers: list[str] = [x.upper() for x in stats_metrics]
             stats_headers = [x.center(stats_width) for x in stats_headers]
             stats_header: str = " ".join(stats_headers)
             underlines: str = "-" * stats_width
-            stats_underline: str = " ".join([underlines] * len(PD_DESCRIBE_FNS))
+            stats_underline: str = " ".join([underlines] * len(stats_metrics))
 
             template: str = (
                 "{0:<"
@@ -327,7 +337,7 @@ class Program:
                 # stats
                 if col.name in stats_cols:
                     values: list = []
-                    for fn in PD_DESCRIBE_FNS:
+                    for fn in stats_metrics:
                         v: int | float = top.stats[col.name][fn]
                         # https://docs.python.org/2/library/string.html#format-specification-mini-language
                         out: str

@@ -198,6 +198,13 @@ class Table:
         stats_df: pd.DataFrame = self._data.describe().transpose()
         self.stats = stats_df.to_dict(orient="index")
 
+        # Add sum and median to the 'describe' stats
+        names: list[str] = [x.name for x in self._cols if x.type in PD_DESCRIBE_TYPES]
+        more: dict = self._data[names].agg(["sum", "median"], axis="index").to_dict()
+        for col_name, col_stats in more.items():
+            if col_name in self.stats:
+                self.stats[col_name].update(col_stats)
+
     ### PUBLIC METHODS ###
 
     @property
