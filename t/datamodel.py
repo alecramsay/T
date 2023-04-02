@@ -200,7 +200,11 @@ class Table:
 
         # Add sum and median to the 'describe' stats
         names: list[str] = [x.name for x in self._cols if x.type in PD_DESCRIBE_TYPES]
-        more: dict = self._data[names].agg(["sum", "median"], axis="index").to_dict()
+        more: dict = (
+            self._data[names].agg(["sum", "median"], axis="index").to_dict()
+            if names
+            else dict()
+        )
         for col_name, col_stats in more.items():
             if col_name in self.stats:
                 self.stats[col_name].update(col_stats)
@@ -389,6 +393,8 @@ class Table:
     ) -> None:
         """Derive a new column from the table"""
 
+        # TYPE HINT
+        # assert self.stats is not None
         expr: str
         wrappers: list[str]
         expr, wrappers = rewrite_expr(tokens, self.col_names(), self.stats, udf)

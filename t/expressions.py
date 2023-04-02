@@ -96,6 +96,8 @@ def has_valid_refs(
             continue
         if isidentifier(tok) and (tok in col_names or tok in udf_names):
             continue
+        if isaggstatref(tok):
+            continue
         if isudfcall(tok, udf):
             continue
         if isliteral(tok):
@@ -125,20 +127,25 @@ def generate_df_syntax(
 
         # NOTE - The order of these checks is important!
         if tok in DELIM_TOKS:
-            expr = expr + tok
-        elif tok in col_names:
-            expr = expr + col_rewrite_rule(tok)
-        elif isaggstatref(tok):
-            bind_agg_stat(tok, tokens.index(tok), tokens, stats)
+            expr += tok
+            continue
+        if tok in col_names:
+            expr += col_rewrite_rule(tok)
+            continue
+        if isaggstatref(tok):
+            expr += bind_agg_stat(tok, i, tokens, stats)
             skip = 3
-        elif isslice(tok):
-            expr = expr + slice_rewrite_rule(tok)
-        elif isudfcall(tok, udf):
-            expr = expr + udf_rewrite_rule(tok, udf)
-        elif isliteral(tok):
-            expr = expr + tok
-        else:
-            raise Exception(f"Invalid column reference: {tok}")
+            continue
+        if isslice(tok):
+            expr += slice_rewrite_rule(tok)
+            continue
+        if isudfcall(tok, udf):
+            expr += udf_rewrite_rule(tok, udf)
+            continue
+        if isliteral(tok):
+            expr += tok
+            continue
+        raise Exception(f"Invalid column reference: {tok}")
 
     return expr
 

@@ -18,8 +18,6 @@ derive(D_prob, est_seat_probability(D_pct))
 keep(County, Total_sum, D_pct, D_prob)
 rename((Total_sum, Total))
 
-# TODO - Not reimplemented below here yet
-
 # Weight counties by population
 derive(w, Total / sum(Total))
 
