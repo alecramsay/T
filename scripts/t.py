@@ -1,20 +1,12 @@
 #!/usr/bin/env python3
 
 """
-Run a 'T' script from the command line.
+Start the 'T' repl -or- run a 'T' script.
 
 For example:
 
-$ scripts/T.py -u user/alec.py -s examples/rd -d data/rd/NC -f census.t > temp/census.txt
-$ scripts/T.py -u user/alec.py -s examples/rd -d data/rd/NC -f elections.t > temp/elections.txt
-$ scripts/T.py -u user/alec.py -s examples/rd -d data/rd/NC -f precincts.t > temp/precincts.txt
-$ scripts/T.py -u user/alec.py -s examples/rd -d data/rd/NC -f districts.t > temp/districts.txt
-$
-$ scripts/T.py -u user/alec.py -s examples/rd -d data/rd/NC -f precincts.t -a '{"paf": "2020_alt_assignments_NC.csv"}'
-$ scripts/T.py -u user/alec.py -s examples/rd -d data/rd/NC -f precincts.t -a '{"paf": "\'2020_alt_assignments_NC.csv\'"}' <<< This doesn't work in argparse
-
-$ scripts/T.py -u user/alec.py -s test/lang -d test/files -f groupby2.t 
-$ scripts/T.py -u user/alec.py -s test/lang -d data/rd/NC -f join3.t 
+$ scripts/T.py -u user/alec.py -s examples/rd -d data/rd/NC
+$ scripts/T.py -u user/alec.py -s examples/rd -d data/rd/NC -f census.t
 
 For documentation, type:
 
@@ -25,7 +17,7 @@ $ scripts/T.py -h
 import json
 import argparse as ap
 
-from T import run_script
+from T import run_script, run_repl
 
 
 parser = ap.ArgumentParser(description="Start the T language processor")
@@ -46,13 +38,26 @@ parser.add_argument(
 args: ap.Namespace = parser.parse_args()
 scriptargs: dict = json.loads(args.scriptargs) if (args.scriptargs) else dict()
 
-run_script(
-    user=args.user,
-    file=args.file,
-    src=args.source,
-    data=args.data,
-    output=args.output,
-    log=args.logfile,
-    verbose=args.verbose,
-    scriptargs=scriptargs,
-)
+if args.file:
+    run_script(
+        user=args.user,
+        file=args.file,
+        src=args.source,
+        data=args.data,
+        output=args.output,
+        log=args.logfile,
+        verbose=args.verbose,
+        scriptargs=scriptargs,
+    )
+else:
+    run_repl(
+        user=args.user,
+        src=args.source,
+        data=args.data,
+        output=args.output,
+        log=args.logfile,
+        verbose=args.verbose,
+        scriptargs=scriptargs,
+    )
+
+### END ###
