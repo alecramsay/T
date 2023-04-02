@@ -10,6 +10,7 @@ import copy
 import pprint
 from functools import wraps
 from contextlib import contextmanager
+from tabulate import tabulate
 from typing import Any, Callable, Optional, Generator
 
 from .constants import STATS_METRICS
@@ -207,31 +208,14 @@ class Program:
 
         try:
             top: Table = self.table_stack.first()
-
-            if top.n_rows > 0:
-                header: list[str] = top.col_names()
-                sample: list = top.nth_row(0)
+            if top.n_rows > 0 and top.n_cols > 0:
                 n: int = nrows if (nrows is not None) else top.n_rows
-
-                margin: int = 5
-                pad: int = 5
-                header_width: int = sum([len(x) + pad for x in header]) + margin
-                row_width: int = (
-                    sum([value_width(x, pad) + pad for x in sample]) + margin
-                )
-                width: int = max(header_width, row_width)
-
-                pp: pprint.PrettyPrinter = pprint.PrettyPrinter(
-                    width=width, compact=False
-                )
-
-                rows: list[list[str]] = top.first_n_rows(n)
-                out: list[list[str]] = [header] + rows
-
-                pp.pprint(out)
-
+                if top.n_cols < 10:
+                    show_tabulate(top, n)  # prettier
+                else:
+                    show_pprint(top, n)  # more compact
             else:
-                print("This table does not have any rows.")
+                print("This table is empty.")
 
         except Exception as e:
             print_execution_exception("show", e)
@@ -751,6 +735,42 @@ def Tables(
 
     yield T
     del T
+
+
+### HELPERS ###
+
+
+def show_tabulate(top: Table, n: int) -> None:
+    """SHOW helper using tabulate: https://pypi.org/project/tabulate/
+
+    TODO - Handle GEOID strings
+    """
+
+    data: list[list] = list()
+    data.append(top.col_names())
+    data.extend(top.first_n_rows(n))
+
+    print(tabulate(data, headers="firstrow"))
+
+
+def show_pprint(top: Table, n: int) -> None:
+    """SHOW helper using pprint.PrettyPrinter"""
+
+    header: list[str] = top.col_names()
+    sample: list = top.nth_row(0)
+
+    margin: int = 5
+    pad: int = 5
+    header_width: int = sum([len(x) + pad for x in header]) + margin
+    row_width: int = sum([value_width(x, pad) + pad for x in sample]) + margin
+    width: int = max(header_width, row_width)
+
+    pp: pprint.PrettyPrinter = pprint.PrettyPrinter(width=width, compact=False)
+
+    rows: list[list[str]] = top.first_n_rows(n)
+    out: list[list[str]] = [header] + rows
+
+    pp.pprint(out)
 
 
 def print_execution_exception(verb, e) -> None:

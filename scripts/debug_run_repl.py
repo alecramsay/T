@@ -14,9 +14,8 @@ user: str = "user/alec.py"
 # source: str = "examples"
 source: str = "examples/rd"
 
-data: str = "data/rd/NC"
-# data: str = "test/join"
-# data: str = "test/union"
+# data: str = "data/rd/NC"
+data: str = "test/files"
 
 output: str = ""
 
