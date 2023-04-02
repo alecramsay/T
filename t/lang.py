@@ -166,7 +166,7 @@ def repl_mode(env: Program) -> None:
                 count += 1
                 app_log.info(str(count).zfill(3) + " " + command)
 
-                if result in FILE_IN_VERBS:
+                if result.strip("_") in FILE_IN_VERBS:
                     is_rooted = True
 
             print()
