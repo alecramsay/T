@@ -739,18 +739,30 @@ def Tables(
 
 ### HELPERS ###
 
+tabulate.PRESERVE_WHITESPACE = True
+
 
 def show_tabulate(top: Table, n: int) -> None:
-    """SHOW helper using tabulate: https://pypi.org/project/tabulate/
-
-    TODO - Handle GEOID strings
-    """
+    """SHOW helper using tabulate: https://pypi.org/project/tabulate/"""
 
     data: list[list] = list()
     data.append(top.col_names())
     data.extend(top.first_n_rows(n))
 
-    print(tabulate(data, headers="firstrow"))
+    disable_numparse: list[int] = [
+        i for i, x in enumerate(top.cols()) if x.type not in ["int64", "float64"]
+    ]
+
+    print(
+        tabulate(
+            data,
+            headers="firstrow",
+            tablefmt="simple",
+            disable_numparse=disable_numparse,
+            intfmt=",",
+            floatfmt=".4f",
+        )
+    )
 
 
 def show_pprint(top: Table, n: int) -> None:
