@@ -1,3 +1,3 @@
 # swap
 
-TODO
+`>>> swap()`

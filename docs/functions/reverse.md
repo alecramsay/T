@@ -1,3 +1,3 @@
 # reverse
 
-TODO
+`>>> reverse()`

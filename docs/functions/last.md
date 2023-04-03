@@ -1,3 +1,5 @@
 # last
 
-TODO
+`>>> last(10)`
+
+`>>> last(10%)`

@@ -1,38 +1,38 @@
 # Commands
 
-T commands fall into several categories:
+T functions fall into several categories:
 
-- I/O commands:
-    - [from](commands/from.md) -- Read a table from disk or read a T script execute it.
-    - [write](commands/write.md)
-- Column commands:
-    - [keep](commands/keep.md)
-    - [drop](commands/drop.md)
-    - [rename](commands/rename.md)
-    - [alias](commands/alias.md)
-    - [derive](commands/derive.md)
-    - [cast](commands/cast.md)
-- Row commands:
-    - [select](commands/select.md)
-    - [first](commands/first.md)
-    - [last](commands/last.md)
-    - [sample](commands/sample.md)
-- Table commands:
-    - [sort](commands/sort.md)
-    - [groupby](commands/groupby.md)
-    - [join](commands/join.md)
-    - [union](commands/union.md)
-    - [duplicate](commands/duplicate.md)
-- Information commands:
-    - [show](commands/show.md)
-    - [inspect](commands/inspect.md)
-    - [history](commands/history.md)
-- Stack commands:
-    - [clear](commands/clear.md)
-    - [pop](commands/pop.md)
-    - [swap](commands/swap.md)
-    - [reverse](commands/reverse.md)
-    - [rotate](commands/rotate.md)
+- I/O functions:
+    - [from](functions/from.md) -- Read a table from a CSV file or read a T script execute it.
+    - [write](functions/write.md) -- Write a table to a CSV or JSON file.
+- Column functions:
+    - [keep](functions/keep.md) -- Keep the specified columns; drop the rest.
+    - [drop](functions/drop.md) -- Drop the specified columns; keep the rest.
+    - [rename](functions/rename.md) -- Rename the specified columns.
+    - [alias](functions/alias.md) -- Alias the specified columns.
+    - [derive](functions/derive.md) -- Derive a new column from existing columns.
+    - [cast](functions/cast.md) -- Cast the specified columns to a new data type.
+- Row functions:
+    - [select](functions/select.md) -- Select rows that match the specified criteria.
+    - [first](functions/first.md) -- Select the first N or N% rows.
+    - [last](functions/last.md) -- Select the last N or N% rows.
+    - [sample](functions/sample.md) -- Select a random sample of N or N% rows.
+- Table functions:
+    - [sort](functions/sort.md) -- Sort the table by the specified columns.
+    - [groupby](functions/groupby.md) -- Group (or pivot) the table by the specified columns.
+    - [join](functions/join.md) -- Join two tables.
+    - [union](functions/union.md) -- Union two tables.
+    - [duplicate](functions/duplicate.md) -- Duplicate a table.
+- Informational functions -- These functions don't modify the stack:
+    - [show](functions/show.md) -- Show the first N rows of a table.
+    - [inspect](functions/inspect.md) -- Show descriptive statistics for a table.
+    - [history](functions/history.md) -- Show the function (command) history.
+- Stack functions:
+    - [clear](functions/clear.md) -- Clear the stack.
+    - [pop](functions/pop.md)
+    - [swap](functions/swap.md)
+    - [reverse](functions/reverse.md)
+    - [rotate](functions/rotate.md)
 
 Notes:
 

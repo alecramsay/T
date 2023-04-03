@@ -1,3 +1,5 @@
 # sample
 
-TODO
+`>>> sample(10)`
+
+`>>> sample(10%)`

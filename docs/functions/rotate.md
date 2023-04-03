@@ -1,3 +1,3 @@
 # rotate
 
-TODO
+`>>> rotate()`

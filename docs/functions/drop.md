@@ -1,3 +1,3 @@
 # drop
 
-TODO
+`>>> drop(AsnC_2010_tot)`

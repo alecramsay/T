@@ -850,6 +850,7 @@ def _handle_show(cmd: Command, env: Program) -> str:
     Example:
 
     >>> show()
+    >>> show(10)
     """
 
     try:

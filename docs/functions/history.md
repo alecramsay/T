@@ -1,3 +1,3 @@
 # history
 
-TODO
+`>>> history()`

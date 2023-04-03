@@ -1,3 +1,3 @@
 # sort
 
-TODO
+`>>> sort((Total, DESC))`

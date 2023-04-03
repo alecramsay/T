@@ -1,3 +1,3 @@
 # clear
 
-TODO
+`>>> clear()`

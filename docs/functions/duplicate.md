@@ -1,3 +1,3 @@
 # duplicate
 
-TODO
+`>>> duplicate()`

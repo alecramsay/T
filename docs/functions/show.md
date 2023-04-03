@@ -1,3 +1,5 @@
 # show
 
-TODO
+`>>> show()`
+
+`>>> show(10)`

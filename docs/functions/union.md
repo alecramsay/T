@@ -1,3 +1,3 @@
 # union
 
-TODO
+`>>> union()`
