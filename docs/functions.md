@@ -3,7 +3,7 @@
 T commands fall into several categories:
 
 - I/O commands:
-    - [from](commands/from.md) -- Read a table from disk
+    - [from](commands/from.md) -- Read a table from disk or read a T script execute it.
     - [write](commands/write.md)
 - Column commands:
     - [keep](commands/keep.md)
