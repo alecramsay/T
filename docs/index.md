@@ -8,4 +8,4 @@ TODO
 
 The [model](model.md)
 
-The [commands](commands.md)
+The [functions](functions.md)
