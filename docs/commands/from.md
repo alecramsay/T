@@ -3,6 +3,10 @@
 Read a table from a CSV file or read a T script and execute it.
 Push the resulting table onto the stack.
 
+## Syntax
+
+TODO
+
 ## Examples
 
 Read a table from a CSV file:
