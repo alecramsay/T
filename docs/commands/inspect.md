@@ -1,5 +1,9 @@
 # inspect
 
+Show descriptive statistics for the numeric columns of a table.
+
+## Examples
+
 All numeric columns:
 
 `>>> inspect()`

@@ -1,5 +1,9 @@
 # from
 
+Read a table from a CSV file or read a T script and execute it.
+
+## Examples
+
 Read a table from a CSV file:
 
 `>>> from(2020_census_NC.csv)`

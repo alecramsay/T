@@ -1,5 +1,9 @@
 # write
 
+Write a table to a CSV or JSON file.
+
+## Examples
+
 Write a table to a CSV file:
 
 `>>> write(2020_census_NC.csv)`

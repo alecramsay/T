@@ -1,5 +1,9 @@
 # join
 
+Join two tables.
+
+## Examples
+
 `>>> join()`
 
 `>>> join(on=[[county_fips], [FIPS]])`

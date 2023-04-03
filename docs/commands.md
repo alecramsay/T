@@ -23,7 +23,7 @@ Commands fall into several categories:
     - [sample](commands/sample.md) -- Select a random sample of N (or N%) rows. Discard the rest.
 - Table commands change entire tables:
     - [sort](commands/sort.md) -- Sort a table by one or more columns.
-    - [groupby](commands/groupby.md) -- Group the rows of a table by the the values of one or more columns.
+    - [groupby](commands/groupby.md) -- Aggregate the rows of a table by the the values of one or more columns.
     - [join](commands/join.md) -- Join two tables.
     - [union](commands/union.md) -- Concatenate two tables.
     - [duplicate](commands/duplicate.md) -- Duplicate a table.
