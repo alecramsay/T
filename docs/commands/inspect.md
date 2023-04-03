@@ -1,6 +1,8 @@
 # inspect
 
-Show descriptive statistics for the numeric columns of a table.
+Show descriptive statistics for the numeric columns of the table on the top of the stack.
+By default, show all numeric columns.
+If a string is provided, show only columns with that string in the name.
 
 ## Examples
 

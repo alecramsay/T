@@ -1,6 +1,7 @@
 # derive
 
-Derive a new column from existing columns.
+Derive a new column from existing columns in the top table on the stack.
+Pop that table off and push the new table onto the stack.
 
 ## Examples
 

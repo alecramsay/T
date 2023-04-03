@@ -1,6 +1,7 @@
 # select
 
-Select rows that match a condition. Discard the rest.
+Select rows from the table on the top of the stack that match a condition. Discard the rest.
+Pop that table off and push the new table onto the stack.
 
 ## Examples
 

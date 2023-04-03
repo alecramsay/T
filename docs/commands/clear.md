@@ -1,6 +1,6 @@
 # clear
 
-Clear the stack.
+Clear the table stack.
 
 ## Examples
 

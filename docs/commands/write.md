@@ -1,6 +1,6 @@
 # write
 
-Write a table to a CSV or JSON file.
+Write the table on the top of the stack to a CSV or JSON file.
 
 ## Examples
 

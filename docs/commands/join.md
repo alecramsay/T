@@ -1,6 +1,7 @@
 # join
 
-Join two tables.
+Join the top two tables on the stack.
+Pop those two tables off and push the joined table onto the stack.
 
 ## Examples
 
