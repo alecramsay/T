@@ -8,4 +8,6 @@ TODO
 
 The [model](model.md)
 
-The [functions](functions.md)
+The [commands](commands.md)
+
+[User-defined functions](udf.md)
