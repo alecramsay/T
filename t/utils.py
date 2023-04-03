@@ -72,7 +72,7 @@ def split_verb_and_args(s: str) -> tuple[str, str]:
     right: int
     left, right = find_args_string(s)
 
-    verb = s[:left].strip()
+    verb = s[:left].strip().lower()
     args_str = s[left + 1 : right].strip()
 
     return verb, args_str

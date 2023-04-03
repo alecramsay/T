@@ -34,4 +34,7 @@ T commands fall into several categories:
     - [reverse](commands/reverse.md)
     - [rotate](commands/rotate.md)
 
-TODO - Upper & lower case
+Notes:
+
+- Upper & lower case
+- Whitespace

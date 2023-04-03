@@ -556,8 +556,11 @@ def rewrite_input_line(line: str) -> str:
         return line
 
     # HACK - 'from' is a Python keyword
-    if line.find("from(") > -1:
-        line = line.replace("from(", "from_(")
+    verb: str
+    args_str: str
+    verb, args_str = split_verb_and_args(line)
+    if verb.lower() == "from":
+        line = "from_" + "(" + args_str + ")"
 
     # HACK - '%' is a reserved Python symbol
     line = rewrite_pct(line)
