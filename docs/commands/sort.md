@@ -9,7 +9,7 @@ Pop the unsorted table and push the sorted table onto the stack.
 
 Parameters:
 
-- sort_spec: list -- Each spec is either a column name or a (column name, order) tuple. Column names are unquoted strings. Order is either ASC or DESC (no quotes) for ascending and descending, respectively. If a spec doesn't have an explicit sort order, the default order is ASC.
+- **sort_spec**: list -- Each spec is either a column name or a (column name, order) tuple. Column names are unquoted strings. Order is either ASC or DESC (no quotes) for ascending and descending, respectively. If a spec doesn't have an explicit sort order, the default order is ASC.
 
 ## Examples
 

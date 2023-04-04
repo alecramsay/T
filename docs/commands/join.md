@@ -10,10 +10,10 @@ Pop those two tables off and push the joined table onto the stack.
 
 Parameters:
 
-- how: {left, right, outer, inner, cross}, default is inner
-- on: str, list[str], list[list[str], list[str]], optional (no default) -- If not specified, the join column is inferred. If one column is given, the join is on that column from both tables. If one list is specified, the join is on those columns from both tables. If two lists are specified, they must be of the same length and the join is those columns from the two tables.
-- suffixes: a length-2 tuple, default is ('_y', '_x') -- Both elements are optionally a string indicating the suffix to add to overlapping column names in the 'y' and 'x' tables, respectively. Passing a value of None instead of a string indicates that that column name should be left as-is, i.e., with no suffix. At least one of the two values must not be None.
-- validate: {1:1, 1:m, m:1, m:m}, optional (no default) -- If specified, checks if the join is of the specified type.
+- **how**: {left, right, outer, inner, cross}, default is inner
+- **on**: str, list[str], list[list[str], list[str]], optional (no default) -- If not specified, the join column is inferred. If one column is given, the join is on that column from both tables. If one list is specified, the join is on those columns from both tables. If two lists are specified, they must be of the same length and the join is those columns from the two tables.
+- **suffixes**: a length-2 tuple, default is ('_y', '_x') -- Both elements are optionally a string indicating the suffix to add to overlapping column names in the 'y' and 'x' tables, respectively. Passing a value of None instead of a string indicates that that column name should be left as-is, i.e., with no suffix. At least one of the two values must not be None.
+- **validate**: {1:1, 1:m, m:1, m:m}, optional (no default) -- If specified, checks if the join is of the specified type.
 
 ## Examples
 

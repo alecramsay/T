@@ -5,8 +5,14 @@ Pop that table off and push the narrower table onto the stack.
 
 ## Syntax
 
-TODO
+`>>> keep(column, ...)`
+
+Parameters:
+
+- **column**: list -- Columns to keep *in the order to keep them*.
 
 ## Examples
+
+Keep two columns:
 
 `>>> keep(GEOID20, Tot_2020_tot)`

@@ -8,8 +8,8 @@ Write the table on the top of the stack to a CSV or JSON file.
 
 Parameters:
 
-- filepath: str -- path to the file to write to (no quotes)
-- format: {CSV, JSON} (no quotes), default is CSV
+- **filepath**: str -- path to the file to write to (no quotes)
+- **format**: {CSV, JSON} (no quotes), default is CSV
 
 ## Examples
 

@@ -7,6 +7,8 @@ Pop those two tables off and push the union table onto the stack.
 
 `union()`
 
+Parameters - None.
+
 ## Examples
 
 `>>> union()`
