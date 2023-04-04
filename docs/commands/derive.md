@@ -22,6 +22,10 @@ Compute a new column as a slice of an existing string column:
 
 `>>> derive(county_fips, GEOID20[2:5]`
 
+Define a new column in terms of an [aggregate function](../aggregates.md):
+
+`>>> derive(w, Total / sum(Total))`
+
 Use a [user-defined functions](../udf.md) to compute a new column:
 
 `>>> derive(D_pct, vote_share(D_2020_pres, R_2020_pres)`

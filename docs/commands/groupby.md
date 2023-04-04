@@ -12,7 +12,7 @@ Parameters:
 
 - **by**: list of columns to group by
 - **only**: list of columns, optional -- By default, all numeric columns are grouped. If 'only' is specified, only those column are grouped.
-- **agg**: list of functions, optional -- By default, all aggregate functions are computed: {sum, count, mean, std, min, max, median}. If 'agg' is specified, only those functions are computed.
+- **agg**: list of functions, optional -- By default, all [aggregate functions](../aggregates.md) are computed. If 'agg' is specified, only those functions are computed.
 
 ## Examples
 

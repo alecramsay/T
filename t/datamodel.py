@@ -193,10 +193,12 @@ class Table:
         Wh_2010_vap    2666.0  1862.087397  1247.839395   4.0  1000.50  1669.0  2504.00  18500.0
         His_2010_vap   2666.0   184.669917   249.148990   0.0    44.00   104.0   225.00   3598.0
         ...
+
+        'sum' and 'median' are added to these stats.
         """
 
         stats_df: pd.DataFrame = self._data.describe().transpose()
-        self.stats = stats_df.to_dict(orient="index")
+        self = stats_df.to_dict(orient="index")
 
         # Add sum and median to the 'describe' stats
         names: list[str] = [x.name for x in self._cols if x.type in PD_DESCRIBE_TYPES]
