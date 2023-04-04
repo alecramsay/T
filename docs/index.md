@@ -21,13 +21,10 @@ first(10)
 
 ## Contents
 
-[Installation and usage](https://github.com/alecramsay/T/README.md)
+To set up T, see the [README](https://github.com/alecramsay/T) in the GitHub repository.
 
-The [model](model.md)
+The following document how it works:
 
-The [commands](commands.md)
-
-[Aggregate functions](aggregates.md)
-
-[User-defined functions](udf.md)
-
+- The [model](model.md)
+- The [commands](commands.md)
+- [User-defined functions](udf.md)
