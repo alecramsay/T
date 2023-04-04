@@ -27,14 +27,14 @@ T \
 
 All parameters are optional. If specified:
 
-- user (-u) -- Specifies a relative path to a .py file of user-defined functions. The default is None.
-- file (-f) -- Specifies a relative path to .t script file.
-- source (-s) -- Provides a relative directory where T will look for .t script files.
-- data (-d) -- Provides a relative directory where T will look for .csv data files.
-- output (-o) -- Provides a relative directory where T will write output .csv or .json files.
-- log (-l) -- Specifies a relative path to log file where T will log a history of commands. The defaults is "logs/history.log".
-- scriptargs (-a) -- Provides script arguments used by the script file. Arguments are provides as dictionary represented as a string. For example, '{"paf": "2020_alt_assignments_NC.csv"}'. The default is None.
-- verbose (-v) -- Toggles verbose mode on.
+- **user** (-u) -- Specifies a relative path to a .py file of user-defined functions. The default is None.
+- **file** (-f) -- Specifies a relative path to .t script file.
+- **source** (-s) -- Provides a relative directory where T will look for .t script files.
+- **data** (-d) -- Provides a relative directory where T will look for .csv data files.
+- **output** (-o) -- Provides a relative directory where T will write output .csv or .json files.
+- **log** (-l) -- Specifies a relative path to log file where T will log a history of commands. The defaults is "logs/history.log".
+- **scriptargs** (-a) -- Provides script arguments used by the script file. Arguments are provides as dictionary represented as a string. For example, '{"paf": "2020_alt_assignments_NC.csv"}'. The default is None.
+- **verbose** (-v) -- Toggles verbose mode on.
 
 For command documentation, type:
 

@@ -1,8 +1,9 @@
 # Commands
 
-T commands are like functions: they have a name, they take arguments in parentheses, and they work on the tables on the stack.
+T commands are like functions: they have a name, and they take arguments in parentheses.
 Command names ("verbs") can be in lower or upper case.
 Whitespace is ignored.
+Commands work on the tables on a stack.
 
 Commands fall into several categories:
 
