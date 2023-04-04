@@ -198,7 +198,7 @@ class Table:
         """
 
         stats_df: pd.DataFrame = self._data.describe().transpose()
-        self = stats_df.to_dict(orient="index")
+        self.stats = stats_df.to_dict(orient="index")
 
         # Add sum and median to the 'describe' stats
         names: list[str] = [x.name for x in self._cols if x.type in PD_DESCRIBE_TYPES]
