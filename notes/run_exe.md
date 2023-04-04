@@ -1,5 +1,5 @@
 # Run Executable
 
-This appears to be the incantation:
+After copying the executable to the top-level scripts directory:
 
-`scripts/dist/T/T -u user/alec.py -s examples -d data/rd/NC`
+`scripts/T -u user/alec.py -s examples -d data/rd/NC`
