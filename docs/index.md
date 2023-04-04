@@ -6,6 +6,8 @@ TODO
 
 ## Contents
 
+[Installation and usage](../README.md)
+
 The [model](model.md)
 
 The [commands](commands.md)

@@ -4,67 +4,60 @@ Tables as a computing model
 
 The purpose of T is to make it easier to work with CSV data.
 
+TODO - Verify all these instructions.
+
 ## Installation
 
 On macOS, download the UNIX executable T from the scripts/ directory, and
-make sure it is in your PATH.
+make sure it is in your PATH. 
 
 ## Usage
 
+```bash
+T \
+    --user file_path \
+    --file file_path \
+    --source source_dir \
+    --data data_dir \
+    --output output_dir \
+    --log log_file \
+    --scriptargs script_args \
+    --verbose verbose
 ```
-scripts/T -u user/alec.py -s examples -d data/rd/NC
-```
+
+All parameters are optional. If specified:
+
+- user (-u) -- Specifies a relative path to a .py file of user-defined functions. The default is None.
+- file (-f) -- Specifies a relative path to .t script file.
+- source (-s) -- Provides a relative directory where T will look for .t script files.
+- data (-d) -- Provides a relative directory where T will look for .csv data files.
+- output (-o) -- Provides a relative directory where T will write output .csv or .json files.
+- log (-l) -- Specifies a relative path to log file where T will log a history of commands. The defaults is "logs/history.log".
+- scriptargs (-a) -- Provides script arguments used by the script file. Arguments are provides as dictionary represented as a string. For example, '{"paf": "2020_alt_assignments_NC.csv"}'. The default is None.
+- verbose (-v) -- Toggles verbose mode on.
 
 For command documentation, type:
 
 ```
-REmake -h
+T -h
 ```
 
-For example, this program for finding floating pointing numbers:
+For example:
 
 ```
-digit() * 0, ...
-period()
-digit() * 1, ...
-group (
-  "e"
-  digit() * 1, ...
-) * 0, 1
-```
-
-produces a single-line regex: 
-
-```
-\d*\.\d+(?:e\d+)?
-```
-
-as well as a free-spaced regex:
-
-```
-\d                  # A digit
-*                   # Zero or more times (greedy)
-\.                  # A period (escaped)
-\d                  # A digit
-+                   # One or more times (greedy)
-(?:                 # Begin group (not captured):
-  e                 # The character 'e'
-  \d                # A digit
-  +                 # One or more times (greedy)
-  )                 # End of group
-?                   # Optionally (greedy)
+T -u user/alec.py -s examples -d data/rd/NC
 ```
 
 ## Documentation
 
-The language is documented [here](https://alecramsay.github.io/REmake/).
+The language is documented [here](https://alecramsay.github.io/T/).
 
 ## Feedback
 
-I welcome your feedback in [Discussions](https://github.com/alecramsay/REmake/discussions):
+I welcome your feedback in [Discussions](https://github.com/alecramsay/T/discussions/landing):
 
-- What [language features](https://github.com/alecramsay/REmake/discussions/categories/features) would make this tool most useful?
-- What [output flavors](https://github.com/alecramsay/REmake/discussions/categories/flavors) would make this tool most useful?
+- What language features would make T most useful?
+- Would a GUI authoring app be useful?
 
 Obviously, I need a Windows executable. 
 I would appreciate help with that, as I don't have a Windows PC.
