@@ -21,10 +21,9 @@ first(10)
 
 ## Contents
 
-To set up T, see the [README](https://github.com/alecramsay/T) in the GitHub repository.
+The following document how T works:
 
-The following document how it works:
-
-- The [model](model.md)
-- The [commands](commands.md)
-- [User-defined functions](udf.md)
+- The [README](https://github.com/alecramsay/T) in GitHub explains how to set up & configure T.
+- [Model](model.md) sketches the essential computing model.
+- [Commands](commands.md) documents each of the two dozen commands.
+- [User-defined functions](udf.md) describes how to use custom Python functions that you've written.

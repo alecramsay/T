@@ -3,9 +3,9 @@
 T's power comes from the underlying computing model:
 
 - There is a stack of tables.
-- Instead of naming tables & passing them around as arguments, commands operate a stack. 
-- A command uses one or more tables on the stack, creates a new table, pops the old ones off, and pushes the new one on.
-- Commands are like functions: they have a name, and they take arguments in parentheses.
-- Commands implicitly iterate over the rows of a table--there is no need to write a loop.
-- You can user-defined Python functions to define new columns.
+- Commands operate the stack, instead of naming tables & passing them around as arguments. 
+- They use one or more tables on the stack, create a new table, pop the old one(s) off, and push the new one on.
+- Commands appear like functions: they have a name, and they take arguments in parentheses.
+- They implicitly iterate over the rows of a table--there is no looping.
+- You can use user-defined Python functions to define new columns.
 
