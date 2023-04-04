@@ -18,7 +18,6 @@ from .verbs import *
 name: str = "T"
 
 
-### TODO - Limit what is re-exported ###
+### Limit what is re-exported ###
 
-# __all__: list[str] = [
-# ]
+__all__: list[str] = ["run_script", "run_repl"]
