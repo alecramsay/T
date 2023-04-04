@@ -5,7 +5,11 @@ Push the resulting table onto the stack.
 
 ## Syntax
 
-TODO
+`from(filepath)`
+
+Parameters:
+
+- **filepath**: str -- path to the CSV file to read or T script to execute (no quotes).
 
 ## Examples
 
@@ -19,20 +23,4 @@ Execute a T script with arguments:
 
 ## TODO
 
-These arguments are surfaced yet:
-
-```
-delimiter: str = "comma",
-header: bool = True,
-```
-
-```
-StandardDelimiters: dict[str, str] = {
-    "tab": "\t",
-    "semicolon": ";",
-    "comma": ",",
-    "space": " ",
-    "pipe": "|",
-    # user-defined
-}
-```
+- Surface 'delimiter' and 'header' keyword arguments.
