@@ -6,8 +6,8 @@ The purpose of T is to make it easier to work with CSV data.
 
 ## Installation
 
-On macOS, download the UNIX executable T from the scripts/ directory, and
-make sure it is in your PATH. 
+On macOS, download the UNIX executable T from the scripts/ directory.
+Make sure it is in your PATH or invoke it with a fully qualified path.
 
 ## Usage
 
