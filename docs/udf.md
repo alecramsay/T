@@ -1,4 +1,4 @@
-# User-defined Functions
+# User-Defined Functions
 
 When you start the T language processor, you can specify the path to a file containing user-defined functions. 
 See the `--user` parameter described in the [README](https://github.com/alecramsay/T) in the GitHub repository.

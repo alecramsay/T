@@ -13,7 +13,7 @@ sort((Total, DESC))
 first(10)
 ```
 
-- Load a CSV file of census data with 2666 rows with 57 columns,
+- Load a CSV file of census data with lots of rows (2,666) and columns (57),
 - Keep only the geoid and total population columns,
 - Renames the total population to something shorter,
 - Sorts the rows by total population in descending order, and
@@ -25,5 +25,5 @@ The following document how T works:
 
 - The [README](https://github.com/alecramsay/T) in GitHub explains how to set up & configure T.
 - [Model](model.md) sketches the essential computing model.
-- [Commands](commands.md) documents each of the two dozen commands.
+- [Commands](commands.md) documents each of the over two dozen commands.
 - [User-defined functions](udf.md) describes how to use custom Python functions that you've written.

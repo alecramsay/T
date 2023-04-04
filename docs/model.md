@@ -1,4 +1,4 @@
-# The T model
+# Model
 
 T's power comes from the underlying computing model:
 
