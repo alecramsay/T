@@ -1,6 +1,6 @@
 # show
 
-Show prints the first N rows of the top table on the stack.
+Print the first N rows of the top table on the stack.
 This command does not alter the table stack.
 
 If there are less than 10 columns, a nice tabluar format is used like this:

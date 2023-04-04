@@ -36,6 +36,8 @@ All parameters are optional. If specified:
 - **scriptargs** (-a) -- Provides script arguments used by the script file. Arguments are provides as dictionary represented as a string. For example, '{"paf": "2020_alt_assignments_NC.csv"}'. The default is None.
 - **verbose** (-v) -- Toggles verbose mode on.
 
+You can, of course, bundle these parameters into a shell script so you can invoke a recurring T configuration with a single short command.
+
 For command documentation, type:
 
 ```
